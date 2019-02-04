@@ -1,0 +1,4 @@
+# ignore composer vendor directory
+/vendor
+/.git
+/.idea
