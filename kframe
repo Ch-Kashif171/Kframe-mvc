@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+<?php
+
+require_once 'vendor/autoload.php';
+/******************************************************
+*for some reason need to include here these two files *
+******************************************************/
+require_once 'core/Dotenv/Dotenv.php';
+require_once 'core/helpers.php';
+
+require 'core/Commands/CreateControllerCommand.php';
+require 'core/Commands/CreateModelCommand.php';
+require 'core/Commands/MakeAuth.php';
+require 'core/Commands/MigrationCommand.php';
+
+use Symfony\Component\Console\Application;
+use Core\Commands\CreateControllerCommand;
+use Core\Commands\CreateModelCommand;
+use Core\Commands\MakeAuth;
+use Core\Commands\MigrationCommand;
+
+
+$application = new Application('Welcome to Kfram Console Developed By Kashif Sohail', '1.0.0');
+$application->add(new CreateControllerCommand());
+$application->add(new CreateModelCommand());
+$application->add(new MakeAuth());
+$application->add(new MigrationCommand());
+
+$application->run();
