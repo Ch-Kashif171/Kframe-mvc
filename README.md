@@ -5,7 +5,7 @@ I want to improve it with github community,
 please countribute and make it strong as much as possible.
 This is my first try for mvc. Any contribution will be appreciated. 
 
-#Builtin Facades:
+# Builtin Facades:
 There are some nice Facades like 
 
 Captcha: There is available a Captcha Facade, so we can use this to render and verify captcha (helpers also available for this).
@@ -23,14 +23,14 @@ Toastr::warning('message')
 Toastr::info('message') 
 
 
-#Helpers:
+# Helpers:
 There are many default helper functions, like
 
 captcha(): to render the captcha in html form directly.
 
 verifyCaptcha(): to verify captcha.
 
-#Direct access deny:
+# Direct access deny:
 
 Include index,html in very directory to deny the directory listing.
 
