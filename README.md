@@ -1,8 +1,11 @@
-# Kfram
+# Kframe
+PHP MVC framework.
+I have developed a very very basic mvc pattteren framework, most functions name are same like Laravel (inspired by Laravel)
+I want to improve it with github community,
+please countribute and make it strong as much as possible.
+This is my first try for mvc. Any contribution will be appreciated. 
 
-working on traits, using namespaces and make static functions for calling directoly from models like User::first(); etc, this will posibile to create Doctrine calss's functios statically.
-
-#Builtin Facades:
+# Builtin Facades:
 There are some nice Facades like 
 
 Captcha: There is available a Captcha Facade, so we can use this to render and verify captcha (helpers also available for this).
@@ -10,16 +13,14 @@ Captcha: There is available a Captcha Facade, so we can use this to render and v
 Toastr: There is a Facade for alert message in toastr.
 
 Note:(first need to include a helper function called toastr() in html footer page) Then add Toastr Facade in any controller where you want to use it and then call its function like: 
+    
+    Toastr::error('message');
 
-Toastr::error('message') ,
+    Toastr::success('message'); 
 
-Toastr::success('message') , 
-
-Toastr::warning('message')
-
-Toastr::info('message') 
-
-e.t.c
+    Toastr::warning('message');
+    
+    Toastr::info('message') ;
 
 # Builtin Pagination:
 There are two type bootstrap base pagination provided by framework.
@@ -41,14 +42,14 @@ Then include below snippet to render the pagination on view page like:
 
     <?php echo $render->links?>
 
-#Helpers:
+# Helpers:
 There are many default helper functions, like
 
 captcha(): to render the captcha in html form directly.
 
 verifyCaptcha(): to verify captcha.
 
-#Direct access deny:
+# Direct access deny:
 
 Include index,html in very directory to deny the directory listing.
 
@@ -62,13 +63,13 @@ Mail Facade:
 
 e.g:
 
-    Mail::set('mail', $data, function($mail) {
-
+    Mail::send('mail', $data, function($mail) {
+     
         $mail->to('test@gmail.com', 'test');
         $mail->subject('HTML Testing Mail');
         $mail->body('This is body');
         $mail->from('test@gmail.com','test');
-        $mail->send();
+        $mail->execute();
     });
 
 
@@ -107,4 +108,4 @@ For register custom library file in framework, make a directory under applicatio
     
  For more then one:
  
-    'libraries' =>  array('libraries/my_library','libraries/other_library'),
+    'libraries' =>  array('libraries/my_library',
