@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-define('root_path', dirname(__FILE__), true);
+define('root_path', getcwd(), true);
 
 $base = __DIR__ . '/../';
 require_once $base.'vendor/autoload.php';

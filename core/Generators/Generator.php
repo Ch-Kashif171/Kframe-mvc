@@ -2,7 +2,7 @@
 
 namespace Core\Generators;
 
-use migrations\Migration;
+require_once __DIR__ . '/../'."../migrations/Migration.php";
 
 class Generator {
 
@@ -38,10 +38,21 @@ class Generator {
         }
         $templatefile = getcwd(). '/core/controller/templates/ControllerTemplate.php';
         if(file_exists($templatefile)){
+
+            if (strpos($controllerName,'\\') !== false){
+                $controller_name_arr = explode('\\',$controllerName);
+                $controllerClass = end($controller_name_arr);
+            } elseif (strpos($controllerName,'/') !== false){
+                $controller_name_arr = explode('/',$controllerName);
+                $controllerClass = end($controller_name_arr);
+            } else {
+                $controllerClass = $controllerName;
+            }
+
                 if( strpos(file_get_contents($templatefile),'controllername') !== false) {
-                $newcontent = str_replace('controllername', ucfirst($controllerName), file_get_contents($templatefile));
+                $newcontent = str_replace('controllername', ucfirst($controllerClass), file_get_contents($templatefile));
                 $controllerfile = getcwd(). '/application/controllers'.'/'.ucfirst($controllerName).'.php';
-                $newfile = fopen($controllerfile, 'w');
+                fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
                 return [
                 'status' => true,
@@ -71,11 +82,22 @@ class Generator {
         }
         $templatefile = getcwd(). '/core/model/templates/ModelTemplate.php';
         if(file_exists($templatefile)){
+
+            if (strpos($modelname,'\\') !== false){
+                $model_name_arr = explode('\\',$modelname);
+                $model_class_name = end($model_name_arr);
+            } elseif (strpos($modelname,'/') !== false){
+                $model_name_arr = explode('/',$modelname);
+                $model_class_name = end($model_name_arr);
+            } else {
+                $model_class_name = $modelname;
+            }
+
           if( strpos(file_get_contents($templatefile),'modelname') !== false) {
-            $newcontent = str_replace('modelname', $modelname.'Model', file_get_contents($templatefile));
-            $controllerfile = getcwd(). '/application/models'.'/'.$modelname.'Model.php';
-            $newfile = fopen($controllerfile, 'w');
-            file_put_contents($controllerfile,$newcontent);
+            $newcontent = str_replace('modelname', $model_class_name, file_get_contents($templatefile));
+            $modelfile = getcwd(). '/application/models'.'/'.$modelname.'.php';
+            fopen($modelfile, 'w');
+            file_put_contents($modelfile,$newcontent);
             return [
               'status' => true,
               'message' => ucfirst($modelname).' Model Generated Successfully'
@@ -180,7 +202,7 @@ class Generator {
      */
     public  function generateMigration($migrate)
     {
-       $class = new Migration();
+       $class = new \Migration();
        $message = $class->up();
         return [
             'status' => true,

@@ -41,6 +41,6 @@ $autoload = [
 
 
     /*load helpers*/
-    'helpers' =>  array('helper'),
+    'helpers' =>  array(''),
 
 ];

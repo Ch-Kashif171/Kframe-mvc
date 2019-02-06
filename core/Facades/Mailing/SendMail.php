@@ -50,7 +50,8 @@ class SendMail
         return $this;
     }
 
-    public function execute(){
+    public function send(){
+        $mail_config = require base_path().'/config/mail.php';
 
         $mail = new PHPMailer(true);
 
@@ -58,16 +59,16 @@ class SendMail
 
             $mail->SMTPDebug = 0;
             $mail->isSMTP();
-            $mail->Host = env('MAIL_HOST');
+            $mail->Host = $mail_config['host'];
             $mail->SMTPAuth = true;
-            $mail->Username = env('MAIL_USERNAME');
-            $mail->Password = env('MAIL_PASSWORD');
-            $mail->SMTPSecure = env('MAIL_ENCRYPTION');
-            $mail->Port = env('MAIL_PORT');
+            $mail->Username = $mail_config['username'];
+            $mail->Password = $mail_config['password'];
+            $mail->SMTPSecure = $mail_config['encryption'];
+            $mail->Port = $mail_config['port'];
 
             //Recipients
-            $mail->setFrom($this->to, 'Kframe');
-            $mail->addAddress($this->to, 'Kashif');
+            $mail->setFrom($mail_config['from']['address'], $mail_config['from']['name']);
+            $mail->addAddress($this->to, 'Kframe');
             //$mail->addReplyTo('kashif.sohail.el@gmail.com', 'Information');
             //->addCC('kashif.sohail.el@gmail.com');
             //$mail->addBCC('kashif.sohail.el@gmail.com');
@@ -86,7 +87,7 @@ class SendMail
             return $sent ?? false;
 
         } catch (Exception $e) {
-            echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
+            echo 'Email could not be sent. Mailer Error: ', $mail->ErrorInfo;
             exit;
         }
 

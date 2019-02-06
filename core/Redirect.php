@@ -34,4 +34,8 @@ class Redirect
         Session::flash($key,$message);
         return header('Location: ' . $_SERVER['HTTP_REFERER']);
     }
+
+    public function json($data){
+        echo json_encode($data);
+    }
 }

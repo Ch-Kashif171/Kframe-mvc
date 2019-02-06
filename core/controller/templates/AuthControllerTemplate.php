@@ -3,6 +3,7 @@
 use App\controllers\Controller;
 use Core\Facades\Auth;
 use Core\Facades\Request;
+use Core\Facades\Validation\Validator;
 
 class controllername extends Controller
   {

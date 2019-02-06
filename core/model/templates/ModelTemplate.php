@@ -1,4 +1,6 @@
 <?php
+namespace App\models;
+
 defined('root_path') OR exit("Sorry! No direct script access allowed ");
 
 use Core\model\BaseModel;

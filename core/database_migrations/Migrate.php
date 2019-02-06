@@ -19,7 +19,7 @@ class Migrate
      * @param $table
      * @param $fields
      */
-    public static function create_old($table,$fields){
+    public static function create($table,$fields){
 
         $query = "CREATE TABLE {$table}(";
         $field_statements = '';
@@ -33,10 +33,5 @@ class Migrate
         if($success){
             echo "{$table} table has been successfully created \n";
         }
-    }
-
-    public static function create($table, Closure $closure){
-        $closure(new Schema($table));
-
     }
 }

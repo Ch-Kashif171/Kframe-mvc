@@ -84,6 +84,13 @@ if(!function_exists('full_path')) {
     }
 }
 
+if(!function_exists('base_path')) {
+    function base_path()
+    {
+        return getcwd();
+    }
+}
+
 if(!function_exists('view')) {
 
     /**
@@ -140,8 +147,8 @@ if(!function_exists('extractDataIfExistPagination')) {
             } else {
                 $result = $data;
             }
-            break;
         }
+
         return $result;
     }
 }
@@ -154,28 +161,31 @@ if(!function_exists('extractPaginationData')) {
      */
     function extractPaginationData($data){
 
-        $result = array();
+        $response = array();
         $result['render'] = new stdClass();
         foreach ($data as $key => $d) {
             if (! is_object($d)) {
                 if (isset($d['data'])) {
+                    $response[$key] = $d['data']; //assign data before pagination and unset
                     unset($d['data']);
                     /*here call pagination function to render pagination html*/
+
                     $result['render']->links = pagination((object)$d);
+
                 } elseif (isset($d['simple']['data'])) {
+                    $response[$key] = $d['simple']['data']; //assign data before pagination and unset
                     unset($d['simple']['data']);
                     /*here call pagination function to render pagination html*/
                     $result['render']->links = simplePagination((object)$d['simple']);
                 } else {
-                    $result = array();
+                    $response[$key] = $d;
                 }
             } else{
-                $result = array();
+                $response = array();
             }
-            break;
         }
 
-        return $result;
+        return array_merge($result,$response);
     }
 }
 
@@ -186,6 +196,23 @@ if(!function_exists('redirect')) {
      * @return Redirect|void
      */
     function redirect($url = null){
+        if (!is_null($url)) {
+            $url = ltrim($url, '/');
+            return header('Location: ' . url() . $url);
+
+        } else {
+            return new Redirect();
+        }
+    }
+}
+
+if(!function_exists('response')) {
+
+    /**
+     * @param null $url
+     * @return Redirect|void
+     */
+    function response($url = null){
         if (!is_null($url)) {
             $url = ltrim($url, '/');
             return header('Location: ' . url() . $url);
@@ -715,7 +742,42 @@ if(!function_exists('env')) {
      * @param string $key
      * @return array|false|string
      */
-    function env($env_var,$key= ''){
+    function env($key, $default = null)
+    {
+        $value = getenv($key);
+
+        if ($value === false) {
+            return value($default);
+        }
+
+        switch (strtolower($value)) {
+            case 'true':
+            case '(true)':
+                return true;
+            case 'false':
+            case '(false)':
+                return false;
+            case 'empty':
+            case '(empty)':
+                return '';
+            case 'null':
+            case '(null)':
+                return;
+        }
+
+        if (($valueLength = strlen($value)) > 1 && $value[0] === '"' && $value[$valueLength - 1] === '"') {
+            return substr($value, 1, -1);
+        }
+
+        return $value;
+    }
+
+    function value($value)
+    {
+        return $value instanceof Closure ? $value() : $value;
+    }
+
+    function env_old($env_var,$key= ''){
         if($key == ''){
             $env = getenv($env_var);
         }else{
@@ -907,5 +969,12 @@ if(!function_exists('app')) {
     function app()
     {
         return new \Core\Foundation\Application();
+    }
+}
+
+if(!function_exists('json')) {
+    function json($data)
+    {
+        echo json_encode($data);
     }
 }

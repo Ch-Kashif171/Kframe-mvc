@@ -48,10 +48,6 @@
                             <?php } ?>
                         </div>
 
-                        <div class="form-group">
-                            <?php echo $captcha; ?>
-                        </div>
-
                             <button class="btn btn-success" type="submit">Register</button>
                     </form>
                 </div>
