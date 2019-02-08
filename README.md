@@ -66,14 +66,14 @@ Then include below snippet to render the pagination on view page like:
 
     <?php echo $render->links?>
 
-#Helpers:
+# Helpers:
 There are many default helper functions, like
 
 captcha(): to render the captcha in html form directly.
 
 verifyCaptcha(): to verify captcha.
 
-#Direct access deny:
+# Direct access deny:
 
 Include index.html in every directory to deny the directory listing.
 
