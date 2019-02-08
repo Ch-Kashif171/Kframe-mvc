@@ -18,7 +18,7 @@ class Blueprint
     public function increments($column)
     {
         $this->statement = " {$column} INT NOT NULL AUTO_INCREMENT, primary key ({$column}) ";
-        return $this;
+        return new Blueprint($this->statement);
     }
 
     /**
