@@ -7,7 +7,7 @@ class BaseController
 {
 
     public function model($model){
-        return load($model);
+        return model($model);
     }
 
 }
