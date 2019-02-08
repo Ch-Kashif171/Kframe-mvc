@@ -46,7 +46,7 @@ e.g:
         $mail->send();
     });
 
-#Builtin Pagination:
+# Builtin Pagination:
 There are two type bootstrap base pagination provided by framework.
 You can call on query builder as well as on model.
 
