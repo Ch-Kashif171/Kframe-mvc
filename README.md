@@ -1,9 +1,19 @@
 # Kframe
-PHP MVC framework.
-I have developed a very very basic mvc pattteren framework, most functions name are same like Laravel (inspired by Laravel)
-I want to improve it with github community,
-please countribute and make it strong as much as possible.
-This is my first try for mvc. Any contribution will be appreciated. 
+
+Kframe
+PHP MVC framework. A very very basic mvc pattern framework, most functions name are same like Laravel (inspired by Laravel) I want to improve it with github community, please contribute and make it strong as much as possible. Any contribution will be appreciated.
+
+# Getting Started
+  Kframe uses Composer to Manage Dependencies and You need to have Composer installed on your machine to continue If you don't already have composer, Download it here: http://getcomposer.org/
+  
+  After Installing Composer, Run command
+  
+    composer update
+
+# Routing:
+WE can define routes in route/route.php file as below.
+    
+    Route::get('/','HomeController@index');
 
 # Builtin Facades:
 There are some nice Facades like 
@@ -13,16 +23,30 @@ Captcha: There is available a Captcha Facade, so we can use this to render and v
 Toastr: There is a Facade for alert message in toastr.
 
 Note:(first need to include a helper function called toastr() in html footer page) Then add Toastr Facade in any controller where you want to use it and then call its function like: 
-    
-    Toastr::error('message');
 
-    Toastr::success('message'); 
+Toastr::error('message') ,
 
-    Toastr::warning('message');
-    
-    Toastr::info('message') ;
+Toastr::success('message') , 
 
-# Builtin Pagination:
+Toastr::warning('message')
+
+Toastr::info('message') 
+
+
+Mail Facade:
+
+e.g:
+
+    Mail::set('mail', $data, function($mail) {
+
+        $mail->to('test@gmail.com', 'test');
+        $mail->subject('HTML Testing Mail');
+        $mail->body('This is body');
+        $mail->from('test@gmail.com','test');
+        $mail->send();
+    });
+
+#Builtin Pagination:
 There are two type bootstrap base pagination provided by framework.
 You can call on query builder as well as on model.
 
@@ -42,36 +66,22 @@ Then include below snippet to render the pagination on view page like:
 
     <?php echo $render->links?>
 
-# Helpers:
+#Helpers:
 There are many default helper functions, like
 
 captcha(): to render the captcha in html form directly.
 
 verifyCaptcha(): to verify captcha.
 
-# Direct access deny:
+#Direct access deny:
 
-Include index,html in very directory to deny the directory listing.
+Include index.html in every directory to deny the directory listing.
 
-Also add .htaccess in bootstrap directory to perventing direct access of autoload file
+Also add .htaccess in bootstrap directory to perverting direct access of autoload file
 
 in autoload.php file define a constant called "root_path".
 
 then add a line "define('root_path') OR exit('No direct script access allowed')" in each file at the top
-
-Mail Facade:
-
-e.g:
-
-    Mail::send('mail', $data, function($mail) {
-     
-        $mail->to('test@gmail.com', 'test');
-        $mail->subject('HTML Testing Mail');
-        $mail->body('This is body');
-        $mail->from('test@gmail.com','test');
-        $mail->execute();
-    });
-
 
 # Commands:
 
@@ -108,4 +118,4 @@ For register custom library file in framework, make a directory under applicatio
     
  For more then one:
  
-    'libraries' =>  array('libraries/my_library',
+    'libraries' =>  array('libraries/my_library','libraries/other_library'),
