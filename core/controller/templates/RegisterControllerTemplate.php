@@ -34,7 +34,7 @@ class controllername extends Controller
             'password'=> Auth::Hash($request->post('password')),
         );
 
-        $this->model('Users')->create($data);
+        $this->model('Users')->insert($data);
 
         return redirect('/');
   	}
