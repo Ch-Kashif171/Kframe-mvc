@@ -1,5 +1,6 @@
 <?php
 
+use Core\Doctrine;
 use Core\Facades\DB;
 use Core\Facades\Auth;
 use Core\Facades\Session;
