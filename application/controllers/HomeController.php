@@ -13,6 +13,7 @@ class HomeController extends Controller
     }
 
     public function index(){
+        //echo csrf_token(); exit;
 
         return view('welcome');
     }

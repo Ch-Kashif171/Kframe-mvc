@@ -24,13 +24,13 @@ Toastr: There is a Facade for alert message in toastr.
 
 Note:(first need to include a helper function called toastr() in html footer page) Then add Toastr Facade in any controller where you want to use it and then call its function like: 
 
-Toastr::error('message') ,
+    Toastr::error('message') ,
 
-Toastr::success('message') , 
+    Toastr::success('message') , 
 
-Toastr::warning('message')
+    Toastr::warning('message')
 
-Toastr::info('message') 
+    Toastr::info('message') 
 
 
 Mail Facade:
@@ -65,7 +65,15 @@ Example:
 Then include below snippet to render the pagination on view page like:
 
     <?php echo $render->links?>
+    
+# CSRF
+There is a csrf token verification helper called csrf_toke() 
+provided to add in each post form (it will include an input field with csrf token value)
 
+example: 
+
+    <?php echo csrf_token(); ?>
+    
 # Helpers:
 There are many default helper functions, like
 

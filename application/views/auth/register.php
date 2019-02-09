@@ -10,7 +10,7 @@
                     <form action="<?php echo url('register')?>" method="post">
 
                         <?php include_html('flash/messages.php'); ?>
-
+                        <?php echo csrf_token(); ?>
                         <div class="form-group">
                             <label for="name">Full name:</label>
                             <input type="text" class="form-control <?php echo (has_error('name')?'error':'') ?>" id="name" name="name">

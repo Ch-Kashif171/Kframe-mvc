@@ -3,7 +3,11 @@
 use Core\Facades\Request;
 use Core\Facades\Session;
 use Core\Middleware\Authenticated;
+use Core\Facades\Traits\csrfToken;
+
 class Route{
+
+    use csrfToken;
 
     public $exit = '';
 
@@ -104,6 +108,12 @@ class Route{
         $action =   '/'.$action;
         if($get_action  ==  $action) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+                /*********************************************
+                 **here check CSRF TOKEN To validate request**
+                /********************************************/
+                static::check();
+
                 $getBoth = explode('@', $controller_class_and_method);
                 if (isset($getBoth[1])) {
                     $controller = $getBoth[0];

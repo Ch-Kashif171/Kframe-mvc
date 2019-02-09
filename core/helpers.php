@@ -979,3 +979,21 @@ if(!function_exists('json')) {
         echo json_encode($data);
     }
 }
+
+if(!function_exists('csrf_token')) {
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    function csrf_token()
+    {
+       if (Session::has('csrf_token')) {
+           $token = Session::get('csrf_token');
+       } else{
+           $token = bin2hex(random_bytes(32));
+           Session::put('csrf_token', $token);
+       }
+       return '<input type="hidden" name="csrf_token" value="'.$token.'">';
+    }
+}
