@@ -37,7 +37,7 @@ Mail Facade:
 
 e.g:
 
-    Mail::set('mail', $data, function($mail) {
+    Mail::set('view', $data, function($mail) {
 
         $mail->to('test@gmail.com', 'test');
         $mail->subject('HTML Testing Mail');
