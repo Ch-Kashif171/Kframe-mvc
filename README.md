@@ -12,8 +12,9 @@ PHP MVC framework. A basic mvc pattern framework, most functions name are same l
 
 # Routing:
 WE can define routes in route/route.php file as below.
-    
+   ```php 
     Route::get('/','HomeController@index');
+   ``` 
 
 # Builtin Facades:
 There are some nice Facades like 
@@ -39,7 +40,6 @@ Mail Facade:
 e.g:
    ```php
     Mail::set('view', $data, function($mail) {
-
         $mail->to('test@gmail.com', 'test');
         $mail->subject('HTML Testing Mail');
         $mail->body('This is body');
