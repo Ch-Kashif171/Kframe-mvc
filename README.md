@@ -11,10 +11,10 @@ PHP MVC framework. A basic mvc pattern framework, most functions name are same l
     composer update
 
 # Routing:
-WE can define routes in route/route.php file as below.
-    
+We can define routes in route/route.php file as below.
+    ```php
     Route::get('/','HomeController@index');
-
+    ```
 # Builtin Facades:
 There are some nice Facades like 
 
