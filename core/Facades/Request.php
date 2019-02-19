@@ -57,5 +57,4 @@ class Request
     {
         return new Session();
     }
-
 }
