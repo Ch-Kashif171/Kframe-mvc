@@ -53,4 +53,9 @@ class Request
         return $values;
     }
 
+    public function session()
+    {
+        return new Session();
+    }
+
 }
