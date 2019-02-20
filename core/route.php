@@ -3,10 +3,9 @@
 use Core\Facades\Request;
 use Core\Facades\Session;
 use Core\Middleware\Authenticated;
-use Core\Facades\Traits\csrfToken;
+use Core\Facades\Traits\Csrf\csrfToken;
 
 class Route{
-
     use csrfToken;
 
     public $exit = '';

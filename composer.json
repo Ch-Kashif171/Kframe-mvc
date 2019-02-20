@@ -27,7 +27,7 @@
     },
 
     "require-dev": {
-
+        "filp/whoops": "^2.3"
     },
 
     "autoload-dev": {
