@@ -31,7 +31,7 @@ class controllername extends Controller
             return redirect('/');
         } else {
 
-            return redirect()->backWithErrors('error','credentials did not match with our record');
+            return redirect()->backWith('error','credentials did not match with our record');
         }
   	}
 

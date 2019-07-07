@@ -13,12 +13,24 @@ trait csrfToken
 
         if (isset($_POST['csrf_token']) && Session::has('csrf_token')){
             if (static::verify(Session::get('csrf_token'))){ // this is valid request
-                Session::forget('csrf_token');
+                self::expireToken();
             } else{
                 throw new CsrfException("This is not a valid request, CSRF token mismatch");
             }
         } else{
             throw new CsrfException("CSRF token missing or invalid token");
         }
+    }
+
+    private static function expireToken(){
+        $expireAfter = 10;
+        if(Session::has('last_action')){
+            $secondsInactive = time() - Session::get('last_action');
+            $expireAfterSeconds = $expireAfter * 60;
+            if($secondsInactive >= $expireAfterSeconds){
+                Session::forget('csrf_token');
+            }
+        }
+        Session::put('last_action',time());
     }
 }

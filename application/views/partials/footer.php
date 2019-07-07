@@ -4,7 +4,7 @@
 <footer class="page-footer font-small">
 
     <!-- Copyright -->
-    <div class="footer-copyright text-center py-3">© 2018 Copyright:
+    <div class="footer-copyright text-center py-3">© <?php echo  date("Y")?> Copyright:
         <a href=""> Kfram.com</a>
     </div>
     <!-- Copyright -->

@@ -172,7 +172,9 @@ class Generator {
             }
         }
         /*RegisterController*/
+
         $this->generateRoutes();
+        $this->generateViews();
         return [
         'status' => false,
         'message' => 'Auth Scaffolding Created successfully'
@@ -193,6 +195,68 @@ class Generator {
               file_put_contents($routefile,$newcontent,FILE_APPEND | LOCK_EX);
 
               return true;
+        }
+        return false;
+    }
+
+    private function generateViews(){
+        if (!file_exists(getcwd(). '/application/views/auth')) {
+            mkdir(getcwd(). '/application/views/auth', 0777, true);
+        }
+
+        /*loginController*/
+        if (file_exists(getcwd(). '/application/views/auth/login.php')) {
+            return [
+                'status' => false,
+                'message' => 'Login view already exist'
+            ];
+        }
+        if (file_exists(getcwd(). '/application/views/auth/register.php')) {
+            return [
+                'status' => false,
+                'message' => 'Register view already exist'
+            ];
+        }
+        $register_template = getcwd(). '/core/views/auth/register.php';
+        if(file_exists($register_template)){
+
+            $newcontent = file_get_contents($register_template);
+            $register_view = getcwd(). '/application/views/auth/register.php';
+            file_put_contents($register_view,$newcontent);
+        }  else {
+            return [
+                'status' => false,
+                'message' => 'Register view template file not found'
+            ];
+        }
+
+        $login_template = getcwd(). '/core/views/auth/login.php';
+        if(file_exists($login_template)){
+
+            $newcontent = file_get_contents($login_template);
+            $login_view = getcwd(). '/application/views/auth/login.php';
+            file_put_contents($login_view,$newcontent);
+        }  else {
+            return [
+                'status' => false,
+                'message' => 'Login view template file not found'
+            ];
+        }
+
+        $header_template = getcwd(). '/core/views/header.php';
+        if(file_exists($header_template)){
+            $login_template = getcwd(). '/application/views/partials/header.php';
+            if(file_exists($login_template)){
+                unlink($login_template);
+            }
+            $newcontent = file_get_contents($header_template);
+            $header_view = getcwd(). '/application/views/partials/header.php';
+            file_put_contents($header_view,$newcontent);
+        }  else {
+            return [
+                'status' => false,
+                'message' => 'Header view template file not found'
+            ];
         }
     }
 

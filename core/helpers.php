@@ -994,6 +994,6 @@ if(!function_exists('csrf_token')) {
            $token = bin2hex(random_bytes(32));
            Session::put('csrf_token', $token);
        }
-       return '<input type="hidden" name="csrf_token" value="'.$token.'">';
+       echo '<input type="hidden" name="csrf_token" value="'.$token.'">';
     }
 }
