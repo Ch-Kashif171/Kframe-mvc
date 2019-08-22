@@ -2,11 +2,7 @@
 namespace Core\Facades;
 
 use Core\Doctrine;
-//require_once __DIR__.'/../'.'Doctrine.php';
-
-/**
- * Class Auth
- */
+use MongoDB\Driver\Exception\AuthenticationException;
 
 class Auth
 {
@@ -166,7 +162,7 @@ class Auth
 
             return $auth_fields;
         }else{
-            die("Please enter valid auth table name in .ENV file");
+            throw new AuthenticationException("Please enter valid auth table name in .ENV file");
         }
     }
 

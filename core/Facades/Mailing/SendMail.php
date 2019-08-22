@@ -17,6 +17,10 @@ class SendMail
     public $attachment;
     public $attachment_name;
 
+    /*public function __construct($w,$r)
+    {
+    }*/
+
     public function to($to, $to_name){
 
         $this->to = $to;
@@ -69,9 +73,6 @@ class SendMail
             //Recipients
             $mail->setFrom($mail_config['from']['address'], $mail_config['from']['name']);
             $mail->addAddress($this->to, 'Kframe');
-            //$mail->addReplyTo('kashif.sohail.el@gmail.com', 'Information');
-            //->addCC('kashif.sohail.el@gmail.com');
-            //$mail->addBCC('kashif.sohail.el@gmail.com');
 
             if (! is_null($this->attachment)){
                 $mail->addAttachment($this->attachment,$this->attachment_name);
@@ -87,8 +88,7 @@ class SendMail
             return $sent ?? false;
 
         } catch (Exception $e) {
-            echo 'Email could not be sent. Mailer Error: ', $mail->ErrorInfo;
-            exit;
+            throw $e;
         }
 
 
