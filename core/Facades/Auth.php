@@ -2,6 +2,7 @@
 namespace Core\Facades;
 
 use Core\Doctrine;
+use Core\Exception\Handlers\AuthException;
 use MongoDB\Driver\Exception\AuthenticationException;
 
 class Auth
@@ -162,7 +163,7 @@ class Auth
 
             return $auth_fields;
         }else{
-            throw new AuthenticationException("Please enter valid auth table name in .ENV file");
+            throw new AuthException("Please enter valid auth table name in .ENV file");
         }
     }
 
