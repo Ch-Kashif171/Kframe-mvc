@@ -14,4 +14,3 @@ class controllername extends Controller
         //
   	}
 }
- ?>

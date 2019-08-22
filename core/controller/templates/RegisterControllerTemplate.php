@@ -39,4 +39,3 @@ class controllername extends Controller
         return redirect('/');
   	}
 }
- ?>

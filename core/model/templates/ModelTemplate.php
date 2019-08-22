@@ -22,4 +22,3 @@ class modelname extends BaseModel {
 
 
 }
-?>
