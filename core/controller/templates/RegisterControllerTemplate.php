@@ -36,6 +36,8 @@ class controllername extends Controller
 
         $this->model('Users')->insert($data);
 
+        Auth::attempt(['email'=>$request->post('email'),'password'=>$request->post('password')]);
+
         return redirect('/');
   	}
 }
