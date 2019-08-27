@@ -39,12 +39,11 @@ Mail Facade:
 
 e.g:
    ```php
-    Mail::set('view', $data, function($mail) {
-        $mail->to('test@gmail.com', 'test');
+    Mail::send('welcome', [], function($mail) {
+        $mail->to('example@gmail.com', 'Kframe');
         $mail->subject('HTML Testing Mail');
-        $mail->body('This is body');
-        $mail->from('test@gmail.com','test');
-        $mail->send();
+        $mail->from('example@gmail.com','Kframe');
+        $mail->attachment('path','Kframe');
     });
    ```
 

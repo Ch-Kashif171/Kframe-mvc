@@ -7,19 +7,18 @@ use Core\Mailer\Exception;
 class SendMail
 {
     public $to;
-    public $view;
-    public $data;
     public $to_name;
     public $subject;
-    public $body;
     public $from;
     public $from_name;
     public $attachment;
     public $attachment_name;
+    public $load_view;
 
-    /*public function __construct($w,$r)
+    public function __construct($view,$data)
     {
-    }*/
+        $this->load_view = view($view,$data,true);
+    }
 
     public function to($to, $to_name){
 
@@ -31,12 +30,6 @@ class SendMail
     public function subject($subject){
 
         $this->subject = $subject;
-        return $this;
-    }
-
-    public function body($body){
-
-        $this->body = $body;
         return $this;
     }
 
@@ -54,7 +47,7 @@ class SendMail
         return $this;
     }
 
-    public function send(){
+    public function mailing(){
         $mail_config = require base_path().'/config/mail.php';
 
         $mail = new PHPMailer(true);
@@ -81,7 +74,7 @@ class SendMail
             //Content
             $mail->isHTML(true);
             $mail->Subject = $this->subject;
-            $mail->Body    = $this->body;
+            $mail->Body    = $this->load_view;
 
             $sent = $mail->send();
 

@@ -92,6 +92,17 @@ if(!function_exists('base_path')) {
     }
 }
 
+if(!function_exists('public_path')) {
+    function public_path($path=null)
+    {
+        if (is_null($path)){
+            return getcwd().'/public';
+        } else {
+            return getcwd().'/public/'.$path;
+        }
+    }
+}
+
 if(!function_exists('view')) {
 
     /**
