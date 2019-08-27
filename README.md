@@ -39,7 +39,7 @@ Mail Facade:
 
 e.g:
    ```php
-    Mail::send('welcome', [], function($mail) {
+    Mail::send('mail', [], function($mail) {
         $mail->to('example@gmail.com', 'Kframe');
         $mail->subject('HTML Testing Mail');
         $mail->from('example@gmail.com','Kframe');
