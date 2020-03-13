@@ -10,6 +10,10 @@ PHP MVC framework. A basic mvc pattern framework, most functions name are same l
   
     composer update
 
+# Database configuration
+  1. Set database detail in .env file, then run migration command to create default users table.
+  2. Define specific table for users authentication in .env "AUTH_TABLE" environment constant. like "AUTH_TABLE=users" 
+
 # Routing:
 
 We can define routes in route/route.php file as below.
