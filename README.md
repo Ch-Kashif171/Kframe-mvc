@@ -125,7 +125,7 @@ and then run following command:
     php kframe migration migrate
    
 # Register Custom Helper:
-For register custom helpers file in framework, make a directory under application, create a php file in this directory then for register this helper globally in framework include name in 'config/app.php' helpers like:
+For register custom helpers file in framework, make a directory under app, create a php file in this directory then for register this helper globally in framework include name in 'config/app.php' helpers like:
    ```php 
     'helpers' =>  array('helpers/my_helper'),
    ```
@@ -136,7 +136,7 @@ For more then one:
    ``` 
     
 # Register Custom Libraries:
-For register custom library file in framework, make a directory under application, create a php file in this directory then for register this library globally in framework include name in 'config/app.php' libraries like:
+For register custom library file in framework, make a directory under app, create a php file in this directory then for register this library globally in framework include name in 'config/app.php' libraries like:
    ```php
     'libraries' =>  array('libraries/my_library'),
    ```

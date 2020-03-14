@@ -30,7 +30,7 @@ class Generator {
      */
     public  function generateController($controllerName){
 
-        if (file_exists(getcwd(). '/application/controllers'.'/'.$controllerName.'.php')) {
+        if (file_exists(getcwd(). '//controllers'.'/'.$controllerName.'.php')) {
             return [
             'status' => false,
             'message' => ucfirst($controllerName).' Controller Build Not Successful, Controller Already Exist'
@@ -51,7 +51,7 @@ class Generator {
 
                 if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerClass), file_get_contents($templatefile));
-                $controllerfile = getcwd(). '/application/controllers'.'/'.ucfirst($controllerName).'.php';
+                $controllerfile = getcwd(). '/app/controllers'.'/'.ucfirst($controllerName).'.php';
                 fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
                 return [
@@ -74,7 +74,7 @@ class Generator {
      */
       public  function generateModel($modelname){
 
-        if (file_exists(getcwd(). '/application/models'.'/'.$modelname.'.php')) {
+        if (file_exists(getcwd(). '/app/models'.'/'.$modelname.'.php')) {
           return [
             'status' => false,
             'message' => ucfirst($modelname).'Model Build Not Successful, Model Already Exist'
@@ -95,7 +95,7 @@ class Generator {
 
           if( strpos(file_get_contents($templatefile),'modelname') !== false) {
             $newcontent = str_replace('modelname', $model_class_name, file_get_contents($templatefile));
-            $modelfile = getcwd(). '/application/models'.'/'.$modelname.'.php';
+            $modelfile = getcwd(). '/app/models'.'/'.$modelname.'.php';
             fopen($modelfile, 'w');
             file_put_contents($modelfile,$newcontent);
             return [
@@ -119,13 +119,13 @@ class Generator {
     public  function generateAuth($controllerName)
     {
 
-        if (!file_exists(getcwd(). '/application/controllers/Auth')) {
-            mkdir(getcwd(). '/application/controllers/Auth', 0777, true);
+        if (!file_exists(getcwd(). '/app/controllers/Auth')) {
+            mkdir(getcwd(). '/app/controllers/Auth', 0777, true);
         }
 
         /*loginController*/
         $controllerName = 'Login';
-        if (file_exists(getcwd(). '/application/controllers/Auth/LoginController.php')) {
+        if (file_exists(getcwd(). '/app/controllers/Auth/LoginController.php')) {
             return [
                 'status' => false,
                 'message' => 'LoginController Build Not Successful, Controller Already Exist'
@@ -135,7 +135,7 @@ class Generator {
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
-                $controllerfile = getcwd(). '/application/controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
+                $controllerfile = getcwd(). '/app/controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
                 $newfile = fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
             }
@@ -150,7 +150,7 @@ class Generator {
 
         /*RegisterController*/
         $controllerName = 'Register';
-        if (file_exists(getcwd(). '/application/controllers/Auth/RegisterController.php')) {
+        if (file_exists(getcwd(). '/app/controllers/Auth/RegisterController.php')) {
             return [
                 'status' => false,
                 'message' => 'RegisterController Build Not Successful, Controller Already Exist'
@@ -160,7 +160,7 @@ class Generator {
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
-                $controllerfile = getcwd(). '/application/controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
+                $controllerfile = getcwd(). '/app/controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
                 $newfile = fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
             }
@@ -200,18 +200,18 @@ class Generator {
     }
 
     private function generateViews(){
-        if (!file_exists(getcwd(). '/application/views/auth')) {
-            mkdir(getcwd(). '/application/views/auth', 0777, true);
+        if (!file_exists(getcwd(). '/app/views/auth')) {
+            mkdir(getcwd(). '/app/views/auth', 0777, true);
         }
 
         /*loginController*/
-        if (file_exists(getcwd(). '/application/views/auth/login.php')) {
+        if (file_exists(getcwd(). '/app/views/auth/login.php')) {
             return [
                 'status' => false,
                 'message' => 'Login view already exist'
             ];
         }
-        if (file_exists(getcwd(). '/application/views/auth/register.php')) {
+        if (file_exists(getcwd(). '/app/views/auth/register.php')) {
             return [
                 'status' => false,
                 'message' => 'Register view already exist'
@@ -221,7 +221,7 @@ class Generator {
         if(file_exists($register_template)){
 
             $newcontent = file_get_contents($register_template);
-            $register_view = getcwd(). '/application/views/auth/register.php';
+            $register_view = getcwd(). '/app/views/auth/register.php';
             file_put_contents($register_view,$newcontent);
         }  else {
             return [
@@ -234,7 +234,7 @@ class Generator {
         if(file_exists($login_template)){
 
             $newcontent = file_get_contents($login_template);
-            $login_view = getcwd(). '/application/views/auth/login.php';
+            $login_view = getcwd(). '/app/views/auth/login.php';
             file_put_contents($login_view,$newcontent);
         }  else {
             return [
@@ -245,12 +245,12 @@ class Generator {
 
         $header_template = getcwd(). '/core/views/header.php';
         if(file_exists($header_template)){
-            $login_template = getcwd(). '/application/views/partials/header.php';
+            $login_template = getcwd(). '/app/views/partials/header.php';
             if(file_exists($login_template)){
                 unlink($login_template);
             }
             $newcontent = file_get_contents($header_template);
-            $header_view = getcwd(). '/application/views/partials/header.php';
+            $header_view = getcwd(). '/app/views/partials/header.php';
             file_put_contents($header_view,$newcontent);
         }  else {
             return [

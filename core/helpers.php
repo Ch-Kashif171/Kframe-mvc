@@ -127,13 +127,13 @@ if(!function_exists('view')) {
              * Loading view for pdf etc
              */
             ob_start();
-            require_once($base . "application/views/" . $view . ".php");
+            require_once($base . "app/views/" . $view . ".php");
             $res = ob_get_contents();
             ob_end_clean();
 
             return $res;
         } else {
-            return require_once($base . "application/views/" . $view . ".php");
+            return require_once($base . "app/views/" . $view . ".php");
         }
     }
 }
@@ -266,7 +266,7 @@ if(!function_exists('model')) {
     function model($model){
 
         $base = __DIR__ . '/../';
-        require_once($base . "application/models/" . $model . ".php");
+        require_once($base . "app/models/" . $model . ".php");
         $model_array = explode('/', $model);
         $class = end($model_array);
 
@@ -285,7 +285,7 @@ if(!function_exists('load')) {
      */
     function load($model){
         $base = __DIR__ . '/../';
-        require_once($base . "application/models/" . $model . ".php");
+        require_once($base . "app/models/" . $model . ".php");
         $model_array = explode('/', $model);
         $class = end($model_array);
 
@@ -323,91 +323,7 @@ if(!function_exists('include_html')) {
      * @param $path
      */
     function include_html($path){
-        include getcwd() . '/application/views/' . $path;
-    }
-}
-
-if(!function_exists('pagination_bk')) {
-
-    /**
-     * @param $links
-     * @return string
-     */
-    function pagination_bk($links){
-
-        $html = '';
-        $show = showPages($links);
-
-        if ($show != 0) {
-            if (isset($_GET['page'])) {
-                $page = $_GET['page'];
-            } else {
-                $page = 1;
-            }
-
-            $html = '<ul class="pagination" role="navigation">';
-
-            if ($page == 1) {
-                $prev = '<span class="page-link" aria-hidden="true">&lsaquo;</span>';
-                $disabled = 'disabled';
-            } else {
-                $prev = ' <a href="' . $links->prev_page_url . '">&lsaquo;</a>';
-                $disabled = '';
-            }
-            $html .= '<li class="page-item ' . $disabled . '" aria-disabled="true" aria-label="&laquo; Previous">
-        ' . $prev . '
-        </li>';
-
-            for ($i = 1; $i <= $show; $i++) {
-
-                $p_page = $i;
-                if ($p_page == 0) {
-                    $p_page = 1;
-                    $per_page = $links->first_page_url;
-                } else {
-                    $per_page = $links->path . '?page=' . $i;
-                }
-                $path = $per_page;
-                $first_page = '<a class="page-link" href="' . $path . '">' . $i . '</a>';
-
-                if ($page == $p_page) {
-                    $active = 'active';
-                } else {
-                    $active = '';
-                }
-                if ($show >= 10) {
-                    if ($i <= 3) {
-                        $html .= '<li class="page-item ' . $active . '" aria-current="page">' . $first_page . '</li>';
-                    } elseif ($i >= $show - 2) {
-                        $html .= '<li class="page-item ' . $active . '" aria-current="page">' . $first_page . '</li>';
-                    } else {
-
-                        if (strpos($html, 'javascript:void(0);') === false) {
-                            $html .= '<li class="page-item" aria-current="page"><a class="page-link" href="javascript:void(0);">...</a></li>';
-                        }
-                        continue;
-                    }
-
-                } else {
-                    $html .= '<li class="page-item ' . $active . '" aria-current="page">' . $first_page . '</li>';
-                }
-
-                if ($page == $show) {
-                    $disabled = 'disabled';
-                    $nexLink = 'javascript:void(0);';
-                } else {
-                    $nexLink = $links->next_page_url;
-                    $disabled = '';
-                }
-
-            }
-            $html .= '<li class="page-item ' . $disabled . '">
-            <a class="page-link" href="' . $nexLink . '" rel="next" aria-label="Next &raquo;">&rsaquo;</a>
-            </li>
-            </ul>';
-        }
-
-        return $html;
+        include getcwd() . '/app/views/' . $path;
     }
 }
 
