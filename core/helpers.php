@@ -127,13 +127,13 @@ if(!function_exists('view')) {
              * Loading view for pdf etc
              */
             ob_start();
-            require_once($base . "app/views/" . $view . ".php");
+            require_once($base . "views/" . $view . ".php");
             $res = ob_get_contents();
             ob_end_clean();
 
             return $res;
         } else {
-            return require_once($base . "app/views/" . $view . ".php");
+            return require_once($base . "views/" . $view . ".php");
         }
     }
 }
@@ -323,7 +323,12 @@ if(!function_exists('include_html')) {
      * @param $path
      */
     function include_html($path){
-        include getcwd() . '/app/views/' . $path;
+
+        if (strpos($path,'.php') !== false) {
+            include getcwd() . '/views/' . $path;
+        } else {
+            include getcwd() . '/views/' . $path.'.php';
+        }
     }
 }
 
@@ -484,14 +489,14 @@ if(!function_exists('errors')) {
 
             if (isset($errors)) {
                 $error_bag = [];
-              foreach ($errors as $k=> $error) {
-                  //debug($errors);
-                  if (isset($error[$key])){
-                      $error_bag[$key] = $error[$key];
-                      Session::forget_array('errors',$k,$key);
-                      break;
-                  }
-              }
+                foreach ($errors as $k=> $error) {
+                    //debug($errors);
+                    if (isset($error[$key])){
+                        $error_bag[$key] = $error[$key];
+                        Session::forget_array('errors',$k,$key);
+                        break;
+                    }
+                }
                 return $error_bag[$key];
             } else {
                 return false;
@@ -510,12 +515,12 @@ if(!function_exists('has_error')) {
         if ($exist) {
             $errors = Session::get('errors');
             if (isset($errors)) {
-              foreach ($errors as $error) {
-                  if (isset($error[$key])){
-                    return true;
-                      break;
-                  }
-              }
+                foreach ($errors as $error) {
+                    if (isset($error[$key])){
+                        return true;
+                        break;
+                    }
+                }
             } else {
                 return false;
             }
@@ -915,12 +920,12 @@ if(!function_exists('csrf_token')) {
      */
     function csrf_token()
     {
-       if (Session::has('csrf_token')) {
-           $token = Session::get('csrf_token');
-       } else{
-           $token = bin2hex(random_bytes(32));
-           Session::put('csrf_token', $token);
-       }
-       echo '<input type="hidden" name="csrf_token" value="'.$token.'">';
+        if (Session::has('csrf_token')) {
+            $token = Session::get('csrf_token');
+        } else{
+            $token = bin2hex(random_bytes(32));
+            Session::put('csrf_token', $token);
+        }
+        echo '<input type="hidden" name="csrf_token" value="'.$token.'">';
     }
 }

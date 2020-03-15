@@ -200,18 +200,18 @@ class Generator {
     }
 
     private function generateViews(){
-        if (!file_exists(getcwd(). '/app/views/auth')) {
-            mkdir(getcwd(). '/app/views/auth', 0777, true);
+        if (!file_exists(getcwd(). '/views/auth')) {
+            mkdir(getcwd(). '/views/auth', 0777, true);
         }
 
         /*loginController*/
-        if (file_exists(getcwd(). '/app/views/auth/login.php')) {
+        if (file_exists(getcwd(). '/views/auth/login.php')) {
             return [
                 'status' => false,
                 'message' => 'Login view already exist'
             ];
         }
-        if (file_exists(getcwd(). '/app/views/auth/register.php')) {
+        if (file_exists(getcwd(). '/views/auth/register.php')) {
             return [
                 'status' => false,
                 'message' => 'Register view already exist'
@@ -221,7 +221,7 @@ class Generator {
         if(file_exists($register_template)){
 
             $newcontent = file_get_contents($register_template);
-            $register_view = getcwd(). '/app/views/auth/register.php';
+            $register_view = getcwd(). '/views/auth/register.php';
             file_put_contents($register_view,$newcontent);
         }  else {
             return [
@@ -234,7 +234,7 @@ class Generator {
         if(file_exists($login_template)){
 
             $newcontent = file_get_contents($login_template);
-            $login_view = getcwd(). '/app/views/auth/login.php';
+            $login_view = getcwd(). '/views/auth/login.php';
             file_put_contents($login_view,$newcontent);
         }  else {
             return [
@@ -245,12 +245,12 @@ class Generator {
 
         $header_template = getcwd(). '/core/views/header.php';
         if(file_exists($header_template)){
-            $login_template = getcwd(). '/app/views/partials/header.php';
+            $login_template = getcwd(). '/views/partials/header.php';
             if(file_exists($login_template)){
                 unlink($login_template);
             }
             $newcontent = file_get_contents($header_template);
-            $header_view = getcwd(). '/app/views/partials/header.php';
+            $header_view = getcwd(). '/views/partials/header.php';
             file_put_contents($header_view,$newcontent);
         }  else {
             return [
