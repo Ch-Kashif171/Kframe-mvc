@@ -8,8 +8,8 @@ class Migration extends Migrate
     {
         Migrate::create('users',array(
             $this->table->increments('id'),
-            $this->table->string('name',500)->nullable(),
-            $this->table->string('email',500)->unique(),
+            $this->table->string('name',191)->nullable(),
+            $this->table->string('email',191)->unique(),
             $this->table->string('password'),
             $this->table->timestamps(),
         ));
