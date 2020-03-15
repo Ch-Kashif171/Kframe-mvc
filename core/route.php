@@ -5,26 +5,29 @@ use Core\Facades\Session;
 use Core\Middleware\Authenticated;
 use Core\Facades\Traits\Csrf\csrfToken;
 
+
 class Route{
     use csrfToken;
 
     public $exit = '';
+    public static $prefix;
+    public static $namespace;
 
     /**
      * @return string
      */
     public static function action()
     {
-       $uri     =   $_SERVER['PHP_SELF'];
-       $arr     =   explode('index.php',$uri);
-       $action  =   $arr[1];
+        $uri     =   $_SERVER['PHP_SELF'];
+        $arr     =   explode('index.php',$uri);
+        $action  =   $arr[1];
 
-       if ($action == ''){
-           $action  =   '/';
-       } else {
-           $action = rtrim($arr[1], '/');
-       }
-       return $action;
+        if ($action == ''){
+            $action  =   '/';
+        } else {
+            $action = rtrim($arr[1], '/');
+        }
+        return $action;
     }
 
     public static function routeWithValues($action){
@@ -60,11 +63,13 @@ class Route{
      * @param $action
      * @param $controller_class_and_method
      */
-    public static function get($action,$controller_class_and_method){
+    public static function get($action,$controller_class_and_method) {
 
         $get_action =   self::action();
         $action =    ltrim($action,'/');
-        $action =   '/'.$action;
+        $action_route =   '/'.$action;
+
+        $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
 
         /*route with {id} etc work still pending*/
         /*$find = self::routeWithValues($action);
@@ -75,6 +80,8 @@ class Route{
             $action_array = explode('/',$action);
             $action = $action_array[1];
         }*/
+
+        $controller_class_and_method = static::$namespace ? static::$namespace.'\\'.$controller_class_and_method : $controller_class_and_method;
 
         if ($get_action  ==  $action) {
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -133,14 +140,24 @@ class Route{
      * @param $type
      * @param $route
      */
-    public static function group($type,$route){
+    public static function group($type, Closure $route) {
+
+        if (is_array($type) && isset($type['prefix'])) {
+            static::$prefix = $type['prefix'];
+        }
+
+        if (is_array($type) && isset($type['namespace'])) {
+            static::$namespace = $type['namespace'];
+        }
+
+        return $route();
 
         if(!Session::has('middleware')) {
             if (isset($type['middleware']) && $type['middleware'] == 'auth') {
-               /* if (!Auth::check()) {*/
-                    Session::put('middleware', $type['middleware']);
-                    $auth = new Authenticated();
-                    $auth->handle($route());
+                /* if (!Auth::check()) {*/
+                Session::put('middleware', $type['middleware']);
+                $auth = new Authenticated();
+                $auth->handle($route());
                 /*} else {
                     $route();
                 }*/
