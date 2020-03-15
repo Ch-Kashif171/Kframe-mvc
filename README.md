@@ -21,9 +21,10 @@ We can define routes in route/route.php file as below.
     Route::get('/','HomeController@index');
    ```
 #Group Route
+
 Group route to set prefix and namespace
 
-```php
+   ```php
     Route::group(['prefix'=>'admin','namespace'=>'Admin'], function () {
         Route::get('dashboard','DashboardController@index');
     });
