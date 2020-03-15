@@ -4,6 +4,7 @@ use Core\Facades\Request;
 use Core\Facades\Session;
 use Core\Middleware\Authenticated;
 use Core\Facades\Traits\Csrf\csrfToken;
+use App\Middleware\Authenticate;
 
 
 class Route{
@@ -71,6 +72,8 @@ class Route{
 
         $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
 
+        $controller_class_and_method = static::$namespace ? static::$namespace.'\\'.$controller_class_and_method : $controller_class_and_method;
+
         /*route with {id} etc work still pending*/
         /*$find = self::routeWithValues($action);
         if ($find){
@@ -80,8 +83,6 @@ class Route{
             $action_array = explode('/',$action);
             $action = $action_array[1];
         }*/
-
-        $controller_class_and_method = static::$namespace ? static::$namespace.'\\'.$controller_class_and_method : $controller_class_and_method;
 
         if ($get_action  ==  $action) {
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -111,7 +112,12 @@ class Route{
 
         $get_action =   self::action();
         $action =    ltrim($action,'/');
-        $action =   '/'.$action;
+        $action_route =   '/'.$action;
+
+        $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
+
+        $controller_class_and_method = static::$namespace ? static::$namespace.'\\'.$controller_class_and_method : $controller_class_and_method;
+
         if($get_action  ==  $action) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -129,9 +135,14 @@ class Route{
                     exit;
                 }
                 self::call($controller, $method);
+
+                /*this is check in routeExist file*/
+                $_SESSION['exist'] = true;
+
+            } else {
+                /*this is check in routeExist file*/
+                unset($_SESSION['exist']);
             }
-            /*this is check in routeExist file*/
-            $_SESSION['exist'] = true;
         }
 
     }
@@ -148,6 +159,11 @@ class Route{
 
         if (is_array($type) && isset($type['namespace'])) {
             static::$namespace = $type['namespace'];
+        }
+
+        if (is_array($type) && isset($type['middleware']) && $type['middleware'] == 'auth') {
+
+            //Authenticate::handle($route);
         }
 
         return $route();
