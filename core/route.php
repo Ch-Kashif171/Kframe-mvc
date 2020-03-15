@@ -146,9 +146,6 @@ class Route{
                 /*this is check in routeExist file*/
                 $_SESSION['exist'] = true;
 
-            } else {
-                /*this is check in routeExist file*/
-                unset($_SESSION['exist']);
             }
         }
 
@@ -175,19 +172,6 @@ class Route{
 
         return $route();
 
-        if(!Session::has('middleware')) {
-            if (isset($type['middleware']) && $type['middleware'] == 'auth') {
-                /* if (!Auth::check()) {*/
-                Session::put('middleware', $type['middleware']);
-                $auth = new Authenticated();
-                $auth->handle($route());
-                /*} else {
-                    $route();
-                }*/
-            }
-        }else{
-            Session::forget('middleware');
-        }
     }
 
     private static function middleware() {
