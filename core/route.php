@@ -13,6 +13,7 @@ class Route{
     public $exit = '';
     public static $prefix;
     public static $namespace;
+    public static $middleware;
 
     /**
      * @return string
@@ -85,6 +86,9 @@ class Route{
         }*/
 
         if ($get_action  ==  $action) {
+
+            static::middleware(); /*block route access if not authenticate*/
+
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $getBoth = explode('@', $controller_class_and_method);
                 if (isset($getBoth[1])) {
@@ -119,6 +123,9 @@ class Route{
         $controller_class_and_method = static::$namespace ? static::$namespace.'\\'.$controller_class_and_method : $controller_class_and_method;
 
         if($get_action  ==  $action) {
+
+            static::middleware(); /*block route access if not authenticate*/
+
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 /*********************************************
@@ -163,7 +170,7 @@ class Route{
 
         if (is_array($type) && isset($type['middleware']) && $type['middleware'] == 'auth') {
 
-            //Authenticate::handle($route);
+            static::$middleware = $type['middleware'];
         }
 
         return $route();
@@ -180,6 +187,13 @@ class Route{
             }
         }else{
             Session::forget('middleware');
+        }
+    }
+
+    private static function middleware() {
+        if (! is_null(static::$middleware) && static::$middleware == 'auth') {
+            static::$middleware = null;
+            Authenticate::handle();
         }
     }
 
