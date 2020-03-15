@@ -20,7 +20,7 @@ We can define routes in route/route.php file as below.
    ```php
     Route::get('/','HomeController@index');
    ```
-#Group Route
+# Group Route
 
 Group route to set prefix and namespace
 
