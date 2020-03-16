@@ -3,15 +3,16 @@ session_start();
 
 define('root_path', getcwd(), true);
 
-$base = __DIR__ . '/../';
-require_once $base.'vendor/autoload.php';
-require_once $base.'core/Exception/whoopsExceptionRegister.php  ';
-require_once $base.'core/Dotenv/Dotenv.php';
-require_once $base.'core/helpers.php';
-require_once $base.'config/app.php';
-require_once $base.'core/loadfiles.php';
-require_once $base.'config/mail.php';
-require_once $base.'core/Redirect.php';
-require_once $base.'core/route.php';
-require_once $base.'route/route.php';
-require_once $base.'core/routeExist.php';
+
+require_once root_path.'/vendor/autoload.php';
+require_once root_path.'/core/Dotenv/Dotenv.php';
+require_once root_path.'/core/LoadEnv.php';
+require_once root_path.'/core/Exception/whoopsExceptionRegister.php  ';
+require_once root_path.'/core/helpers.php';
+require_once root_path.'/config/app.php';
+require_once root_path.'/core/loadfiles.php';
+require_once root_path.'/config/mail.php';
+require_once root_path.'/core/Redirect.php';
+require_once root_path.'/core/route.php';
+require_once root_path.'/route/route.php';
+require_once root_path.'/core/routeExist.php';

@@ -1,14 +1,4 @@
 <?php
-/**
- * get @ENV path, and load it for using in whole framework
- */
-$env_path = str_replace("\config","",__DIR__);
-/**
- * sent second @param, file name if load file other then .env
- */
-$dotenv = new Dotenv($env_path);
-$dotenv->load();
-/***********************************************************/
 
 /**********remove errors************/
 
