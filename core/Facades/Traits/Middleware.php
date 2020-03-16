@@ -39,8 +39,6 @@ trait Middleware
                     throw new MiddlewareNotFoundException("Your given middleware did not match");
                 }
 
-            } else {
-                throw new MiddlewareNotFoundException("Your given middleware did not match");
             }
         }
     }
