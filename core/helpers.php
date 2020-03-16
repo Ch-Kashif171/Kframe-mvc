@@ -88,7 +88,7 @@ if(!function_exists('full_path')) {
 if(!function_exists('base_path')) {
     function base_path()
     {
-        return getcwd();
+        return root_path;
     }
 }
 
@@ -96,9 +96,9 @@ if(!function_exists('public_path')) {
     function public_path($path=null)
     {
         if (is_null($path)){
-            return getcwd().'/public';
+            return root_path.'/public';
         } else {
-            return getcwd().'/public/'.$path;
+            return root_path.'/public/'.$path;
         }
     }
 }
@@ -121,19 +121,18 @@ if(!function_exists('view')) {
         extract($data);  /*convert array key as variable here*/
         extract($data2); /*convert array key as variable here*/
 
-        $base = __DIR__ . '/../';
         if ($loadHtml) {
             /**
              * Loading view for pdf etc
              */
             ob_start();
-            require_once($base . "views/" . $view . ".php");
+            require_once(root_path . "/views/" . $view . ".php");
             $res = ob_get_contents();
             ob_end_clean();
 
             return $res;
         } else {
-            return require_once($base . "views/" . $view . ".php");
+            return require_once(root_path . "/views/" . $view . ".php");
         }
     }
 }
@@ -927,5 +926,28 @@ if(!function_exists('csrf_token')) {
             Session::put('csrf_token', $token);
         }
         echo '<input type="hidden" name="csrf_token" value="'.$token.'">';
+    }
+}
+
+if(!function_exists('abort')) {
+
+    function abort($route) {
+        $view = "errors/".$route;
+        return view($view);
+    }
+}
+
+if(!function_exists('not_fount_image')) {
+
+    function not_fount_image() {
+       return url('core/assets/images/404.png');
+    }
+}
+
+if(!function_exists('home_url')) {
+
+    function home_url()
+    {
+        return \Core\Facades\NotFound::get_home_url();
     }
 }

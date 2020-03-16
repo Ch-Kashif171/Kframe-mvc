@@ -34,3 +34,8 @@ $autoload = [
     'helpers' =>  array(''),
 
 ];
+
+/**
+ * Define home page path here to return user to home page in 404 error case.
+ */
+$home_page = url('home');

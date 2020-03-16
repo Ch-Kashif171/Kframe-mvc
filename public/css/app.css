@@ -31,3 +31,14 @@ footer .footer-copyright{
     color: #a94442 !important;
     border-color: #a94442 !important;
 }
+
+.content {
+    margin-left: auto;
+    margin-right: auto;
+    width: 20em;
+}
+.go_home {
+    margin-left: 37%;
+    margin-top: 20px;
+    margin-bottom: 25%;
+}

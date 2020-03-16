@@ -1,9 +1,11 @@
 <?php
-use Core\Exception\Handlers\RouteNotFoundException;
+
+use Core\Facades\RouteNotFount;
 
     if (isset($_SESSION['exist']) && $_SESSION['exist']) {
         /*Okay do nothing*/
     } else {
-        throw new RouteNotFoundException("Your given route did not match");
+
+        RouteNotFount::check();
     }
     unset($_SESSION['exist']);
