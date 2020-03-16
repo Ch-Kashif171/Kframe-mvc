@@ -18,6 +18,8 @@ PHP MVC framework. A basic mvc pattern framework, most functions name are same l
 
 Set Environment variable "APP_ENV" in .env as development or production to show or hide errors, set by default is development.
 
+We can set go home url for 404 error page link for production mode. 
+
 # Routing:
 
 We can define routes in route/route.php file as below.
