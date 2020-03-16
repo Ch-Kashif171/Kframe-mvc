@@ -30,6 +30,33 @@ Group route to set prefix and namespace
     });
    ```
    
+# Middleware
+Create middleware in App\Middleware directory, define rules in middleware handler function then register it in App\Kernel.php.
+
+Example:
+
+   ```php
+    public $routeMiddleware = [
+        'auth' => Authenticate::class,
+    ];
+   ```
+Then in route group function you can define middleware with array or with string.
+
+Example:
+ 
+   ```php
+     Route::group(['middleware'=>'auth'], function () {
+         Route::get('/','HomeController@index');
+     });
+   ```
+
+Or
+
+  ```php
+     Route::group(['middleware'=>['auth','web']], function () {
+         Route::get('/','HomeController@index');
+     });
+   ```
 # Builtin Facades:
 There are some nice Facades like 
 
