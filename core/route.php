@@ -2,13 +2,13 @@
 
 use Core\Facades\Request;
 use Core\Facades\Session;
-use Core\Middleware\Authenticated;
 use Core\Facades\Traits\Csrf\csrfToken;
-use App\Middleware\Authenticate;
+use Core\Facades\Traits\Middleware;
 
 
-class Route{
-    use csrfToken;
+class Route {
+
+    use csrfToken, Middleware;
 
     public $exit = '';
     public static $prefix;
@@ -155,7 +155,7 @@ class Route{
      * @param $type
      * @param $route
      */
-    public static function group($type, Closure $route) {
+    public static function group($type, Closure $routes) {
 
         if (is_array($type) && isset($type['prefix'])) {
             static::$prefix = $type['prefix'];
@@ -165,20 +165,19 @@ class Route{
             static::$namespace = $type['namespace'];
         }
 
-        if (is_array($type) && isset($type['middleware']) && $type['middleware'] == 'auth') {
+        if (is_array($type) && isset($type['middleware'])) {
 
             static::$middleware = $type['middleware'];
         }
 
-        return $route();
+        return $routes();
 
     }
 
     private static function middleware() {
-        if (! is_null(static::$middleware) && static::$middleware == 'auth') {
-            static::$middleware = null;
-            Authenticate::handle();
-        }
+
+        Middleware::getMiddleware(static::$middleware);
+        static::$middleware = null;
     }
 
     public static function authenticate(){
