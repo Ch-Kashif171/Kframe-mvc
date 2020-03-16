@@ -6,6 +6,14 @@ require_once 'vendor/autoload.php';
 *for some reason need to include here these two files *
 ******************************************************/
 require_once 'core/Dotenv/Dotenv.php';
+
+/**
+ * sent second @param, file name if load file other then .env
+ */
+$dotenv = new Dotenv(getcwd());
+$dotenv->load();
+/***********************************************************/
+
 require_once 'core/helpers.php';
 
 require 'core/Commands/CreateControllerCommand.php';

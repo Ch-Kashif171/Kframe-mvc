@@ -1,12 +1,9 @@
 <?php
 namespace Core\database_migrations;
 
-use Closure;
 use Core\Doctrine;
 use Core\database_migrations\Schema;
 use Core\database_migrations\RecordMigration;
-
-require_once __DIR__.'/../../config/app.php';
 
 class Migrate
 {
