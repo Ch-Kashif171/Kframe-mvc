@@ -17,4 +17,4 @@ if (!empty($autoload['helpers'])){
 /**
  * get home url here for 404
  */
-NotFound::home_url($home_page);
+NotFound::home_url($go_back);

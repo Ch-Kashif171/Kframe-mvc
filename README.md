@@ -18,11 +18,11 @@ PHP MVC framework. A basic mvc pattern framework, most functions name are same l
 
 Set Environment variable "APP_ENV" in .env as development or production to show or hide errors, set by default is development.
 
-We can set go home url for 404 error page link for production mode in config\app.php.
+We can set go back url for 404 error page for production mode in config\app.php.
 Example:
 
    ```php
-    $home_page = url('/home');
+    $go_back = url();
    ```
 
 # Routing:

@@ -36,6 +36,6 @@ $autoload = [
 ];
 
 /**
- * Define home page path here to return user to home page in 404 error case.
+ * Define go back page path here to return user to home page in 404 error case.
  */
-$home_page = url('home');
+$go_back = url();
