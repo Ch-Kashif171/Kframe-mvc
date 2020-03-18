@@ -41,6 +41,8 @@ class MakeAuth extends Command
             $output->writeln(["<bg=red;options=bold>{$build['message']}</>"]);
         }
 
+        return 0;
+
     }
 
 }
