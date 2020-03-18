@@ -39,8 +39,7 @@ Group route to set prefix and namespace
     Route::group(['prefix'=>'admin','namespace'=>'Admin'], function () {
         Route::get('dashboard','DashboardController@index');
     });
-   ```
-   
+   ``` 
 # Middleware
 Create middleware in App\Middleware directory, define rules in middleware handler function then register it in App\Kernel.php.
 
@@ -152,8 +151,18 @@ For Auth Scaffolding:
 
     php kframe make:auth auth
 
-Note: above command will create controllers in controllers/Auth, also will create authenticate route in route file 
+Note: above command will create controllers in controllers/Auth, also will create authenticate route in route file.
+Example:
 
+   ```php
+  Route::authenticate();
+   ```
+If you want to disable register route then add ```['register'=>false]```
+Example:
+
+  ```php
+  Route::authenticate(['register'=>false]);
+```
 
 For create a model:
 

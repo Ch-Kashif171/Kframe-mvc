@@ -180,12 +180,19 @@ class Route {
         static::$middleware = null;
     }
 
-    public static function authenticate(){
+    public static function authenticate(array $disable = null)
+    {
 
-        Route::get('login','Auth\LoginController@index');
-        Route::post('login','Auth\LoginController@login');
-        Route::get('logout','Auth\LoginController@logout');
-        Route::get('register','Auth\RegisterController@register');
-        Route::post('register','Auth\RegisterController@save');
+        Route::get('login', 'Auth\LoginController@index');
+        Route::post('login', 'Auth\LoginController@login');
+        Route::get('logout', 'Auth\LoginController@logout');
+
+        if (!is_null($disable) && is_array($disable)
+            && array_key_exists('register',$disable) && !$disable['register']) {
+            /*do nothing*/
+        } else {
+            Route::get('register', 'Auth\RegisterController@register');
+            Route::post('register', 'Auth\RegisterController@save');
+        }
     }
 }
