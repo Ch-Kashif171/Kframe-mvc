@@ -51,22 +51,18 @@ Example:
         'auth' => Authenticate::class,
     ];
    ```
-Then in route group function you can define middleware with array or with string.
+Then Any controller's constructor you can call middleware.
 
 Example:
  
    ```php
-     Route::group(['middleware'=>'auth'], function () {
-         Route::get('/','HomeController@index');
-     });
+      $this->middleware('auth');
    ```
 
-Or
+For more than one middleware.
 
   ```php
-     Route::group(['middleware'=>['auth','web']], function () {
-         Route::get('/','HomeController@index');
-     });
+      $this->middleware(['auth','web']);
    ```
 # Builtin Facades:
 There are some nice Facades like 

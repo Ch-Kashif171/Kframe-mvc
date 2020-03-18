@@ -43,4 +43,9 @@ trait Middleware
         }
     }
 
+    public function middleware($middleware) {
+
+        static::getMiddleware($middleware);
+    }
+
 }

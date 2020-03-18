@@ -176,7 +176,7 @@ class Route {
 
     private static function middleware() {
 
-        Middleware::getMiddleware(static::$middleware);
+        static::getMiddleware(static::$middleware);
         static::$middleware = null;
     }
 
