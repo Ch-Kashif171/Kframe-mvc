@@ -317,9 +317,8 @@ class Doctrine
             $result = $exec->rowCount();
             if ($result > 0) {
                 return true;
-            } else {
-                return false;
             }
+            return false;
         }
         catch (Exception $e){
             $this->exception->errorException($e->getMessage());
@@ -337,7 +336,11 @@ class Doctrine
         try {
             $exec = $this->con->prepare($query);
             $result = $exec->execute();
-            return $result;
+            $delete = $exec->rowCount();
+            if ($delete) {
+                return true;
+            }
+            return false;
         }
         catch (Exception $e){
             $this->exception->errorException($e->getMessage());

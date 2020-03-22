@@ -1,14 +1,13 @@
 <?php
 
 use Core\Facades\Request;
-use Core\Facades\Session;
 use Core\Facades\Traits\Csrf\csrfToken;
 use Core\Facades\Traits\Middleware;
-
+use Core\Facades\Traits\RouteParam;
 
 class Route {
 
-    use csrfToken, Middleware;
+    use csrfToken, Middleware, RouteParam;
 
     public $exit = '';
     public static $prefix;
@@ -32,13 +31,6 @@ class Route {
         return $action;
     }
 
-    public static function routeWithValues($action){
-        if (strpos($action,'{') !== false){
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     /**
      * @param $action
@@ -46,7 +38,7 @@ class Route {
      * @param $method
      * @return mixed
      */
-    public static function call($controller,$method){
+    public static function call($controller,$method, $param = null){
 
         $base = __DIR__ . '/../';
         require_once($base.'app/controllers/' . $controller . '.php' );
@@ -57,7 +49,12 @@ class Route {
         }
 
         $cont   =   new $controller();
-        return $cont->$method( new Request() );
+
+        if (is_null($param)) {
+            return $cont->$method( new Request() );
+        } else {
+            return $cont->$method($param);
+        }
 
     }
 
@@ -75,15 +72,16 @@ class Route {
 
         $controller_class_and_method = static::$namespace ? static::$namespace.'\\'.$controller_class_and_method : $controller_class_and_method;
 
-        /*route with {id} etc work still pending*/
-        /*$find = self::routeWithValues($action);
-        if ($find){
-            $get_action_array = explode('/',$get_action);
-            $get_action = $get_action_array[1];
+        /*********************************************
+        ************here get route param**************
+        /********************************************/
+        $param_action = static::routeWithValues($action, $get_action);
 
-            $action_array = explode('/',$action);
-            $action = $action_array[1];
-        }*/
+        $param = null;
+        if (isset($param_action->param) && $param_action->param) {
+            $action = $param_action->route;
+            $param = $param_action->param;
+        }
 
         if ($get_action  ==  $action) {
 
@@ -99,7 +97,7 @@ class Route {
                     exit;
                 }
 
-                self::call($controller, $method);
+                self::call($controller, $method, $param);
 
             }
 
