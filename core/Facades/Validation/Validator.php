@@ -120,4 +120,13 @@ class Validator
         }
     }
 
+    public function first(){
+        if(count(self::$msg) > 0 ) {
+            $msg = array_reverse(self::$msg);
+            return array_pop($msg);
+        }else{
+            return true;
+        }
+    }
+
 }
