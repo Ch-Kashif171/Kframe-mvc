@@ -15,6 +15,7 @@ class Route {
     public static $prefix;
     public static $namespace;
     public static $middleware;
+    public static $param = null;
 
     /**
      * @return string
@@ -79,10 +80,9 @@ class Route {
         /********************************************/
         $param_action = static::routeWithValues($action, $get_action);
 
-        $param = null;
         if (isset($param_action->param) && $param_action->param) {
             $action = $param_action->route;
-            $param = $param_action->param;
+            static::$param = $param_action->param;
         }
 
         if ($get_action  ==  $action) {
@@ -98,7 +98,7 @@ class Route {
                     throw new RouteNotFoundException("please specify a method in route");
                 }
 
-                self::call($controller, $method, $param);
+                self::call($controller, $method, static::$param);
 
             }
 
