@@ -1,13 +1,15 @@
 <?php
 
 use Core\Facades\Request;
-use Core\Facades\Traits\Csrf\csrfToken;
+use Core\Facades\Traits\IsRoute;
 use Core\Facades\Traits\Middleware;
 use Core\Facades\Traits\RouteParam;
+use Core\Facades\Traits\Csrf\csrfToken;
+use Core\Exception\Handlers\RouteNotFoundException;
 
 class Route {
 
-    use csrfToken, Middleware, RouteParam;
+    use csrfToken, Middleware, RouteParam, IsRoute;
 
     public $exit = '';
     public static $prefix;
@@ -93,8 +95,7 @@ class Route {
                     $controller = $getBoth[0];
                     $method = $getBoth[1];
                 } else {
-                    echo "please specify a method";
-                    exit;
+                    throw new RouteNotFoundException("please specify a method in route");
                 }
 
                 self::call($controller, $method, $param);
@@ -102,7 +103,7 @@ class Route {
             }
 
             /*this is check in routeExist file*/
-            $_SESSION['exist'] = true;
+            IsRoute::checkRoute(true);
         }
     }
 
@@ -136,13 +137,12 @@ class Route {
                     $controller = $getBoth[0];
                     $method = $getBoth[1];
                 } else {
-                    echo "please specify a method";
-                    exit;
+                    throw new RouteNotFoundException("please specify a method in route");
                 }
                 self::call($controller, $method);
 
                 /*this is check in routeExist file*/
-                $_SESSION['exist'] = true;
+                IsRoute::checkRoute(true);
 
             }
         }

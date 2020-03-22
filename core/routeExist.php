@@ -1,11 +1,14 @@
 <?php
 
 use Core\Facades\RouteNotFount;
+use Core\Facades\Traits\IsRoute;
 
-    if (isset($_SESSION['exist']) && $_SESSION['exist']) {
-        /*Okay do nothing*/
-    } else {
+$route = IsRoute::verifyRoute();
 
-        RouteNotFount::check();
-    }
-    unset($_SESSION['exist']);
+if (isset($route) && $route) {
+    /*Okay do nothing*/
+} else {
+    RouteNotFount::check();
+}
+
+IsRoute::checkRoute(false);
