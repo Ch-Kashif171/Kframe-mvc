@@ -43,8 +43,7 @@ class Route {
      */
     public static function call($controller,$method, $param = null){
 
-        $base = __DIR__ . '/../';
-        require_once($base.'app/controllers/' . $controller . '.php' );
+        require_once(base_path().'/app/controllers/' . $controller . '.php' );
 
         $controller_arr = explode('\\',$controller);
         if ( count($controller_arr)>1) {

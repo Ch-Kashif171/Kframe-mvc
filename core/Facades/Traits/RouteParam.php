@@ -11,8 +11,7 @@ trait RouteParam
     private static function routeWithValues($route, $action) {
 
         $routes = new stdClass();
-        if (strpos($route,'{') !== false && strpos($route,'}') !== false
-        ) {
+        if (strpos($route,'{') !== false && strpos($route,'}') !== false) {
 
             $param = static::mapRoute($route, $action);
 
