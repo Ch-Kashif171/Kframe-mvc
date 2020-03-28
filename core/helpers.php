@@ -951,3 +951,44 @@ if(!function_exists('home_url')) {
         return \Core\Facades\NotFound::get_home_url();
     }
 }
+
+if(!function_exists('getClientOriginalName')) {
+
+    function getClientOriginalName($file)
+    {
+        return basename($file["name"]);
+    }
+}
+
+if(!function_exists('getClientOriginalExtension')) {
+
+    function getClientOriginalExtension($filename)
+    {
+        return strtolower(pathinfo($filename['name'],PATHINFO_EXTENSION));
+    }
+}
+
+if(!function_exists('move')) {
+
+    function move($file, $file_path)
+    {
+        if (move_uploaded_file($file["tmp_name"], $file_path)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+if(!function_exists('delete_file')) {
+
+    function delete_file($file_name)
+    {
+        if(file_exists($file_name)){
+            unlink($file_name);
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
