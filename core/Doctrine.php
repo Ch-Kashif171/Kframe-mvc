@@ -59,6 +59,23 @@ class Doctrine
         return $this->result;
     }
 
+
+    public function find($id){
+
+        if(is_null($this->fields)) {
+            $columns = $this->get_table_columns_except_some($this->table);
+            $sql = "SELECT {$columns} FROM " . $this->table." WHERE id = ".$id;
+
+        }else{
+            $sql = "SELECT ".$this->fields." FROM " . $this->table." WHERE id = ".$id;
+        }
+
+        $query = $this->con->query($sql) ;
+        $this->result = $query->fetch(\PDO::FETCH_OBJ);
+
+        return $this->result;
+    }
+
     /**
      * @return array
      */
