@@ -8,7 +8,7 @@ PHP MVC framework. A basic mvc pattern framework, most functions name are same l
   
   After Installing Composer, Run command
   
-    composer update
+    composer install
 
 # Database configuration
   1. Set database detail in .env file, then run migration command to create default users table.
