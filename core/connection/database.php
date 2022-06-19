@@ -2,6 +2,8 @@
 
  namespace Core\connection;
 
+use Core\Exception\Handlers\DBException;
+
 /**
  * Class database written by @kashif sohail
  * it is written in PDO
@@ -38,7 +40,7 @@ class database
         }
         catch (\PDOException $e)
         {
-            echo "There is some problem in connection: " . $e->getMessage();
+            throw new DBException("Connection Error: " .  $e->getMessage());
         }
     }
 
