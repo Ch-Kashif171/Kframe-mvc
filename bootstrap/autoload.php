@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-define('root_path', getcwd(), true);
+define('root_path', getcwd());
 
 
 require_once root_path.'/vendor/autoload.php';
