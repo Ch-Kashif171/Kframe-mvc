@@ -13,6 +13,7 @@ if(!function_exists('debug')) {
      * @param string $type
      */
     function debug($array, $type = ''){
+        $array = func_get_args();
         if ($type == 'dump') {
             echo "<pre>";
             var_dump($array);

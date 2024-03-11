@@ -1,9 +1,7 @@
 <?php
 defined('root_path') OR exit("Sorry! No direct script access allowed ");
 
-use App\controllers\Controller;
-use Core\Facades\DB;
-use Core\Facades\Request;
+use App\Controllers\Controller;
 
 class HomeController extends Controller
 {

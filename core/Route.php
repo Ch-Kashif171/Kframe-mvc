@@ -1,7 +1,10 @@
 <?php
 
+namespace Core;
+
+use Closure;
 use Core\Facades\Request;
-use Core\Facades\Traits\IsRoute;
+use Core\Facades\IsRoute;
 use Core\Facades\Traits\Middleware;
 use Core\Facades\Traits\RouteParam;
 use Core\Facades\Traits\Csrf\csrfToken;
@@ -9,7 +12,7 @@ use Core\Exception\Handlers\RouteNotFoundException;
 
 class Route {
 
-    use csrfToken, Middleware, RouteParam, IsRoute;
+    use csrfToken, Middleware, RouteParam;
 
     public $exit = '';
     public static $prefix;
@@ -20,17 +23,20 @@ class Route {
     /**
      * @return string
      */
-    public static function action()
+    public static function action(): string
     {
-        $uri     =   $_SERVER['PHP_SELF'];
-        $arr     =   explode('index.php',$uri);
-        $action  =   $arr[1];
+        $uri     =   $_SERVER['REQUEST_URI'];
+        $arr     =   explode('/',$uri);
+        unset($arr[0]);
+        unset($arr[1]);
+        $action = implode('/', $arr);
 
         if ($action == ''){
             $action  =   '/';
         } else {
-            $action = rtrim($arr[1], '/');
+            $action = '/' . $action;
         }
+
         return $action;
     }
 
@@ -43,7 +49,7 @@ class Route {
      */
     public static function call($controller,$method, $param = null){
 
-        require_once(base_path().'/app/controllers/' . $controller . '.php' );
+        require_once(base_path().'/app/Controllers/' . $controller . '.php' );
 
         $controller_arr = explode('\\',$controller);
         if ( count($controller_arr)>1) {
@@ -67,6 +73,7 @@ class Route {
     public static function get($action,$controller_class_and_method) {
 
         $get_action =   self::action();
+
         $action =    ltrim($action,'/');
         $action_route =   '/'.$action;
 
@@ -150,7 +157,8 @@ class Route {
 
     /**
      * @param $type
-     * @param $route
+     * @param Closure $routes
+     * @return mixed
      */
     public static function group($type, Closure $routes) {
 
@@ -171,12 +179,20 @@ class Route {
 
     }
 
+    /**
+     * @throws Exception\Handlers\MiddlewareNotFoundException
+     */
     private static function middleware() {
 
         static::getMiddleware(static::$middleware);
         static::$middleware = null;
     }
 
+    /**
+     * @param array|null $disable
+     * @return void
+     * @throws RouteNotFoundException
+     */
     public static function authenticate(array $disable = null)
     {
 
@@ -184,7 +200,7 @@ class Route {
         Route::post('login', 'Auth\LoginController@login');
         Route::get('logout', 'Auth\LoginController@logout');
 
-        if (!is_null($disable) && is_array($disable)
+        if (is_array($disable)
             && array_key_exists('register',$disable) && !$disable['register']) {
             /*do nothing*/
         } else {

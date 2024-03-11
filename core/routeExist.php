@@ -1,7 +1,7 @@
 <?php
 
 use Core\Facades\RouteNotFount;
-use Core\Facades\Traits\IsRoute;
+use Core\Facades\IsRoute;
 
 $route = IsRoute::verifyRoute();
 

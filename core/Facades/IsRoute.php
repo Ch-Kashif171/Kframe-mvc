@@ -1,9 +1,9 @@
 <?php
 
-namespace Core\Facades\Traits;
+namespace Core\Facades;
 
 
-trait IsRoute
+class IsRoute
 {
 
     private static $isRoute;
