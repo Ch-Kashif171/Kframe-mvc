@@ -30,13 +30,13 @@ class Generator {
      */
     public  function generateController($controllerName){
 
-        if (file_exists(getcwd(). '//controllers'.'/'.$controllerName.'.php')) {
+        if (file_exists(getcwd(). '//Controllers'.'/'.$controllerName.'.php')) {
             return [
             'status' => false,
             'message' => ucfirst($controllerName).' Controller Build Not Successful, Controller Already Exist'
             ];
         }
-        $templatefile = getcwd(). '/core/controller/templates/ControllerTemplate.php';
+        $templatefile = getcwd(). '/core/Controllers/templates/ControllerTemplate.php';
         if(file_exists($templatefile)){
 
             if (strpos($controllerName,'\\') !== false){
@@ -51,7 +51,7 @@ class Generator {
 
                 if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerClass), file_get_contents($templatefile));
-                $controllerfile = getcwd(). '/app/controllers'.'/'.ucfirst($controllerName).'.php';
+                $controllerfile = getcwd(). '/app/Controllers'.'/'.ucfirst($controllerName).'.php';
                 fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
                 return [
@@ -120,22 +120,22 @@ class Generator {
     {
 
         if (!file_exists(getcwd(). '/app/controllers/Auth')) {
-            mkdir(getcwd(). '/app/controllers/Auth', 0777, true);
+            mkdir(getcwd(). '/app/Controllers/Auth', 0777, true);
         }
 
         /*loginController*/
         $controllerName = 'Login';
-        if (file_exists(getcwd(). '/app/controllers/Auth/LoginController.php')) {
+        if (file_exists(getcwd(). '/app/Controllers/Auth/LoginController.php')) {
             return [
                 'status' => false,
                 'message' => 'LoginController Build Not Successful, Controller Already Exist'
             ];
         }
-        $templatefile = getcwd(). '/core/controller/templates/AuthControllerTemplate.php';
+        $templatefile = getcwd(). '/core/Controller/templates/AuthControllerTemplate.php';
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
-                $controllerfile = getcwd(). '/app/controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
+                $controllerfile = getcwd(). '/app/Controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
                 $newfile = fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
             }
@@ -150,17 +150,17 @@ class Generator {
 
         /*RegisterController*/
         $controllerName = 'Register';
-        if (file_exists(getcwd(). '/app/controllers/Auth/RegisterController.php')) {
+        if (file_exists(getcwd(). '/app/Controllers/Auth/RegisterController.php')) {
             return [
                 'status' => false,
                 'message' => 'RegisterController Build Not Successful, Controller Already Exist'
             ];
         }
-        $templatefile = getcwd(). '/core/controller/templates/RegisterControllerTemplate.php';
+        $templatefile = getcwd(). '/core/Controllers/templates/RegisterControllerTemplate.php';
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
-                $controllerfile = getcwd(). '/app/controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
+                $controllerfile = getcwd(). '/app/Controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
                 $newfile = fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
             }
