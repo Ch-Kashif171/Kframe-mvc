@@ -874,8 +874,7 @@ if(!function_exists('captcha')) {
 
         return '<div class="captcha-script"><img class="captcha" src="' . $builder->inline() . '"> <span><img style="width: 40px; height: 30px; cursor: pointer;" src="'.path().'/core/captcha/image/refresh.png" onclick="reloadCaptcha();"></span>
            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-          <script type="text/javascript">
-          $.noConflict();
+          <script>
           
           function reloadCaptcha() {
                $.ajax({
@@ -888,8 +887,7 @@ if(!function_exists('captcha')) {
                    }
                });
                
-           }</script>
-           <input type="text" name="captcha" class="captcha-input '.$has_error.'"> '.$error.'</div>';
+           }</script>';
     }
 }
 
