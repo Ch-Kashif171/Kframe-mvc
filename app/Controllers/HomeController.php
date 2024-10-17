@@ -1,5 +1,6 @@
 <?php
-defined('root_path') OR exit("Sorry! No direct script access allowed ");
+
+namespace App\Controllers;
 
 use App\Controllers\Controller;
 

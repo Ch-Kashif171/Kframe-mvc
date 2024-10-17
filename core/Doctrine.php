@@ -3,6 +3,8 @@
 namespace Core;
 
 use Core\connection\database;
+use Exception;
+use Whoops\Exception\ErrorException;
 
 class Doctrine
 {
@@ -148,7 +150,7 @@ class Doctrine
             return $result;
         }
         catch (Exception $e){
-            $this->exception->errorException($e->getMessage());
+            throw new ErrorException($e->getMessage());
         }
     }
 
@@ -173,7 +175,7 @@ class Doctrine
 
         }
         catch (Exception $e){
-            $this->exception->errorException($e->getMessage());
+            throw new ErrorException($e->getMessage());
         }
 
     }
@@ -268,21 +270,18 @@ class Doctrine
     /**
      * @param $data
      * @return bool
+     * @throws ErrorException
      */
-    public function insert($data){
+    public function insert($data) {
         $fields = '`' . implode('`, `', array_keys($data)) . '`';
         $placeholders = ':' . implode(', :', array_keys($data));
         $sql = "INSERT INTO {$this->table} ($fields) VALUES ({$placeholders})";
 
         try {
-            $exec = $this->con->prepare($sql);
-            $result = $exec->execute($data);
-            return $result;
-        }catch (Exception $e)
-        {
-            $this->exception->errorException($e->getMessage());
+            return $this->con->prepare($sql)->execute($data);
+        } catch (Exception $e) {
+            throw new ErrorException($e->getMessage());
         }
-
 
     }
 
@@ -300,9 +299,8 @@ class Doctrine
             $exec->execute($data);
             $last_id = $this->con->lastInsertId();
             return $last_id;
-        }catch (Exception $e)
-        {
-            $this->exception->errorException($e->getMessage());
+        }catch (Exception $e) {
+            throw new ErrorException($e->getMessage());
         }
     }
 
@@ -337,8 +335,8 @@ class Doctrine
             }
             return false;
         }
-        catch (Exception $e){
-            $this->exception->errorException($e->getMessage());
+        catch (Exception $e) {
+            throw new ErrorException($e->getMessage());
         }
 
     }
@@ -359,8 +357,8 @@ class Doctrine
             }
             return false;
         }
-        catch (Exception $e){
-            $this->exception->errorException($e->getMessage());
+        catch (Exception $e) {
+            throw new ErrorException($e->getMessage());
         }
     }
 
@@ -445,7 +443,7 @@ class Doctrine
      */
     public function where($column,$condition,$value){
 
-        if(strpos($this->statement,'WHERE') === false) {
+        if(!str_contains($this->statement, 'WHERE')) {
             $query = " WHERE {$column} {$condition} '".$value."' ";
 
         }else{
@@ -489,7 +487,6 @@ class Doctrine
         if ($query != ''){
             $this->statement .= $query;
         }
-        //debug($this->statement,'dump');
 
         return new Doctrine($this->table,$this->hide_fields,$this->statement);
     }
@@ -540,7 +537,7 @@ class Doctrine
             return $result;
         }
         catch (Exception $e){
-            $this->exception->errorException($e->getMessage());
+            throw new ErrorException($e->getMessage());
         }
     }
 

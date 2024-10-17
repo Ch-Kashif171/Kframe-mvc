@@ -12,7 +12,7 @@ if(!function_exists('debug')) {
      * @param $array
      * @param string $type
      */
-    function debug($array, $type = ''){
+    function dd($array, $type = ''){
         $array = func_get_args();
         if ($type == 'dump') {
             echo "<pre>";

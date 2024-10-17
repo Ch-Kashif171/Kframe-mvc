@@ -17,10 +17,9 @@
                             <input type="email" class="form-control <?php echo (has_error('email')?'error':'') ?>" id="email" name="email">
 
                             <?php if (has_error('email')) { ?>
-
-                                <span class="error" role="alert">
-                                        <strong><?php echo errors('email');?></strong>
-                                    </span>
+                                <span class="text text-danger" role="alert">
+                                    <strong><?php echo errors('email');?></strong>
+                                </span>
                             <?php } ?>
                         </div>
                         <div class="form-group">
@@ -28,9 +27,9 @@
                             <input type="password" class="form-control <?php echo (has_error('password')?'error':'') ?>" id="pwd" name="password">
 
                             <?php if (has_error('password')) { ?>
-                                <span class="error" role="alert">
-                                        <strong><?php echo errors('password');?></strong>
-                                    </span>
+                                <span class="text text-danger" role="alert">
+                                    <strong><?php echo errors('password');?></strong>
+                                </span>
                             <?php } ?>
                         </div>
                             <button class="btn btn-success" type="submit">Login</button>

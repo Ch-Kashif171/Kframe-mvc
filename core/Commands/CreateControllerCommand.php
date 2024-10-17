@@ -14,9 +14,9 @@ class CreateControllerCommand extends Command
         $this
             ->addArgument('controllername', InputArgument::REQUIRED, 'Name Of The Controller to Generate.')
             ->addArgument('option', InputArgument::OPTIONAL, 'Want to Generate a Model?')
-            ->setName('make:controller')
-            ->setDescription('Creates new Contoller.')
-            ->setHelp("This command allows you to create new Contoller...");
+            ->setName('make:Controllers')
+            ->setDescription('Creates new Controller.')
+            ->setHelp("This command allows you to create new Controller...");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -24,12 +24,13 @@ class CreateControllerCommand extends Command
         // outputs multiple lines to the console (adding "\n" at the end of each line)
         $generator = Generator::getInstance();
         $output->writeln([
-            /*"<comment>Executing Command -> make:controller {$input->getArgument('controllername')}</comment>",*/
+            /*"<comment>Executing Command -> make:Controllers {$input->getArgument('controllername')}</comment>",*/
             '**************************************************',
         ]);
 
         $getArgumentOption = $input->getArgument('option');
-        if (strtolower($getArgumentOption) == 'withmodel') {
+
+        if (!empty($getArgumentOption) && strtolower($getArgumentOption) == 'withmodel') {
             $generator->generateModel($input->getArgument('controllername'));
             $build = $generator->generateController($input->getArgument('controllername'));
         }

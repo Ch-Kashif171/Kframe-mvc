@@ -38,7 +38,9 @@ class MakeAuth extends Command
             $output->writeln(["<bg=green;options=bold>{$build['message']}</>"]);
         }
         else {
-            $output->writeln(["<bg=red;options=bold>{$build['message']}</>"]);
+            foreach ($build['message'] as $error) {
+                $output->writeln(["<bg=red;options=bold>{$error}</>"]);
+            }
         }
 
         return 0;
