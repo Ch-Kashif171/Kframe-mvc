@@ -76,14 +76,16 @@ class Auth
      * @param $password
      * @return bool|string
      */
-    public static function Hash($password){
-        return $password_hash = password_hash($password, PASSWORD_BCRYPT);
+    public static function Hash($password): bool|string
+    {
+        return password_hash($password, PASSWORD_BCRYPT);
     }
 
     /**
      * @return bool
      */
-    public static function logout(){
+    public static function logout(): bool
+    {
         /*session_destroy();*/
         unset($_SESSION['user']);
         return true;

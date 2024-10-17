@@ -23,7 +23,7 @@ class MigrationCommand extends Command
     {
         $generator = Generator::getInstance();
         $output->writeln([
-            /*"<comment>Executing Command -> make:controller {$input->getArgument('controllername')}</comment>",*/
+            /*"<comment>Executing Command -> make:Controllers {$input->getArgument('controllername')}</comment>",*/
             '**************************************************',
         ]);
 

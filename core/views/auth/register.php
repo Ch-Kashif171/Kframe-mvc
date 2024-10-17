@@ -18,10 +18,9 @@
                             <input type="text" class="form-control <?php echo (has_error('name')?'error':'') ?>" id="name" name="name">
 
                             <?php if (has_error('name')) { ?>
-
-                            <span class="error" role="alert">
-                                        <strong><?php echo errors('name');?></strong>
-                                    </span>
+                                <span class="text text-danger" role="alert">
+                                    <strong><?php echo errors('name');?></strong>
+                                </span>
                             <?php } ?>
                         </div>
 
@@ -29,12 +28,10 @@
                             <label for="email">Email address:</label>
                             <input type="email" class="form-control <?php echo (has_error('email')?'error':'') ?>" id="email" name="email">
 
-
                             <?php if (has_error('email')) { ?>
-
-                                <span class="error" role="alert">
-                                        <strong><?php echo errors('email');?></strong>
-                                    </span>
+                                <span class="text text-danger" role="alert">
+                                    <strong><?php echo errors('email');?></strong>
+                                </span>
                             <?php } ?>
                         </div>
 
@@ -43,10 +40,9 @@
                             <input type="password" class="form-control <?php echo (has_error('password')?'error':'') ?>" id="pwd" name="password">
 
                             <?php if (has_error('password')) { ?>
-
-                                <span class="error" role="alert">
-                                        <strong><?php echo errors('password');?></strong>
-                                    </span>
+                                <span class="text text-danger" role="alert">
+                                    <strong><?php echo errors('password');?></strong>
+                                </span>
                             <?php } ?>
                         </div>
 

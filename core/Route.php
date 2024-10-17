@@ -9,6 +9,8 @@ use Core\Facades\Traits\Middleware;
 use Core\Facades\Traits\RouteParam;
 use Core\Facades\Traits\Csrf\csrfToken;
 use Core\Exception\Handlers\RouteNotFoundException;
+use App\Controllers\Auth\LoginController;
+use App\Controllers\Auth\RegisterController;
 
 class Route {
 
@@ -47,16 +49,9 @@ class Route {
      * @param $method
      * @return mixed
      */
-    public static function call($controller,$method, $param = null){
+    public static function call($controller, $method, $param = null) {
 
-        require_once(base_path().'/app/Controllers/' . $controller . '.php' );
-
-        $controller_arr = explode('\\',$controller);
-        if ( count($controller_arr)>1) {
-            $controller = $controller_arr[1];
-        }
-
-        $cont   =   new $controller();
+        $cont = new $controller();
 
         if (is_null($param)) {
             return $cont->$method( new Request() );
@@ -68,18 +63,21 @@ class Route {
 
     /**
      * @param $action
-     * @param $controller_class_and_method
+     * @param $controllerMethod
+     * @return void
+     * @throws Exception\Handlers\MiddlewareNotFoundException
+     * @throws RouteNotFoundException
      */
-    public static function get($action,$controller_class_and_method) {
+    public static function get($action, $controllerMethod) {
 
-        $get_action =   self::action();
+        $get_action =  self::action();
 
         $action =    ltrim($action,'/');
         $action_route =   '/'.$action;
 
         $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
 
-        $controller_class_and_method = static::$namespace ? static::$namespace.'\\'.$controller_class_and_method : $controller_class_and_method;
+        $routeArgs = static::$namespace ? static::$namespace.'\\'.$controllerMethod : $controllerMethod;
 
         /*********************************************
         ************here get route param**************
@@ -96,10 +94,9 @@ class Route {
             static::middleware(); /*block route access if not authenticate*/
 
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                $getBoth = explode('@', $controller_class_and_method);
-                if (isset($getBoth[1])) {
-                    $controller = $getBoth[0];
-                    $method = $getBoth[1];
+                if (isset($routeArgs[1])) {
+                    $controller = $routeArgs[0];
+                    $method = $routeArgs[1];
                 } else {
                     throw new RouteNotFoundException("please specify a method in route");
                 }
@@ -117,7 +114,7 @@ class Route {
      * @param $action
      * @param $controller_class_and_method
      */
-    public static function post($action,$controller_class_and_method){
+    public static function post($action,$controllerMethod){
 
         $get_action =   self::action();
         $action =    ltrim($action,'/');
@@ -125,7 +122,7 @@ class Route {
 
         $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
 
-        $controller_class_and_method = static::$namespace ? static::$namespace.'\\'.$controller_class_and_method : $controller_class_and_method;
+        $routeArgs = static::$namespace ? static::$namespace.'\\'.$controllerMethod : $controllerMethod;
 
         if($get_action  ==  $action) {
 
@@ -138,10 +135,9 @@ class Route {
                 /********************************************/
                 static::check();
 
-                $getBoth = explode('@', $controller_class_and_method);
-                if (isset($getBoth[1])) {
-                    $controller = $getBoth[0];
-                    $method = $getBoth[1];
+                if (isset($routeArgs[1])) {
+                    $controller = $routeArgs[0];
+                    $method = $routeArgs[1];
                 } else {
                     throw new RouteNotFoundException("please specify a method in route");
                 }
@@ -196,16 +192,16 @@ class Route {
     public static function authenticate(array $disable = null)
     {
 
-        Route::get('login', 'Auth\LoginController@index');
-        Route::post('login', 'Auth\LoginController@login');
-        Route::get('logout', 'Auth\LoginController@logout');
+        Route::get('login', [LoginController::class, 'index']);
+        Route::post('login', [LoginController::class, 'login']);
+        Route::get('logout', [LoginController::class, 'logout']);
 
         if (is_array($disable)
             && array_key_exists('register',$disable) && !$disable['register']) {
             /*do nothing*/
         } else {
-            Route::get('register', 'Auth\RegisterController@register');
-            Route::post('register', 'Auth\RegisterController@save');
+            Route::get('register', [RegisterController::class, 'register']);
+            Route::post('register', [RegisterController::class, 'save']);
         }
     }
 }

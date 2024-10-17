@@ -30,33 +30,33 @@ class Validator
     }
 
     private static function valid($name,$field,$rule){
-        if($field == '' && strpos($rule,'required') !== false){
-            self::$msg[$name] =  "The ".self::splitField($name)." is required";
+        if($field == '' && str_contains($rule, 'required')){
+            self::$msg[$name] =  "The ".self::splitField($name)." field is required";
         }
 
-        if($field != '' && strpos($rule,'mail') !== false) {
+        if($field != '' && str_contains($rule, 'mail')) {
             if (!filter_var($field, FILTER_VALIDATE_EMAIL)) {
                 self::$msg[$name] = "The ".self::splitField($name)." field is not a valid email";
             }
         }
-        if($field != '' && strpos($rule,'date') !== false) {
+        if($field != '' && str_contains($rule, 'date')) {
             $is_valid = self::validate_date($field);
             if (!$is_valid) {
                 self::$msg[$name] = "The ".self::splitField($name)." field is not a valid date";
             }
         }
 
-        if($field != '' && strpos($rule,'min') !== false) {
+        if($field != '' && str_contains($rule, 'min')) {
             $r = self::getRule($rule,'min:');
             if ($r > 0 && strlen($field) < $r) {
                 self::$msg[$name] = "The minimum length of ".self::splitField($name)." should be {$r}";
             }
         }
 
-        if($field != '' && strpos($rule,'max') !== false) {
+        if($field != '' && str_contains($rule, 'max')) {
             $r = self::getRule($rule,'max:');
             if ($r > 0 && strlen($field) > $r) {
-                self::$msg[$name] = "The maximum lenght of ".self::splitField($name)." should be {$r}";
+                self::$msg[$name] = "The maximum length of ".self::splitField($name)." should be {$r}";
             }
         }
 
