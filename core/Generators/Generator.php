@@ -33,36 +33,53 @@ class Generator {
         if (file_exists(getcwd(). '//Controllers'.'/'.$controllerName.'.php')) {
             return [
             'status' => false,
-            'message' => ucfirst($controllerName).' Controller Build Not Successful, Controller Already Exist'
+            'message' => ucfirst($controllerName).' Controller Already Exist'
             ];
         }
         $templatefile = getcwd(). '/core/Controllers/templates/ControllerTemplate.php';
         if(file_exists($templatefile)){
 
-            if (strpos($controllerName,'\\') !== false){
+            if (str_contains($controllerName, '\\')){
                 $controller_name_arr = explode('\\',$controllerName);
                 $controllerClass = end($controller_name_arr);
-            } elseif (strpos($controllerName,'/') !== false){
+            } elseif (str_contains($controllerName, '/')){
                 $controller_name_arr = explode('/',$controllerName);
                 $controllerClass = end($controller_name_arr);
             } else {
                 $controllerClass = $controllerName;
             }
 
-                if( strpos(file_get_contents($templatefile),'controllername') !== false) {
-                $newcontent = str_replace('controllername', ucfirst($controllerClass), file_get_contents($templatefile));
+            if(str_contains(file_get_contents($templatefile), 'controllername')) {
                 $controllerfile = getcwd(). '/app/Controllers'.'/'.ucfirst($controllerName).'.php';
+
+                if (file_exists($controllerfile)) {
+                    return [
+                        'status' => false,
+                        'message' => $controllerfile . ' controller already exists'
+                    ];
+                }
+
+                $newcontent = str_replace('controllername', ucfirst($controllerClass), file_get_contents($templatefile));
+
+                $directory = $controller_name_arr[0];
+
+                $updatedContent = $this->prependNamespace($newcontent, $directory);
+
+                if (!file_exists(getcwd(). '/app/controllers/' . $directory)) {
+                    mkdir(getcwd(). '/app/Controllers/' . $directory, 0777, true);
+                }
+
                 fopen($controllerfile, 'w');
-                file_put_contents($controllerfile,$newcontent);
+                file_put_contents($controllerfile, $updatedContent);
+
                 return [
-                'status' => true,
-                'message' => ucfirst($controllerName).' Controller Generated Successfully'
+                    'status' => true,
+                    'message' => ucfirst($controllerName).' Controller Generated Successfully'
                 ];
-            }
-            else {
-            return [
-                'status' => false,
-                'message' => 'Controller Template File Not Found'
+            } else {
+                return [
+                    'status' => false,
+                    'message' => 'Controller Template File Not Found'
                 ];
             }
         }
@@ -118,6 +135,7 @@ class Generator {
      */
     public  function generateAuth($controllerName)
     {
+        $response['errors'] = [];
 
         if (!file_exists(getcwd(). '/app/controllers/Auth')) {
             mkdir(getcwd(). '/app/Controllers/Auth', 0777, true);
@@ -126,12 +144,9 @@ class Generator {
         /*loginController*/
         $controllerName = 'Login';
         if (file_exists(getcwd(). '/app/Controllers/Auth/LoginController.php')) {
-            return [
-                'status' => false,
-                'message' => 'LoginController Build Not Successful, Controller Already Exist'
-            ];
+            $response['errors'][] = 'LoginController Already Exist';
         }
-        $templatefile = getcwd(). '/core/Controller/templates/AuthControllerTemplate.php';
+        $templatefile = getcwd(). '/core/Controllers/templates/AuthControllerTemplate.php';
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
@@ -140,10 +155,7 @@ class Generator {
                 file_put_contents($controllerfile,$newcontent);
             }
             else {
-                return [
-                    'status' => false,
-                    'message' => 'Controller Template File Not Found'
-                ];
+                $response['errors'][] = 'Login Controller Template File Not Found';
             }
         }/*end loginController*/
 
@@ -151,10 +163,7 @@ class Generator {
         /*RegisterController*/
         $controllerName = 'Register';
         if (file_exists(getcwd(). '/app/Controllers/Auth/RegisterController.php')) {
-            return [
-                'status' => false,
-                'message' => 'RegisterController Build Not Successful, Controller Already Exist'
-            ];
+            $response['errors'][] = 'RegisterController Already Exist';
         }
         $templatefile = getcwd(). '/core/Controllers/templates/RegisterControllerTemplate.php';
         if(file_exists($templatefile)){
@@ -165,41 +174,59 @@ class Generator {
                 file_put_contents($controllerfile,$newcontent);
             }
             else {
-                return [
-                    'status' => false,
-                    'message' => 'Controller Template File Not Found'
-                ];
+                $response['errors'][] = 'Register Controller Template File Not Found';
             }
         }
         /*RegisterController*/
 
         $this->generateRoutes();
         $this->generateViews();
+
+        if (!empty($response['errors'])) {
+            return [
+                'status' => false,
+                'message' => $response['errors']
+            ];
+        }
         return [
-        'status' => false,
-        'message' => 'Auth Scaffolding Created successfully'
+            'status' => true,
+            'message' => 'Auth Scaffolding Created successfully'
         ];
     }
 
     /**
-     * @return bool
+     * @return array
      */
-    private function generateRoutes(){
+    private function generateRoutes() {
         $templatefile = getcwd(). '/core/routes/RouteTemplate.php';
         if(file_exists($templatefile)){
 
             $newcontent = file_get_contents($templatefile);
+            $routefile = getcwd(). '/route/route.php';
 
-              $routefile = getcwd(). '/route/route.php';
-              $newfile = fopen($routefile, 'a');
-              file_put_contents($routefile,$newcontent,FILE_APPEND | LOCK_EX);
+            if(str_contains(file_get_contents($routefile), $newcontent)) {
 
-              return true;
+                return [
+                    'status' => false,
+                    'message' => "Auth routes already exists!",
+                ];
+            }
+
+            $newfile = fopen($routefile, 'a');
+            file_put_contents($routefile, $newcontent,FILE_APPEND | LOCK_EX);
+
+              return [
+                  'status' => true,
+                  'Message' => 'Auth Routes has been created.',
+              ];
         }
-        return false;
+        return [
+            'status' => false,
+            'Message' => 'Failed to create auth routes.',
+        ];
     }
 
-    private function generateViews(){
+    private function generateViews() {
         if (!file_exists(getcwd(). '/views/auth')) {
             mkdir(getcwd(). '/views/auth', 0777, true);
         }
@@ -274,7 +301,18 @@ class Generator {
         ];
     }
 
+    /**
+     * @param $newcontent
+     * @param $namespace
+     * @return array|string
+     */
+    private function prependNamespace($newcontent, $namespace): array|string
+    {
+        $specificString = "<?php";
+        $line = "\n\nnamespace " .$controllerNameSpace = "App\\Controllers\\" . $namespace . ";";
+
+        return str_replace($specificString, $specificString . $line, $newcontent);
+
+    }
+
 }
-
-
- ?>

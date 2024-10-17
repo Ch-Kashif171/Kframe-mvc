@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Controllers\Auth;
+
 use App\controllers\Controller;
 use Core\Facades\Auth;
 use Core\Facades\Request;

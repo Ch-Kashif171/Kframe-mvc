@@ -29,7 +29,7 @@ Example:
 
 We can define routes in route/route.php file as below.
    ```php
-    Route::get('/','HomeController@index');
+    Route::get('/', [App\Controllers\HomeController::class, 'index']);
    ```
 # Group Route
 
@@ -37,7 +37,7 @@ Group route to set prefix and namespace
 
    ```php
     Route::group(['prefix'=>'admin','namespace'=>'Admin'], function () {
-        Route::get('dashboard','DashboardController@index');
+        Route::get('dashboard', [App\Controllers\HomeController::class, 'index']);
     });
    ``` 
 # Middleware
@@ -50,7 +50,7 @@ Example:
         'auth' => Authenticate::class,
     ];
    ```
-Then Any controller's constructor you can call middleware.
+Then Any Controllers's constructor you can call middleware.
 
 Example:
  
@@ -70,7 +70,7 @@ Captcha: There is available a Captcha Facade, so we can use this to render and v
 
 Toastr: There is a Facade for alert message in toastr.
 
-Note:(first need to include a helper function called toastr() in html footer page) Then add Toastr Facade in any controller where you want to use it and then call its function like: 
+Note:(first need to include a helper function called toastr() in html footer page) Then add Toastr Facade in any Controllers where you want to use it and then call its function like: 
   ```php
     Toastr::error('message') ,
 
@@ -108,7 +108,7 @@ Example:
    ```
     Or
    ```php
-    $this->model('users')->paginate(10);
+    $this->model('Users')->paginate(10);
    ```
     
 Then include below snippet to render the pagination on view page like:
@@ -161,7 +161,7 @@ If you want to disable register route then add ```['register'=>false]```
 Example:
 
   ```php
-  Route::authenticate(['register'=>false]);
+  Route::authenticate(['register' => false]);
 ```
 
 For create a model:
@@ -170,7 +170,7 @@ For create a model:
     
 For create a Controller:
 
-    php kframe make:controller controller name
+    php kframe make:Controllers Controllers name
 
 Create migration for new table in "migrations/Migration.php" file
 and then run following command:
