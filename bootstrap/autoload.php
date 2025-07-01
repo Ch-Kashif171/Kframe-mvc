@@ -13,5 +13,5 @@ require_once root_path.'/core/loadfiles.php';
 require_once root_path.'/config/mail.php';
 require_once root_path.'/core/Redirect.php';
 require_once root_path.'/core/route.php';
-require_once root_path.'/route/route.php';
+require_once root_path.'/routes/route.php';
 require_once root_path.'/core/routeExist.php';

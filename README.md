@@ -63,26 +63,37 @@ For more than one middleware.
   ```php
       $this->middleware(['auth','web']);
    ```
-# Builtin Facades:
-There are some nice Facades like 
+# Template Structure (as of July 2025)
 
-Captcha: There is available a Captcha Facade, so we can use this to render and verify captcha (helpers also available for this).
+All code generation templates for controllers, models, routes, and views are now centralized under:
 
-Toastr: There is a Facade for alert message in toastr.
+    core/Templates/
 
-Note:(first need to include a helper function called toastr() in html footer page) Then add Toastr Facade in any Controllers where you want to use it and then call its function like: 
+Organized as:
+- core/Templates/Controllers/ (controller templates)
+- core/Templates/Models/ (model templates)
+- core/Templates/Routes/ (route templates)
+- core/Templates/Views/auth/ (auth view templates)
+- core/Templates/Views/partials/ (partials like header/footer)
+
+Update your generator code and any custom scripts to reference these new locations for scaffolding.
+
+# Builtin Support Classes (formerly Facades):
+There are some nice Support classes (previously called Facades) like:
+
+Captcha: There is available a Captcha Support class, so we can use this to render and verify captcha (helpers also available for this).
+
+Toastr: There is a Support class for alert message in toastr.
+
+Note:(first need to include a helper function called toastr() in html footer page) Then add Toastr Support class in any Controllers where you want to use it and then call its function like: 
   ```php
     Toastr::error('message') ,
-
     Toastr::success('message') , 
-
     Toastr::warning('message')
-
     Toastr::info('message') 
   ```
 
-
-Mail Facade:
+Mail Support class:
 
 e.g:
    ```php
@@ -108,7 +119,7 @@ Example:
    ```
     Or
    ```php
-    $this->model('Users')->paginate(10);
+    Users::paginate(10);
    ```
     
 Then include below snippet to render the pagination on view page like:
@@ -151,7 +162,7 @@ For Auth Scaffolding:
 
     php kframe make:auth auth
 
-Note: above command will create controllers in controllers/Auth, also will create authenticate route in route file.
+Note: above command will create controllers in core/Templates/Controllers/Auth, also will create authenticate route in core/Templates/Routes, and views in core/Templates/Views/auth.
 Example:
 
    ```php
@@ -170,7 +181,7 @@ For create a model:
     
 For create a Controller:
 
-    php kframe make:Controllers Controllers name
+    php kframe make:controller ControllerName
 
 Create migration for new table in "migrations/Migration.php" file
 and then run following command:
