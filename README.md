@@ -63,7 +63,7 @@ For more than one middleware.
   ```php
       $this->middleware(['auth','web']);
    ```
-# Template Structure (as of July 2025)
+# Template Structure
 
 All code generation templates for controllers, models, routes, and views are now centralized under:
 
@@ -78,8 +78,8 @@ Organized as:
 
 Update your generator code and any custom scripts to reference these new locations for scaffolding.
 
-# Builtin Support Classes (formerly Facades):
-There are some nice Support classes (previously called Facades) like:
+# Builtin Support Classes:
+There are some nice Support classes like:
 
 Captcha: There is available a Captcha Support class, so we can use this to render and verify captcha (helpers also available for this).
 

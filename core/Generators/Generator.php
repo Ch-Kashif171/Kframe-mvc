@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Core\Generators;
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR . 'Migration.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Database' . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR . 'Migration.php';
 
 define('ROOT_PATH', defined('root_path') ? root_path : dirname(__DIR__, 2));
 
@@ -89,7 +89,7 @@ class Generator {
             'message' => ucfirst($modelname).'Model Build Not Successful, Model Already Exist'
           ];
         }
-        $templatefile = getcwd(). '/core/model/templates/ModelTemplate.php';
+        $templatefile = getcwd(). '/core/Templates/Models/ModelTemplate.php';
         if(file_exists($templatefile)){
 
             if (strpos($modelname,'\\') !== false){
@@ -138,7 +138,7 @@ class Generator {
         if (file_exists(getcwd(). '/app/Controllers/Auth/LoginController.php')) {
             $response['errors'][] = 'LoginController Already Exist';
         }
-        $templatefile = getcwd(). '/core/Controllers/templates/AuthControllerTemplate.php';
+        $templatefile = getcwd(). '/core/Templates/Controllers/AuthControllerTemplate.php';
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
@@ -157,7 +157,7 @@ class Generator {
         if (file_exists(getcwd(). '/app/Controllers/Auth/RegisterController.php')) {
             $response['errors'][] = 'RegisterController Already Exist';
         }
-        $templatefile = getcwd(). '/core/Controllers/templates/RegisterControllerTemplate.php';
+        $templatefile = getcwd(). '/core/Templates/Controllers/RegisterControllerTemplate.php';
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
@@ -190,7 +190,7 @@ class Generator {
      * @return array
      */
     private function generateRoutes() {
-        $templatefile = getcwd(). '/core/routes/RouteTemplate.php';
+        $templatefile = getcwd(). '/core/Templates/Routes/RouteTemplate.php';
         if(file_exists($templatefile)){
 
             $newcontent = file_get_contents($templatefile);
@@ -236,7 +236,7 @@ class Generator {
                 'message' => 'Register view already exist'
             ];
         }
-        $register_template = getcwd(). '/core/views/auth/register.php';
+        $register_template = getcwd(). '/core/Templates/Views/auth/register.php';
         if(file_exists($register_template)){
 
             $newcontent = file_get_contents($register_template);
@@ -249,7 +249,7 @@ class Generator {
             ];
         }
 
-        $login_template = getcwd(). '/core/views/auth/login.php';
+        $login_template = getcwd(). '/core/Templates/Views/auth/login.php';
         if(file_exists($login_template)){
 
             $newcontent = file_get_contents($login_template);
