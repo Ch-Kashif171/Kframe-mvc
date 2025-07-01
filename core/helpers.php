@@ -321,16 +321,12 @@ if(!function_exists('include_html')) {
      * @param $path
      */
     function include_html($path){
-        $templatePath = getcwd() . '/core/Templates/Views/' . $path;
-        $legacyPath = getcwd() . '/views/' . $path;
+        $viewPath = getcwd() . '/views/' . $path;
         if (strpos($path,'.php') === false) {
-            $templatePath .= '.php';
-            $legacyPath .= '.php';
+            $viewPath .= '.php';
         }
-        if (file_exists($templatePath)) {
-            include $templatePath;
-        } elseif (file_exists($legacyPath)) {
-            include $legacyPath;
+        if (file_exists($viewPath)) {
+            include $viewPath;
         } else {
             throw new \Exception("Template not found: $path");
         }

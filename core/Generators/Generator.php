@@ -262,21 +262,8 @@ class Generator {
             ];
         }
 
-        $header_template = getcwd(). '/core/Templates/Views/partials/header.php';
-        if(file_exists($header_template)){
-            $login_template = getcwd(). '/core/Templates/Views/partials/header.php';
-            if(file_exists($login_template)){
-                unlink($login_template);
-            }
-            $newcontent = file_get_contents($header_template);
-            $header_view = getcwd(). '/core/Templates/Views/partials/header.php';
-            file_put_contents($header_view,$newcontent);
-        }  else {
-            return [
-                'status' => false,
-                'message' => 'Header view template file not found'
-            ];
-        }
+        // Remove header partial overwrite block
+        // (No code here for header partial)
     }
 
     /**
