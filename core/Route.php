@@ -97,40 +97,35 @@ class Route {
      * @throws RouteNotFoundException
      */
     public static function post($action,$controllerMethod){
-
         $get_action =   self::action();
         $action =    ltrim($action,'/');
         $action_route =   '/'.$action;
-
         $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
-
         $routeArgs = static::$namespace ? static::$namespace.'\\'.$controllerMethod : $controllerMethod;
-
         if($get_action  ==  $action) {
-
-            static::middleware(); /*block route access if not authenticate*/
-
+            static::middleware();
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-                /*********************************************
-                 **here check CSRF TOKEN To validate request**
-                /********************************************/
                 static::check();
-
                 if (isset($routeArgs[1])) {
                     $controller = $routeArgs[0];
                     $method = $routeArgs[1];
                 } else {
                     throw new RouteNotFoundException("please specify a method in route");
                 }
-                self::call($controller, $method);
-
-                /*this is check in routeExist file*/
+                $requestWasSuccessful = false;
+                try {
+                    self::call($controller, $method);
+                    $requestWasSuccessful = true;
+                } catch (\Exception $e) {
+                    // Do not rotate token on error
+                    throw $e;
+                }
+                if ($requestWasSuccessful) {
+                    self::rotateToken();
+                }
                 IsRoute::checkRoute(true);
-
             }
         }
-
     }
 
     /**
