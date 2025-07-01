@@ -3,11 +3,11 @@
 namespace Core;
 
 use Closure;
-use Core\Facades\Request;
-use Core\Facades\IsRoute;
-use Core\Facades\Traits\Middleware;
-use Core\Facades\Traits\RouteParam;
-use Core\Facades\Traits\Csrf\csrfToken;
+use Core\Support\Request;
+use Core\Support\IsRoute;
+use Core\Support\Traits\Middleware;
+use Core\Support\Traits\RouteParam;
+use Core\Support\Traits\Csrf\csrfToken;
 use Core\Exception\Handlers\RouteNotFoundException;
 use App\Controllers\Auth\LoginController;
 use App\Controllers\Auth\RegisterController;
@@ -44,21 +44,14 @@ class Route {
 
 
     /**
-     * @param $action
      * @param $controller
      * @param $method
+     * @param array $params
      * @return mixed
      */
-    public static function call($controller, $method, $param = null) {
-
+    public static function call($controller, $method, array $params = []) {
         $cont = new $controller();
-
-        if (is_null($param)) {
-            return $cont->$method( new Request() );
-        } else {
-            return $cont->$method($param);
-        }
-
+        return $cont->$method(new Request(), ...$params);
     }
 
     /**
@@ -69,30 +62,18 @@ class Route {
      * @throws RouteNotFoundException
      */
     public static function get($action, $controllerMethod) {
-
-        $get_action =  self::action();
-
-        $action =    ltrim($action,'/');
-        $action_route =   '/'.$action;
-
-        $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
-
-        $routeArgs = static::$namespace ? static::$namespace.'\\'.$controllerMethod : $controllerMethod;
-
-        /*********************************************
-        ************here get route param**************
-        /********************************************/
+        $get_action = self::action();
+        $action = ltrim($action, '/');
+        $action_route = '/' . $action;
+        $action = static::$prefix ? '/' . static::$prefix . $action_route : $action_route;
+        $routeArgs = static::$namespace ? static::$namespace . '\\' . $controllerMethod : $controllerMethod;
         $param_action = static::routeWithValues($action, $get_action);
-
-        if (isset($param_action->param) && $param_action->param) {
+        if (!empty($param_action->params)) {
             $action = $param_action->route;
-            static::$param = $param_action->param;
+            static::$param = $param_action->params;
         }
-
-        if ($get_action  ==  $action) {
-
-            static::middleware(); /*block route access if not authenticate*/
-
+        if ($get_action == $action) {
+            static::middleware();
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 if (isset($routeArgs[1])) {
                     $controller = $routeArgs[0];
@@ -100,55 +81,51 @@ class Route {
                 } else {
                     throw new RouteNotFoundException("please specify a method in route");
                 }
-
-                self::call($controller, $method, static::$param);
-
+                $params = static::$param ?? [];
+                self::call($controller, $method, $params);
             }
-
-            /*this is check in routeExist file*/
             IsRoute::checkRoute(true);
         }
     }
 
     /**
      * @param $action
-     * @param $controller_class_and_method
+     * @param $controllerMethod
+     * @return void
+     * @throws Exception\Handlers\CsrfException
+     * @throws Exception\Handlers\MiddlewareNotFoundException
+     * @throws RouteNotFoundException
      */
     public static function post($action,$controllerMethod){
-
         $get_action =   self::action();
         $action =    ltrim($action,'/');
         $action_route =   '/'.$action;
-
         $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
-
         $routeArgs = static::$namespace ? static::$namespace.'\\'.$controllerMethod : $controllerMethod;
-
         if($get_action  ==  $action) {
-
-            static::middleware(); /*block route access if not authenticate*/
-
+            static::middleware();
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-                /*********************************************
-                 **here check CSRF TOKEN To validate request**
-                /********************************************/
                 static::check();
-
                 if (isset($routeArgs[1])) {
                     $controller = $routeArgs[0];
                     $method = $routeArgs[1];
                 } else {
                     throw new RouteNotFoundException("please specify a method in route");
                 }
-                self::call($controller, $method);
-
-                /*this is check in routeExist file*/
+                $requestWasSuccessful = false;
+                try {
+                    self::call($controller, $method);
+                    $requestWasSuccessful = true;
+                } catch (\Exception $e) {
+                    // Do not rotate token on error
+                    throw $e;
+                }
+                if ($requestWasSuccessful) {
+                    self::rotateToken();
+                }
                 IsRoute::checkRoute(true);
-
             }
         }
-
     }
 
     /**

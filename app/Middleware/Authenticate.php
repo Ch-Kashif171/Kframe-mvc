@@ -2,7 +2,7 @@
 
 namespace App\Middleware;
 
-use Core\Facades\Auth;
+use Core\Support\Auth;
 
 class Authenticate
 {

@@ -1,8 +1,8 @@
 <?php
+namespace App\Models;
 defined('root_path') OR exit("Sorry! No direct script access allowed ");
 
-use Core\model\BaseModel;
-use Core\Facades\DB;
+use Core\Database\BaseModel;
 
 class Users extends BaseModel
 {

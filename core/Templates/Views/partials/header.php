@@ -28,6 +28,29 @@
         <ul class="nav navbar-nav">
             <li class="active"><a href="<?php echo url(); ?>">Home</a></li>
         </ul>
-      
+        <ul class="nav navbar-nav navbar-right">
+            <?php if(!auth()->check()) {?>
+                <li><a href="<?php echo url('register'); ?>"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                <li><a href="<?php echo url('login'); ?>"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            <?php }else{  ?>
+
+                <div class="dropdown">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#"><?php echo user()->email; ?></a></li>
+                    </ul>
+
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"><span class="caret"></span></button>
+
+                    <ul class="dropdown-menu">
+                        <li><a href="<?php echo url(); ?>"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
+
+                        <li><a href="<?php echo url('logout'); ?>"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+                    </ul>
+
+                </div>
+            <?php } ?>
+
+        </ul>
+
     </div>
 </nav>
