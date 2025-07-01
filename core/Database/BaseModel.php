@@ -3,23 +3,18 @@ namespace Core\Database;
 
 use Core\Database\Doctrine;
 
-class BaseModel extends Doctrine
+class BaseModel
 {
-
     public $table;
     public $hide_fields;
     public $db;
 
     public function __construct() {
-        parent::__construct();
         /*if table not define in model, then by default, model
          *name should be then table name*/
-        if(is_null($this->table) && $this->table == ''){
-            $this->table = getTable(get_called_class());
+        if(is_null($this->table)) {
+            $this->table = getTable(static::class);
         }
-
-        /*-----------------------------------*/
-
         $this->db = new Doctrine($this->table,$this->hide_fields);
     }
 
@@ -49,4 +44,9 @@ class BaseModel extends Doctrine
         return $instance->db->paginate($limit);
     }
 
+    public static function insert($data)
+    {
+        $instance = new static();
+        return $instance->db->insert($data);
+    }
 }

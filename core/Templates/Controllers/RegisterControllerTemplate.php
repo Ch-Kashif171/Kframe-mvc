@@ -3,6 +3,7 @@
 namespace App\Controllers\Auth;
 
 use App\controllers\Controller;
+use App\Models\Users;
 use Core\Support\Auth;
 use Core\Support\Request;
 use Core\Support\Validation\Validator;
@@ -36,7 +37,7 @@ class controllername extends Controller
             'password'=> Auth::Hash($request->post('password')),
         );
 
-        $this->model('Users')->insert($data);
+        Users::insert($data);
 
         Auth::attempt(['email'=>$request->post('email'),'password'=>$request->post('password')]);
 
