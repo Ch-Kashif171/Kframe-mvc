@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\Controller;
 use App\Models\Users;
+use Core\Support\DB;
 
 class HomeController extends Controller
 {
@@ -14,8 +15,6 @@ class HomeController extends Controller
 
     public function index()
     {
-        $user = Users::select('name')->where('id', '=', '14')->get();
-        dd($user);
         return view('welcome');
     }
 }

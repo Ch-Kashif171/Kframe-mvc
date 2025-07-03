@@ -2,39 +2,20 @@
 
 namespace Core\Database;
 
-use Core\Database\connection\database;
+use Core\Support\Traits\Internal\Queries;
 use Exception;
 use Whoops\Exception\ErrorException;
 
 class Doctrine
 {
-    public $con;
-    public $table;
-    public $statement;
-    public $where;
-    public $fields;
-    public $hide_fields;
-    public $result;
-    public $exception;
-
-    public function __construct($table = null, $hidden_fields = null, $statement = null, $fields = null){
-        $this->table  =   $table;
-        $this->statement  =   $statement;
-        $this->hide_fields = $hidden_fields;
-        if(!is_null($fields)){
-            $this->fields  =   str_replace($this->hide_fields,'',$fields);
-        }else{
-            $this->fields  =  $fields;
-        }
-
-        $db   =   new database();
-        $this->con = $db->connection();
-    }
+    use Queries;
 
     /**
      * @return mixed
+     * @throws ErrorException
      */
-    public function first(){
+    public function first()
+    {
 
         if(!is_null($this->statement)){
             $array_statement = getChildTableAndStatement($this->statement);
@@ -62,8 +43,13 @@ class Doctrine
         return $this->result;
     }
 
-
-    public function find($id){
+    /**
+     * @param $id
+     * @return mixed
+     * @throws ErrorException
+     */
+    public function find($id)
+    {
 
         if(is_null($this->fields)) {
             $columns = $this->get_table_columns_except_some($this->table);
@@ -80,9 +66,11 @@ class Doctrine
     }
 
     /**
-     * @return array
+     * @return array|false
+     * @throws ErrorException
      */
-    public function get(){
+    public function get()
+    {
         if(!is_null($this->statement)){
             $array_statement = getChildTableAndStatement($this->statement);
             if(is_null($this->fields)) {
@@ -113,7 +101,8 @@ class Doctrine
      * @param $column
      * @return Doctrine
      */
-    public function latest($column){
+    public function latest($column)
+    {
         $query = " order by {$column} DESC";
         $this->statement .= $query;
         return new Doctrine($this->table,$this->hide_fields,$this->statement);
@@ -123,7 +112,8 @@ class Doctrine
      * @param $column
      * @return Doctrine
      */
-    public function oldest($column){
+    public function oldest($column)
+    {
         $query = " order by {$column} ASC";
         $this->statement .= $query;
         return new Doctrine($this->table,$this->hide_fields,$this->statement);
@@ -134,7 +124,8 @@ class Doctrine
      * @param int $value
      * @return bool
      */
-    public function increment($column,$value = 1){
+    public function increment($column,$value = 1)
+    {
 
         $array_statement = getChildTableAndStatement($this->statement);
         $sql = "SELECT {$column} FROM " . $this->table." ".$array_statement['statement'];
@@ -186,7 +177,8 @@ class Doctrine
      * @param $column
      * @return mixed
      */
-    public function sum($column){
+    public function sum($column)
+    {
 
         if(!is_null($this->statement)){
             $array_statement = getChildTableAndStatement($this->statement);
@@ -207,7 +199,8 @@ class Doctrine
     /**
      * @return mixed
      */
-    public function count(){
+    public function count()
+    {
 
         if(!is_null($this->statement)){
             $array_statement = getChildTableAndStatement($this->statement);
@@ -229,7 +222,8 @@ class Doctrine
      * @param $column
      * @return mixed
      */
-    public function max($column){
+    public function max($column)
+    {
 
         if(!is_null($this->statement)){
             $array_statement = getChildTableAndStatement($this->statement);
@@ -251,7 +245,8 @@ class Doctrine
      * @param $column
      * @return mixed
      */
-    public function min($column){
+    public function min($column)
+    {
 
         if(!is_null($this->statement)){
             $array_statement = getChildTableAndStatement($this->statement);
@@ -274,7 +269,8 @@ class Doctrine
      * @return bool
      * @throws ErrorException
      */
-    public function insert($data) {
+    public function insert($data)
+    {
         $fields = '`' . implode('`, `', array_keys($data)) . '`';
         $placeholders = ':' . implode(', :', array_keys($data));
         $sql = "INSERT INTO {$this->table} ($fields) VALUES ({$placeholders})";
@@ -291,7 +287,8 @@ class Doctrine
      * @param $data
      * @return string
      */
-    public function insertGetId($data){
+    public function insertGetId($data)
+    {
         $fields = '`' . implode('`, `', array_keys($data)) . '`';
         $placeholders = ':' . implode(', :', array_keys($data));
         $sql = "INSERT INTO {$this->table} ($fields) VALUES ({$placeholders})";
@@ -310,8 +307,10 @@ class Doctrine
      * @param $fields
      * @return Doctrine
      */
-    public function select($fields){
-        $this->fields = $fields;
+    public function select()
+    {
+        $fields = func_get_args();
+        $this->fields = implode(',', $fields);
         return new Doctrine($this->table,$this->hide_fields,$this->statement,$this->fields);
     }
 
@@ -319,7 +318,8 @@ class Doctrine
      * @param $fields
      * @return bool
      */
-    public function update($fields){
+    public function update($fields)
+    {
 
         $query = "UPDATE {$this->table} SET ";
         foreach ($fields as $name => $value) {
@@ -346,7 +346,8 @@ class Doctrine
     /**
      * @return bool
      */
-    public function delete(){
+    public function delete()
+    {
         $query = "delete from {$this->table} ";
         $query .= $this->statement;
 
@@ -369,7 +370,7 @@ class Doctrine
      * @param $order
      * @return Doctrine
      */
-    public function orderBy($field, $order): self
+    public function orderBy($field, $order = 'ASC'): self
     {
         $query = " ORDER BY ".$field.' '.$order;
         $this->statement .= $query;
@@ -389,7 +390,8 @@ class Doctrine
      * @param $fields
      * @return Doctrine
      */
-    public function groupBy($fields): self {
+    public function groupBy($fields): self
+    {
         $query = " GROUP BY ".$fields;
         $this->statement .= $query;
 
@@ -402,7 +404,8 @@ class Doctrine
      * @param $value
      * @return Doctrine
      */
-    public function having($column,$condition,$value): self {
+    public function having($column,$condition,$value): self
+    {
         $query = " HAVING {$column} {$condition}  '".$value."' ";
         $this->statement .= $query;
 
@@ -413,7 +416,8 @@ class Doctrine
      * @param $limit
      * @return Doctrine
      */
-    public function limit($limit): self {
+    public function limit($limit): self
+    {
         $query = " LIMIT {$limit} ";
         $this->statement .= $query;
         return $this;
@@ -423,7 +427,8 @@ class Doctrine
      * @param $offset
      * @return Doctrine
      */
-    public function offset($offset): self {
+    public function offset($offset): self
+    {
         $query = " OFFSET {$offset} ";
         $this->statement .= $query;
         return $this;
@@ -440,7 +445,8 @@ class Doctrine
      * @param $take
      * @return Doctrine
      */
-    public function take($take): self {
+    public function take($take): self
+    {
         $query = " LIMIT {$take} ";
         $this->statement .= $query;
         return $this;
@@ -452,9 +458,11 @@ class Doctrine
      * @param $value
      * @return Doctrine
      */
-    public function where($column,$condition,$value): self {
+    public function where($column,$condition,$value): self
+    {
 
-        if(!str_contains($this->statement, 'WHERE')) {
+        $haystack = $this->statement ?? '';
+        if(!str_contains($haystack, 'WHERE')) {
             $query = " WHERE {$column} {$condition} '".$value."' ";
 
         }else{
@@ -472,32 +480,10 @@ class Doctrine
      * @param $value
      * @return Doctrine
      */
-    public function orWhere($column,$condition,$value): self {
+    public function orWhere($column,$condition,$value): self
+    {
         $query = " OR {$column} {$condition} '".$value."' ";
         $this->statement .= $query;
-
-        return $this;
-    }
-
-    /**
-     * @param $data
-     * @return Doctrine
-     */
-    public function where_array($data){
-        $count = 1;
-        $query = '';
-        foreach ($data as $column=> $value){
-            if($count == 1){
-                $query .= " WHERE ".$column." = '".$value."' ";
-            }else{
-                $query .= " AND ".$column." = '".$value."' ";
-            }
-            $count++;
-        }
-
-        if ($query != ''){
-            $this->statement .= $query;
-        }
 
         return $this;
     }
@@ -509,7 +495,8 @@ class Doctrine
      * @param $second_column
      * @return Doctrine
      */
-    public function join($table,$column,$equal,$second_column): self {
+    public function join($table,$column,$equal,$second_column): self
+    {
         $query = "INNER JOIN $table ON $column $equal $second_column ";
         $this->statement .= $query;
         $this->statement.="|$this->table|";
@@ -523,7 +510,8 @@ class Doctrine
      * @param $second_column
      * @return Doctrine
      */
-    public function leftJoin($table,$column,$equal,$second_column): self {
+    public function leftJoin($table,$column,$equal,$second_column): self
+    {
         $query = "LEFT JOIN $table ON $column $equal $second_column ";
         $this->statement .= $query;
         $this->statement.="|$this->table|";
@@ -531,33 +519,11 @@ class Doctrine
     }
 
     /**
-     * @param $sql
-     * @param bool $create
-     * @return array|bool
-     */
-    public function rawQuery($sql,$create = false){
-
-        try {
-            $query = $this->con->query($sql);
-
-            if($create){
-                $result = true;
-            }else{
-                $result = $query->fetchAll(\PDO::FETCH_OBJ);
-            }
-            return $result;
-        }
-        catch (Exception $e){
-            throw new ErrorException($e->getMessage());
-        }
-    }
-
-    /**
      * @param $limit
      * @return array
      */
-    public function paginate($limit){
-
+    public function paginate($limit)
+    {
         $pagination = array();
 
         if(isset($_GET['page']) && $_GET['page'] > 2){
@@ -661,37 +627,11 @@ class Doctrine
 
     }
 
-    public function simplePaginate($limit){
+    public function simplePaginate($limit)
+    {
         $pagination['simple'] = $this->paginate($limit);
         return $pagination;
 
-    }
-
-    /**
-     * @param $table
-     * @return string
-     */
-    private function get_table_columns_except_some($table){
-        $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '".env('DB_DATABASE')."' AND TABLE_NAME = '".$table."' ";
-
-        $fields = $this->rawQuery($query);
-
-        $columns = '';
-        foreach ($fields as $key=> $field) {
-            if (!is_null($this->hide_fields)) {
-                $hidden_fields = explode(',',$this->hide_fields);
-                if(!in_array($field->COLUMN_NAME,$hidden_fields)){
-                    $columns .= $field->COLUMN_NAME.',';
-                }
-            }else{
-                $columns .= $field->COLUMN_NAME.',';
-            }
-
-        }
-
-        $select_columns = rtrim($columns,',');
-
-        return $select_columns;
     }
 
     /**
@@ -699,7 +639,8 @@ class Doctrine
      * @param string $column
      * @return array
      */
-    public function pluck(string $column): array {
+    public function pluck(string $column): array
+    {
         $results = $this->get();
         return array_map(function($item) use ($column) {
             return $item->$column ?? null;
@@ -710,8 +651,10 @@ class Doctrine
      * Check if any record exists for the current query.
      * @return bool
      */
-    public function exists(): bool {
-        return $this->count() > 0;
+    public function exists(): bool
+    {
+        $result = $this->limit(1)->first();
+        return $result !== false && $result !== null;
     }
 
     /**
@@ -719,7 +662,8 @@ class Doctrine
      * @return mixed
      * @throws Exception
      */
-    public function firstOrFail() {
+    public function firstOrFail()
+    {
         $result = $this->first();
         if (!$result) {
             throw new Exception("No record found.");
@@ -732,7 +676,8 @@ class Doctrine
      * @param array $data
      * @return mixed
      */
-    public function create(array $data) {
+    public function create(array $data)
+    {
         $id = $this->insertGetId($data);
         return $this->find($id);
     }
@@ -743,7 +688,8 @@ class Doctrine
      * @param array $values
      * @return mixed
      */
-    public function updateOrCreate(array $attributes, array $values) {
+    public function updateOrCreate(array $attributes, array $values)
+    {
         $query = $this;
         foreach ($attributes as $key => $value) {
             $query = $query->where($key, '=', $value);
@@ -763,7 +709,8 @@ class Doctrine
      * @param array $values
      * @return $this
      */
-    public function whereIn($column, array $values): self {
+    public function whereIn($column, array $values): self
+    {
         $in = implode(",", array_map(function($v) { return "'".addslashes($v)."'"; }, $values));
         $query = " WHERE {$column} IN ({$in})";
         $this->statement .= $query;
@@ -775,7 +722,8 @@ class Doctrine
      * @param string $column
      * @return $this
      */
-    public function whereNull($column): self {
+    public function whereNull($column): self
+    {
         $query = " WHERE {$column} IS NULL";
         $this->statement .= $query;
         return $this;
@@ -786,7 +734,8 @@ class Doctrine
      * @param string $column
      * @return $this
      */
-    public function whereNotNull($column): self {
+    public function whereNotNull($column): self
+    {
         $query = " WHERE {$column} IS NOT NULL";
         $this->statement .= $query;
         return $this;

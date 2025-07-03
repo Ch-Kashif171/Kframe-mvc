@@ -34,40 +34,33 @@ trait QueryBuilder
         return $this->table;
     }
 
-    public static function orderBy($field, $order = 'ASC')
+    public function orderBy($field, $order = 'ASC')
     {
-        $instance = new static();
-        return $instance->doctrine->orderBy($field, $order);
+        return $this->doctrine->orderBy($field, $order);
     }
 
-    public static function orderByDesc($field)
+    public function orderByDesc($field)
     {
-        $instance = new static();
-        return $instance->doctrine->orderByDesc($field);
+        return $this->doctrine->orderByDesc($field);
     }
 
-    public static function groupBy($fields)
+    public function groupBy($fields)
     {
-        $instance = new static();
-        return $instance->doctrine->groupBy($fields);
+        return $this->doctrine->groupBy($fields);
     }
 
-    public static function limit($limit)
+    public function limit($limit)
     {
-        $instance = new static();
-        return $instance->doctrine->limit($limit);
+        return $this->doctrine->limit($limit);
     }
 
-    public static function offset($offset)
+    public function offset($offset)
     {
-        $instance = new static();
-        return $instance->doctrine->offset($offset);
+        return $this->doctrine->offset($offset);
     }
 
-    public static function take($take)
+    public function take($take)
     {
-        $instance = new static();
-        return $instance->doctrine->take($take);
+        return $this->doctrine->take($take);
     }
-
 }

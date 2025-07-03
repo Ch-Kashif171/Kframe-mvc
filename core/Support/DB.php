@@ -1,6 +1,7 @@
 <?php
 namespace Core\Support;
 
+use Core\Database\QueryBuilder;
 use Core\Database\Doctrine;
 
 /**
@@ -15,12 +16,12 @@ class DB
 
     /**
      * @param null $table
-     * @return Doctrine
+     * @return QueryBuilder
      */
     public static function table($table = null)
     {
         /*here we can also set hidden_fields but currently not working*/
-        return new Doctrine($table);
+        return new QueryBuilder($table);
     }
 
     /**
@@ -30,8 +31,8 @@ class DB
      */
     public static function rawQuery($sql)
     {
-        $doctrine = self::table();
-        $result = $doctrine->rawQuery($sql) ;
+        $doctrine = new Doctrine();
+        $result = $doctrine->rawQuery($sql);
         return $result;
     }
 }
