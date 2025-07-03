@@ -19,12 +19,12 @@ class database
 
     public function __construct()
     {
-        $this->driver   =   env('DB_CONNECTION','mysql');
-        $this->db       =   env('DB_DATABASE','kframe');
-        $this->user     =   env("DB_USERNAME","root");
-        $this->host     =   env('DB_HOST','localhost');
-        $this->pass     =   env('DB_PASSWORD','');
-        $this->dsn = "" . $this->driver . ":host=" . $this->host . ";dbname=" . $this->db;
+        $this->driver   =   config('database.db_connection');
+        $this->db       =   config('database.db_database');
+        $this->user     =   config('database.db_username');
+        $this->host     =   config('database.db_host');
+        $this->pass     =   config('database.db_password');
+        $this->dsn = "{$this->driver}:host={$this->host};dbname={$this->db}";
     }
 
     private $options  = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,\PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,);

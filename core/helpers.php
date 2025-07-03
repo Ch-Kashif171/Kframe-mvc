@@ -1025,3 +1025,48 @@ if(!function_exists('secure_decrypt')) {
         return openssl_decrypt($ciphertext, $cipher, $key, 0, $iv);
     }
 }
+
+if (!function_exists('config')) {
+    /**
+     * Get a config value using dot notation, e.g. config('database.db_username')
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    function config($key, $default = null) {
+        static $configs = [];
+
+        $parts = explode('.', $key, 2);
+        $file = $parts[0];
+        $path = $parts[1] ?? null;
+
+        $configPath = __DIR__ . "/../config/{$file}.php"; // Adjust as per your structure
+
+        // Load and cache config file
+        if (!isset($configs[$file])) {
+            if (file_exists($configPath)) {
+                $configs[$file] = require $configPath;
+            } else {
+                $configs[$file] = [];
+            }
+        }
+
+        // If only file requested
+        if ($path === null) {
+            return $configs[$file];
+        }
+
+        // Traverse nested config keys
+        $value = $configs[$file];
+        foreach (explode('.', $path) as $segment) {
+            if (is_array($value) && array_key_exists($segment, $value)) {
+                $value = $value[$segment];
+            } else {
+                return $default;
+            }
+        }
+
+        return $value;
+    }
+
+}
