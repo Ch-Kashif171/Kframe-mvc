@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\Users;
+
 class HomeController extends Controller
 {
 
@@ -9,6 +11,8 @@ class HomeController extends Controller
 
     public function index()
     {
+        $users = Users::gets();
+        dd($users);
         return view('welcome');
     }
 }

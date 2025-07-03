@@ -39,3 +39,7 @@ $autoload = [
  * Define go back page path here to return user to home page in 404 error case.
  */
 $go_back = url();
+
+return [
+    'app_env' => env('APP_ENV', 'testing'),
+];

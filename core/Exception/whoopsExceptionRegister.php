@@ -18,7 +18,7 @@ if (file_exists($logFile)) {
 }
 $whoops->pushHandler($handler);
 
-if (getenv("APP_ENV") != "production") {
+if (config("app.app_env") != "production") {
     $whoops->register();
 } else {
     $whoops->unregister();
