@@ -8,29 +8,21 @@ use Core\Support\Session;
 use Core\Support\Alert\Toastr;
 
 
-if(!function_exists('debug')) {
+if(!function_exists('dd')) {
     /**
-     * @param $array
-     * @param string $type
+     * Dump and die with pretty JSON output (API-style, like Laravel for APIs).
+     *
+     * @param mixed ...$vars
+     * @return void
      */
-    function dd($array, $type = ''){
-        $array = func_get_args();
-        if ($type == 'dump') {
-            echo "<pre>";
-            var_dump($array);
-            echo "</pre>";
-            exit;
-        }else if ($type == 'json') {
-            echo json_encode($array);
-            exit;
+    function dd(...$vars) {
+        header('Content-Type: application/json');
+        if (count($vars) === 1) {
+            echo json_encode($vars[0], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode($vars, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         }
-        else {
-            echo "<pre>";
-            print_r($array);
-            echo "</pre>";
-            exit;
-
-        }
+        exit;
     }
 }
 

@@ -92,7 +92,8 @@ class Auth
     /**
      * @return bool|stdClass
      */
-    private function get(){
+    private function get()
+    {
         if(isset($_SESSION['user'])){
             /*$result = $this->db->where_array($_SESSION['user'])->first();*/
             $keys = array_keys((array)$_SESSION['user']);
@@ -113,8 +114,10 @@ class Auth
     /**
      * @param $credentials
      * @return mixed
+     * @throws \Whoops\Exception\ErrorException
      */
-    private function checkUser($credentials){
+    private function checkUser($credentials)
+    {
 
        $result = $this->db->where_array($credentials)->first();
         return $result;
@@ -125,7 +128,8 @@ class Auth
      * @param $output
      * @return bool
      */
-    public function verify($credentials,$output){
+    public function verify($credentials,$output)
+    {
 
         $verified = array();
         foreach ($credentials as $field=> $credential){
@@ -142,7 +146,8 @@ class Auth
      * @param $credentials
      * @return array
      */
-    private function getAuthTableFieldsSkipPassword($credentials){
+    private function getAuthTableFieldsSkipPassword($credentials)
+    {
 
         $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '".env('DB_DATABASE')."' AND TABLE_NAME = '".env('AUTH_TABLE')."' ";
         $fields = $this->db->rawQuery($query);
@@ -163,7 +168,7 @@ class Auth
 
             return $auth_fields;
         }else{
-            throw new AuthException("Please enter valid auth table name in .ENV file");
+            throw new \Exception("Please enter valid auth table name in .ENV file");
         }
     }
 

@@ -28,6 +28,6 @@
         <ul class="nav navbar-nav">
             <li class="active"><a href="<?php echo url(); ?>">Home</a></li>
         </ul>
-      
+
     </div>
 </nav>

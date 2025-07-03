@@ -7,5 +7,6 @@ use Core\Database\BaseModel;
 class Users extends BaseModel
 {
     public $table = 'users';
+
     public $hide_fields = 'password';
 }

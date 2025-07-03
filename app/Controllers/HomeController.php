@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\Controller;
+use App\Models\Users;
+use Core\Support\DB;
 
 class HomeController extends Controller
 {
@@ -11,7 +13,8 @@ class HomeController extends Controller
 
     }
 
-    public function index(){
+    public function index()
+    {
         return view('welcome');
     }
 }
