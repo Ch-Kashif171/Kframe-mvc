@@ -16,10 +16,15 @@ if (file_exists($logFile)) {
     $recent = $lines ? array_slice($lines, -20) : [];
     $handler->addDataTable('Recent Log Entries', $recent);
 }
-$whoops->pushHandler($handler);
 
 if (config("app.app_env") != "production") {
+    $whoops->pushHandler($handler);
     $whoops->register();
 } else {
-    $whoops->unregister();
+    // In production, show a pretty error page
+    $whoops->pushHandler(function ($exception, $inspector, $run) {
+       abort(500);
+    });
+
+    $whoops->register();
 }
