@@ -17,7 +17,7 @@ class Doctrine
     public $result;
     public $exception;
 
-    public function __construct($table=null,$hidden_fields=null,$statement=null,$fields = null){
+    public function __construct($table = null, $hidden_fields = null, $statement = null, $fields = null){
         $this->table  =   $table;
         $this->statement  =   $statement;
         $this->hide_fields = $hidden_fields;
@@ -26,6 +26,7 @@ class Doctrine
         }else{
             $this->fields  =  $fields;
         }
+
         $db   =   new database();
         $this->con = $db->connection();
     }
@@ -133,7 +134,7 @@ class Doctrine
      * @param int $value
      * @return bool
      */
-    public function increment($column,$value =1){
+    public function increment($column,$value = 1){
 
         $array_statement = getChildTableAndStatement($this->statement);
         $sql = "SELECT {$column} FROM " . $this->table." ".$array_statement['statement'];
@@ -159,7 +160,8 @@ class Doctrine
      * @param int $value
      * @return bool
      */
-    public function decrement($column,$value=1){
+    public function decrement($column, $value = 1)
+    {
         $array_statement = getChildTableAndStatement($this->statement);
         $sql = "SELECT {$column} FROM " . $this->table." ".$array_statement['statement'];
 
@@ -367,7 +369,16 @@ class Doctrine
      * @param $order
      * @return Doctrine
      */
-    public function orderBy($field,$order): self {
+    public function orderBy($field, $order): self
+    {
+        $query = " ORDER BY ".$field.' '.$order;
+        $this->statement .= $query;
+
+        return $this;
+    }
+
+    public function orderByDesc($field, $order = 'DESC'): self
+    {
         $query = " ORDER BY ".$field.' '.$order;
         $this->statement .= $query;
 
