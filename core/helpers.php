@@ -799,7 +799,7 @@ if(!function_exists('getTable')) {
     function getTable($get_class)
     {
         $table = strtolower($get_class);
-        if (strpos($table, '\\') !== false) {
+        if (str_contains($table, '\\')) {
             $tbl = explode('\\', $table);
             return end($tbl);
         } else {

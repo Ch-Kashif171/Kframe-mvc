@@ -9,9 +9,9 @@ trait QueryBuilder
 {
     use Aggregators, Clauses, Statements, Joins;
 
-    public $table;
-    public $hide_fields;
-    public $doctrine;
+    protected $table;
+    protected $hide_fields;
+    protected $doctrine;
 
     public function __construct()
     {
