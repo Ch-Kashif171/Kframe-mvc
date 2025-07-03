@@ -2,7 +2,7 @@
 
 namespace Core\Controllers;
 
-use Core\Facades\Traits\Middleware;
+use Core\Support\Traits\Middleware;
 
 class BaseController
 {

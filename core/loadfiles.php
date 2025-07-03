@@ -1,6 +1,6 @@
 <?php
 
-use Core\Facades\NotFound;
+use Core\Support\NotFound;
 
 if (!empty($autoload['libraries'])){
     foreach (array_filter($autoload['libraries']) as $library){

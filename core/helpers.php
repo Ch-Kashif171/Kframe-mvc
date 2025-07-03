@@ -1,35 +1,28 @@
 <?php
+declare(strict_types=1);
 
-use Core\Doctrine;
-use Core\Facades\DB;
-use Core\Facades\Auth;
-use Core\Facades\Session;
-use Core\Facades\Alert\Toastr;
+use Core\Database\Doctrine;
+use Core\Support\DB;
+use Core\Support\Auth;
+use Core\Support\Session;
+use Core\Support\Alert\Toastr;
 
 
-if(!function_exists('debug')) {
+if(!function_exists('dd')) {
     /**
-     * @param $array
-     * @param string $type
+     * Dump and die with pretty JSON output (API-style, like Laravel for APIs).
+     *
+     * @param mixed ...$vars
+     * @return void
      */
-    function dd($array, $type = ''){
-        $array = func_get_args();
-        if ($type == 'dump') {
-            echo "<pre>";
-            var_dump($array);
-            echo "</pre>";
-            exit;
-        }else if ($type == 'json') {
-            echo json_encode($array);
-            exit;
+    function dd(...$vars) {
+        header('Content-Type: application/json');
+        if (count($vars) === 1) {
+            echo json_encode($vars[0], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode($vars, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         }
-        else {
-            echo "<pre>";
-            print_r($array);
-            echo "</pre>";
-            exit;
-
-        }
+        exit;
     }
 }
 
@@ -87,20 +80,17 @@ if(!function_exists('full_path')) {
 }
 
 if(!function_exists('base_path')) {
-    function base_path()
+    function base_path(): string
     {
-        return root_path;
+        return defined('root_path') ? root_path : dirname(__DIR__, 1);
     }
 }
 
 if(!function_exists('public_path')) {
-    function public_path($path=null)
+    function public_path(?string $path = null): string
     {
-        if (is_null($path)){
-            return root_path.'/public';
-        } else {
-            return root_path.'/public/'.$path;
-        }
+        $base = base_path() . DIRECTORY_SEPARATOR . 'public';
+        return is_null($path) ? $base : $base . DIRECTORY_SEPARATOR . $path;
     }
 }
 
@@ -323,11 +313,14 @@ if(!function_exists('include_html')) {
      * @param $path
      */
     function include_html($path){
-
-        if (strpos($path,'.php') !== false) {
-            include getcwd() . '/views/' . $path;
+        $viewPath = getcwd() . '/views/' . $path;
+        if (strpos($path,'.php') === false) {
+            $viewPath .= '.php';
+        }
+        if (file_exists($viewPath)) {
+            include $viewPath;
         } else {
-            include getcwd() . '/views/' . $path.'.php';
+            throw new \Exception("Template not found: $path");
         }
     }
 }
@@ -947,7 +940,7 @@ if(!function_exists('home_url')) {
 
     function home_url()
     {
-        return \Core\Facades\NotFound::get_home_url();
+        return \Core\Support\NotFound::get_home_url();
     }
 }
 
@@ -969,10 +962,20 @@ if(!function_exists('getClientOriginalExtension')) {
 
 if(!function_exists('move')) {
 
-    function move($file, $file_path)
+    function move($file, $file_path, $allowed_types = ['jpg','jpeg','png','gif','pdf'], $max_size = 2097152) // 2MB
     {
-        if (move_uploaded_file($file["tmp_name"], $file_path)) {
-            return true;
+        $ext = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
+        $size = $file["size"] ?? 0;
+        $filename = preg_replace('/[^a-zA-Z0-9-_\.]/','_', basename($file["name"]));
+        $target = dirname($file_path) . DIRECTORY_SEPARATOR . $filename;
+        if (!in_array($ext, $allowed_types)) {
+            return false;
+        }
+        if ($size > $max_size) {
+            return false;
+        }
+        if (move_uploaded_file($file["tmp_name"], $target)) {
+            return $target;
         } else {
             return false;
         }
@@ -989,5 +992,36 @@ if(!function_exists('delete_file')) {
         } else {
             return false;
         }
+    }
+}
+
+if(!function_exists('secure_encrypt')) {
+    /**
+     * Securely encrypt a string using OpenSSL
+     * @param string $data
+     * @param string $key
+     * @return string|false
+     */
+    function secure_encrypt($data, $key) {
+        $ivlen = openssl_cipher_iv_length($cipher = "AES-128-CBC");
+        $iv = openssl_random_pseudo_bytes($ivlen);
+        $ciphertext = openssl_encrypt($data, $cipher, $key, 0, $iv);
+        return base64_encode($iv . $ciphertext);
+    }
+}
+
+if(!function_exists('secure_decrypt')) {
+    /**
+     * Securely decrypt a string using OpenSSL
+     * @param string $data
+     * @param string $key
+     * @return string|false
+     */
+    function secure_decrypt($data, $key) {
+        $c = base64_decode($data);
+        $ivlen = openssl_cipher_iv_length($cipher = "AES-128-CBC");
+        $iv = substr($c, 0, $ivlen);
+        $ciphertext = substr($c, $ivlen);
+        return openssl_decrypt($ciphertext, $cipher, $key, 0, $iv);
     }
 }

@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace Core\Generators;
 
-require_once __DIR__ . '/../'."../migrations/Migration.php";
+require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Database' . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR . 'Migration.php';
+
+define('ROOT_PATH', defined('root_path') ? root_path : dirname(__DIR__, 2));
 
 class Generator {
 
@@ -28,53 +31,38 @@ class Generator {
      * @param $controllerName
      * @return array
      */
-    public  function generateController($controllerName){
-
-        if (file_exists(getcwd(). '//Controllers'.'/'.$controllerName.'.php')) {
+    public function generateController(string $controllerName): array {
+        $controllerFile = ROOT_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR . ucfirst($controllerName) . '.php';
+        if (file_exists($controllerFile)) {
             return [
-            'status' => false,
-            'message' => ucfirst($controllerName).' Controller Already Exist'
+                'status' => false,
+                'message' => ucfirst($controllerName) . ' Controller Already Exist'
             ];
         }
-        $templatefile = getcwd(). '/core/Controllers/templates/ControllerTemplate.php';
-        if(file_exists($templatefile)){
-
-            if (str_contains($controllerName, '\\')){
-                $controller_name_arr = explode('\\',$controllerName);
+        $templateFile = ROOT_PATH . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'ControllerTemplate.php';
+        if (file_exists($templateFile)) {
+            $controllerClass = $controllerName;
+            if (str_contains($controllerName, '\\')) {
+                $controller_name_arr = explode('\\', $controllerName);
                 $controllerClass = end($controller_name_arr);
-            } elseif (str_contains($controllerName, '/')){
-                $controller_name_arr = explode('/',$controllerName);
+            } elseif (str_contains($controllerName, '/')) {
+                $controller_name_arr = explode('/', $controllerName);
                 $controllerClass = end($controller_name_arr);
             } else {
-                $controllerClass = $controllerName;
+                $controller_name_arr = [$controllerName];
             }
-
-            if(str_contains(file_get_contents($templatefile), 'controllername')) {
-                $controllerfile = getcwd(). '/app/Controllers'.'/'.ucfirst($controllerName).'.php';
-
-                if (file_exists($controllerfile)) {
-                    return [
-                        'status' => false,
-                        'message' => $controllerfile . ' controller already exists'
-                    ];
-                }
-
-                $newcontent = str_replace('controllername', ucfirst($controllerClass), file_get_contents($templatefile));
-
+            if (str_contains(file_get_contents($templateFile), 'controllername')) {
                 $directory = $controller_name_arr[0];
-
-                $updatedContent = $this->prependNamespace($newcontent, $directory);
-
-                if (!file_exists(getcwd(). '/app/controllers/' . $directory)) {
-                    mkdir(getcwd(). '/app/Controllers/' . $directory, 0777, true);
+                $controllerDir = ROOT_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR . $directory;
+                if (!file_exists($controllerDir)) {
+                    mkdir($controllerDir, 0777, true);
                 }
-
-                fopen($controllerfile, 'w');
-                file_put_contents($controllerfile, $updatedContent);
-
+                $newContent = str_replace('controllername', ucfirst($controllerClass), file_get_contents($templateFile));
+                $updatedContent = $this->prependNamespace($newContent, $directory);
+                file_put_contents($controllerFile, $updatedContent);
                 return [
                     'status' => true,
-                    'message' => ucfirst($controllerName).' Controller Generated Successfully'
+                    'message' => ucfirst($controllerName) . ' Controller Generated Successfully'
                 ];
             } else {
                 return [
@@ -83,6 +71,10 @@ class Generator {
                 ];
             }
         }
+        return [
+            'status' => false,
+            'message' => 'Controller Template File Not Found'
+        ];
     }
 
     /**
@@ -97,7 +89,7 @@ class Generator {
             'message' => ucfirst($modelname).'Model Build Not Successful, Model Already Exist'
           ];
         }
-        $templatefile = getcwd(). '/core/model/templates/ModelTemplate.php';
+        $templatefile = getcwd(). '/core/Templates/Models/ModelTemplate.php';
         if(file_exists($templatefile)){
 
             if (strpos($modelname,'\\') !== false){
@@ -146,7 +138,7 @@ class Generator {
         if (file_exists(getcwd(). '/app/Controllers/Auth/LoginController.php')) {
             $response['errors'][] = 'LoginController Already Exist';
         }
-        $templatefile = getcwd(). '/core/Controllers/templates/AuthControllerTemplate.php';
+        $templatefile = getcwd(). '/core/Templates/Controllers/AuthControllerTemplate.php';
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
@@ -165,7 +157,7 @@ class Generator {
         if (file_exists(getcwd(). '/app/Controllers/Auth/RegisterController.php')) {
             $response['errors'][] = 'RegisterController Already Exist';
         }
-        $templatefile = getcwd(). '/core/Controllers/templates/RegisterControllerTemplate.php';
+        $templatefile = getcwd(). '/core/Templates/Controllers/RegisterControllerTemplate.php';
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
@@ -198,11 +190,11 @@ class Generator {
      * @return array
      */
     private function generateRoutes() {
-        $templatefile = getcwd(). '/core/routes/RouteTemplate.php';
+        $templatefile = getcwd(). '/core/Templates/Routes/RouteTemplate.php';
         if(file_exists($templatefile)){
 
             $newcontent = file_get_contents($templatefile);
-            $routefile = getcwd(). '/route/route.php';
+            $routefile = getcwd(). '/routes/route.php';
 
             if(str_contains(file_get_contents($routefile), $newcontent)) {
 
@@ -244,7 +236,7 @@ class Generator {
                 'message' => 'Register view already exist'
             ];
         }
-        $register_template = getcwd(). '/core/views/auth/register.php';
+        $register_template = getcwd(). '/core/Templates/Views/auth/register.php';
         if(file_exists($register_template)){
 
             $newcontent = file_get_contents($register_template);
@@ -257,7 +249,7 @@ class Generator {
             ];
         }
 
-        $login_template = getcwd(). '/core/views/auth/login.php';
+        $login_template = getcwd(). '/core/Templates/Views/auth/login.php';
         if(file_exists($login_template)){
 
             $newcontent = file_get_contents($login_template);
@@ -270,12 +262,9 @@ class Generator {
             ];
         }
 
-        $header_template = getcwd(). '/core/views/header.php';
+        $header_template = getcwd(). '/core/Templates/Views/partials/header.php';
         if(file_exists($header_template)){
-            $login_template = getcwd(). '/views/partials/header.php';
-            if(file_exists($login_template)){
-                unlink($login_template);
-            }
+
             $newcontent = file_get_contents($header_template);
             $header_view = getcwd(). '/views/partials/header.php';
             file_put_contents($header_view,$newcontent);

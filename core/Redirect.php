@@ -1,5 +1,5 @@
 <?php
-use Core\Facades\Session;
+use Core\Support\Session;
 
 use Core\Response;
 

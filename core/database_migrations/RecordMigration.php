@@ -1,7 +1,7 @@
 <?php
 
 namespace Core\database_migrations;
-use Core\Doctrine;
+use Core\Database\Doctrine;
 
 trait RecordMigration
 {

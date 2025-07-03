@@ -1,7 +1,7 @@
 <?php
 namespace Core\database_migrations;
 
-use Core\Doctrine;
+use Core\Database\Doctrine;
 use Core\database_migrations\Schema;
 use Core\database_migrations\RecordMigration;
 
