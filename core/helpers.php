@@ -117,13 +117,13 @@ if(!function_exists('view')) {
              * Loading view for pdf etc
              */
             ob_start();
-            require_once(root_path . "/views/" . $view . ".php");
+            require_once(root_path . "/views/" . makeView($view) . ".php");
             $res = ob_get_contents();
             ob_end_clean();
 
             return $res;
         } else {
-            return require_once(root_path . "/views/" . $view . ".php");
+            return require_once(root_path . "/views/" . makeView($view) . ".php");
         }
     }
 }
@@ -798,13 +798,18 @@ if(!function_exists('session')) {
 if(!function_exists('getTable')) {
     function getTable($get_class)
     {
-        $table = strtolower($get_class);
-        if (str_contains($table, '\\')) {
-            $tbl = explode('\\', $table);
-            return end($tbl);
+        // Get only the class name if namespace is present
+        if (str_contains($get_class, '\\')) {
+            $parts = explode('\\', $get_class);
+            $class = end($parts);
         } else {
-            return strtolower($get_class);
+            $class = $get_class;
         }
+
+        // Convert CamelCase to snake_case
+        $snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $class));
+
+        return $snake;
     }
 }
 
@@ -932,7 +937,7 @@ if(!function_exists('abort')) {
 if(!function_exists('not_fount_image')) {
 
     function not_fount_image() {
-       return url('core/assets/images/404.png');
+        return url('core/assets/images/404.png');
     }
 }
 
@@ -1069,4 +1074,19 @@ if (!function_exists('config')) {
         return $value;
     }
 
+    function makeView($view)
+    {
+        return str_replace('.', '/', $view);
+    }
+
+}
+
+if (!function_exists('old')) {
+    function old($key, $default = '') {
+        if (Session::has('old')) {
+            $old = Session::get('old');
+            return isset($old[$key]) ? $old[$key] : $default;
+        }
+        return $default;
+    }
 }

@@ -8,7 +8,7 @@ use Core\Support\Request;
 use Core\Support\Validation\Validator;
 
 class controllername extends Controller
-  {
+{
     public function __construct(){
         //
     }

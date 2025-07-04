@@ -100,10 +100,10 @@
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="http://localhost/Kframe-mvc/">Kframe</a>
+            <a class="navbar-brand" href="<?php echo url(); ?>">Kframe</a>
         </div>
         <ul class="nav navbar-nav">
-            <li class="active"><a href="http://localhost/Kframe-mvc/">Home</a></li>
+            <li class="active"><a href="<?php echo url(); ?>">Home</a></li>
         </ul>
 
         <ul class="nav navbar-nav navbar-right">
