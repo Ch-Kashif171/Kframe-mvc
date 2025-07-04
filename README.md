@@ -272,7 +272,20 @@ To roll back the most recent migration:
 - This will call the `down()` method of the latest applied migration and remove it from the `migrations` table.
 - You can run this command multiple times to roll back multiple migrations, one at a time.
 
-## Notes
-- The old `core/Database/migrations/Migration.php` file is no longer used and can be deleted.
-- Migration file names can be in snake_case or StudlyCase; table names will be extracted accordingly (e.g., `create_about_us_table` → `about_us`).
-- Only the new migration files in the `migrations/` directory are used for database changes.
+# Old Input Values (Form Repopulation)
+
+Kframe automatically supports repopulating form fields with previous input values after validation errors or failed submissions.
+
+## How it works
+- On every POST request, all submitted input values are automatically flashed to the session.
+- If validation or another error occurs, you can use the `old('field_name')` helper in your form fields to repopulate them with the previous input.
+- After a successful submission (when you redirect back with a success message), the old input data is automatically cleared from the session.
+
+## Example usage in forms
+```php
+<input type="text" name="name" value="<?php echo old('name'); ?>">
+<input type="email" name="email" value="<?php echo old('email'); ?>">
+```
+
+## No manual setup needed
+- You do not need to manually flash or clear old input data; it is handled by the framework for all POST requests and successful redirects.

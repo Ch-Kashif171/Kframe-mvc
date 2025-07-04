@@ -1080,3 +1080,13 @@ if (!function_exists('config')) {
     }
 
 }
+
+if (!function_exists('old')) {
+    function old($key, $default = '') {
+        if (Session::has('old')) {
+            $old = Session::get('old');
+            return isset($old[$key]) ? $old[$key] : $default;
+        }
+        return $default;
+    }
+}

@@ -3,6 +3,7 @@
 namespace Core;
 
 use Closure;
+use Core\Support\General;
 use Core\Support\Request;
 use Core\Support\IsRoute;
 use Core\Support\Traits\Middleware;

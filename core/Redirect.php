@@ -1,4 +1,6 @@
 <?php
+
+use Core\Support\General;
 use Core\Support\Session;
 
 use Core\Response;
@@ -8,6 +10,12 @@ class Redirect
     public function __construct()
     {
         //
+    }
+
+    public function withInput()
+    {
+        General::setOldData();
+        return new Redirect();
     }
 
     /**
