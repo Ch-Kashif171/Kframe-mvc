@@ -22,6 +22,10 @@ class Route {
     public static $namespace;
     public static $middleware;
     public static $param = null;
+    public static $routes = [
+        'GET' => [],
+        'POST' => [],
+    ];
 
     /**
      * @return string
@@ -67,6 +71,7 @@ class Route {
         $action = ltrim($action, '/');
         $action_route = '/' . $action;
         $action = static::$prefix ? '/' . static::$prefix . $action_route : $action_route;
+        self::$routes['GET'][] = $action;
         $routeArgs = static::$namespace ? static::$namespace . '\\' . $controllerMethod : $controllerMethod;
         $param_action = static::routeWithValues($action, $get_action);
         if (!empty($param_action->params)) {
@@ -84,8 +89,6 @@ class Route {
                 }
                 $params = static::$param ?? [];
                 self::call($controller, $method, $params);
-            } else {
-                throw new RouteNotFoundException("Post route is not available.");
             }
             IsRoute::checkRoute(true);
         }
@@ -104,6 +107,7 @@ class Route {
         $action =    ltrim($action,'/');
         $action_route =   '/'.$action;
         $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
+        self::$routes['POST'][] = $action;
         $routeArgs = static::$namespace ? static::$namespace.'\\'.$controllerMethod : $controllerMethod;
         if($get_action  ==  $action) {
             static::middleware();
@@ -127,8 +131,6 @@ class Route {
                     self::rotateToken();
                 }
                 IsRoute::checkRoute(true);
-            } else {
-                throw new RouteNotFoundException("Get route is not available.");
             }
         }
     }
@@ -184,6 +186,25 @@ class Route {
         } else {
             Route::get('register', [RegisterController::class, 'register']);
             Route::post('register', [RegisterController::class, 'save']);
+        }
+    }
+
+    public static function checkMethodNotAllowed() {
+        $requestedUri = self::action();
+        $method = $_SERVER['REQUEST_METHOD'];
+        $otherMethod = $method === 'GET' ? 'POST' : 'GET';
+        if (
+            !in_array($requestedUri, self::$routes[$method]) &&
+            in_array($requestedUri, self::$routes[$otherMethod])
+        ) {
+            http_response_code(405);
+            if (function_exists('config') && config('app.app_env') === 'production') {
+                include base_path('views/errors/405.php');
+            } else {
+                // Use Whoops for pretty error in development
+                throw new \Exception('405 Method Not Allowed: This route only supports ' . $otherMethod . ' requests.');
+            }
+            exit;
         }
     }
 }

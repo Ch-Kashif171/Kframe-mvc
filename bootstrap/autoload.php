@@ -1,4 +1,7 @@
 <?php
+
+use Core\Route;
+
 session_start();
 
 define('root_path', getcwd());
@@ -14,4 +17,5 @@ require_once root_path.'/config/mail.php';
 require_once root_path.'/core/Redirect.php';
 require_once root_path.'/core/route.php';
 require_once root_path.'/routes/route.php';
+Route::checkMethodNotAllowed();
 require_once root_path.'/core/routeExist.php';
