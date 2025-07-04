@@ -1,14 +1,10 @@
-<!-- Footer -->
 <?php echo toastr(); ?>
 
-<footer class="page-footer font-small">
-
-    <!-- Copyright -->
-    <div class="footer-copyright text-center py-3">© <?php echo  date("Y")?> Copyright:
-        <a href=""> Kframe.com</a>
+<!-- Footer -->
+<footer>
+    <div>Created By <strong>M. Kashif Sohail</strong> © 2025 |
+        <a href="#">Kframe.com</a>
     </div>
-    <!-- Copyright -->
-
 </footer>
 <!-- Footer -->
 

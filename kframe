@@ -28,7 +28,7 @@ use Core\Commands\MakeAuth;
 use Core\Commands\MigrationCommand;
 
 
-$application = new Application('Welcome to Kframe Console Developed By Kashif Sohail', '1.0.0');
+$application = new Application('Welcome to Kframe Developed By Kashif Sohail, Version: ', '1.0.2');
 $application->add(new CreateControllerCommand());
 $application->add(new CreateModelCommand());
 $application->add(new MakeAuth());
