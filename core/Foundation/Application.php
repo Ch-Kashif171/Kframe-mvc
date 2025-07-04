@@ -6,7 +6,7 @@ namespace Core\Foundation;
 class Application
 {
 
-    const VERSION = '1.0.0';
+    const VERSION = '1.0.2';
 
     const FRAMEWORK = 'kframe';
 
