@@ -17,7 +17,7 @@ trait QueryBuilder
     {
         /*if table not define in model, then by default, model
          *name should be then table name*/
-        if(is_null($this->table)) {
+        if(empty($this->table)) {
             $this->table = getTable(static::class);
         }
 

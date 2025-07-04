@@ -798,13 +798,18 @@ if(!function_exists('session')) {
 if(!function_exists('getTable')) {
     function getTable($get_class)
     {
-        $table = strtolower($get_class);
-        if (str_contains($table, '\\')) {
-            $tbl = explode('\\', $table);
-            return end($tbl);
+        // Get only the class name if namespace is present
+        if (str_contains($get_class, '\\')) {
+            $parts = explode('\\', $get_class);
+            $class = end($parts);
         } else {
-            return strtolower($get_class);
+            $class = $get_class;
         }
+
+        // Convert CamelCase to snake_case
+        $snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $class));
+
+        return $snake;
     }
 }
 
