@@ -39,7 +39,7 @@ class Generator {
                 'message' => ucfirst($controllerName) . ' Controller Already Exist'
             ];
         }
-        $templateFile = ROOT_PATH . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'ControllerTemplate.php';
+        $templateFile = ROOT_PATH . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR . 'ControllerTemplate.php';
         if (file_exists($templateFile)) {
             $controllerClass = $controllerName;
             if (str_contains($controllerName, '\\')) {
@@ -52,11 +52,15 @@ class Generator {
                 $controller_name_arr = [$controllerName];
             }
             if (str_contains(file_get_contents($templateFile), 'controllername')) {
-                $directory = $controller_name_arr[0];
-                $controllerDir = ROOT_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR . $directory;
-                if (!file_exists($controllerDir)) {
-                    mkdir($controllerDir, 0777, true);
+                $directory = '';
+                if (count($controller_name_arr) > 1) {
+                    $directory = $controller_name_arr[0];
+                    $controllerDir = ROOT_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR . $directory;
+                    if (!file_exists($controllerDir)) {
+                        mkdir($controllerDir, 0777, true);
+                    }
                 }
+
                 $newContent = str_replace('controllername', ucfirst($controllerClass), file_get_contents($templateFile));
                 $updatedContent = $this->prependNamespace($newContent, $directory);
                 file_put_contents($controllerFile, $updatedContent);
@@ -81,13 +85,13 @@ class Generator {
      * @param $modelname
      * @return array
      */
-      public  function generateModel($modelname){
+    public  function generateModel($modelname){
 
         if (file_exists(getcwd(). '/app/models'.'/'.$modelname.'.php')) {
-          return [
-            'status' => false,
-            'message' => ucfirst($modelname).'Model Build Not Successful, Model Already Exist'
-          ];
+            return [
+                'status' => false,
+                'message' => ucfirst($modelname).'Model Build Not Successful, Model Already Exist'
+            ];
         }
         $templatefile = getcwd(). '/core/Templates/Models/ModelTemplate.php';
         if(file_exists($templatefile)){
@@ -102,24 +106,24 @@ class Generator {
                 $model_class_name = $modelname;
             }
 
-          if( strpos(file_get_contents($templatefile),'modelname') !== false) {
-            $newcontent = str_replace('modelname', $model_class_name, file_get_contents($templatefile));
-            $modelfile = getcwd(). '/app/models'.'/'.$modelname.'.php';
-            fopen($modelfile, 'w');
-            file_put_contents($modelfile,$newcontent);
-            return [
-              'status' => true,
-              'message' => ucfirst($modelname).' Model Generated Successfully'
-            ];
-          }
-          else {
-            return [
-              'status' => false,
-              'message' => 'Model Template File Not Found'
-            ];
-          }
+            if( strpos(file_get_contents($templatefile),'modelname') !== false) {
+                $newcontent = str_replace('modelname', $model_class_name, file_get_contents($templatefile));
+                $modelfile = getcwd(). '/app/models'.'/'.$modelname.'.php';
+                fopen($modelfile, 'w');
+                file_put_contents($modelfile,$newcontent);
+                return [
+                    'status' => true,
+                    'message' => ucfirst($modelname).' Model Generated Successfully'
+                ];
+            }
+            else {
+                return [
+                    'status' => false,
+                    'message' => 'Model Template File Not Found'
+                ];
+            }
         }
-      }
+    }
 
     /**
      * @param $controllerName
@@ -207,10 +211,10 @@ class Generator {
             $newfile = fopen($routefile, 'a');
             file_put_contents($routefile, $newcontent,FILE_APPEND | LOCK_EX);
 
-              return [
-                  'status' => true,
-                  'Message' => 'Auth Routes has been created.',
-              ];
+            return [
+                'status' => true,
+                'Message' => 'Auth Routes has been created.',
+            ];
         }
         return [
             'status' => false,
@@ -282,8 +286,8 @@ class Generator {
      */
     public  function generateMigration($migrate)
     {
-       $class = new \Migration();
-       $message = $class->up();
+        $class = new \Migration();
+        $message = $class->up();
         return [
             'status' => true,
             'message' => $message
@@ -298,7 +302,11 @@ class Generator {
     private function prependNamespace($newcontent, $namespace): array|string
     {
         $specificString = "<?php";
-        $line = "\n\nnamespace " .$controllerNameSpace = "App\\Controllers\\" . $namespace . ";";
+        if ($namespace !== '') {
+            $line = "\n\nnamespace " .$controllerNameSpace = "App\\Controllers\\" . $namespace . ";";
+        } else {
+            $line = "\n\nnamespace " .$controllerNameSpace = "App\\Controllers;";
+        }
 
         return str_replace($specificString, $specificString . $line, $newcontent);
 

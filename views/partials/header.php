@@ -105,6 +105,6 @@
         <ul class="nav navbar-nav">
             <li class="active"><a href="http://localhost/Kframe-mvc/">Home</a></li>
         </ul>
-        
+
     </div>
 </nav>

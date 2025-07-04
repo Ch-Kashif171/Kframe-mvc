@@ -28,14 +28,15 @@ class CreateModelCommand extends Command
       '**************************************************',
     ]);
 
-    $getArgumentOption = $input->getArgument('option');
-    if (strtolower($getArgumentOption) == 'withcontroller') {
-      $generator->generateController($input->getArgument('modelname'));
-      $build = $generator->generateModel($input->getArgument('modelname'));
-    }
-    else{
-      $build = $generator->generateModel($input->getArgument('modelname'));
-    }
+      $getArgumentOption = $input->getArgument('option') ?? '';
+
+      if (strtolower((string) $getArgumentOption) === 'withcontroller') {
+        $generator->generateController($input->getArgument('modelname'));
+        $build = $generator->generateModel($input->getArgument('modelname'));
+      }
+      else {
+          $build = $generator->generateModel($input->getArgument('modelname'));
+      }
 
     if ($build['status']) {
       $output->writeln(["<bg=green;options=bold>{$build['message']}</>"]);

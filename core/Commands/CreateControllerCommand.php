@@ -14,7 +14,7 @@ class CreateControllerCommand extends Command
         $this
             ->addArgument('controllername', InputArgument::REQUIRED, 'Name Of The Controller to Generate.')
             ->addArgument('option', InputArgument::OPTIONAL, 'Want to Generate a Model?')
-            ->setName('make:Controllers')
+            ->setName('make:controller')
             ->setDescription('Creates new Controller.')
             ->setHelp("This command allows you to create new Controller...");
     }

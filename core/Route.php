@@ -83,6 +83,8 @@ class Route {
                 }
                 $params = static::$param ?? [];
                 self::call($controller, $method, $params);
+            } else {
+                throw new RouteNotFoundException("Post route is not available.");
             }
             IsRoute::checkRoute(true);
         }
@@ -124,6 +126,8 @@ class Route {
                     self::rotateToken();
                 }
                 IsRoute::checkRoute(true);
+            } else {
+                throw new RouteNotFoundException("Get route is not available.");
             }
         }
     }

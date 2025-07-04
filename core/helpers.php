@@ -117,13 +117,13 @@ if(!function_exists('view')) {
              * Loading view for pdf etc
              */
             ob_start();
-            require_once(root_path . "/views/" . $view . ".php");
+            require_once(root_path . "/views/" . makeView($view) . ".php");
             $res = ob_get_contents();
             ob_end_clean();
 
             return $res;
         } else {
-            return require_once(root_path . "/views/" . $view . ".php");
+            return require_once(root_path . "/views/" . makeView($view) . ".php");
         }
     }
 }
@@ -932,7 +932,7 @@ if(!function_exists('abort')) {
 if(!function_exists('not_fount_image')) {
 
     function not_fount_image() {
-       return url('core/assets/images/404.png');
+        return url('core/assets/images/404.png');
     }
 }
 
@@ -1067,6 +1067,11 @@ if (!function_exists('config')) {
         }
 
         return $value;
+    }
+
+    function makeView($view)
+    {
+        return str_replace('.', '/', $view);
     }
 
 }
