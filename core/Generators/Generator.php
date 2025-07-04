@@ -312,4 +312,39 @@ class Generator {
 
     }
 
+    /**
+     * @param string $name
+     * @return array
+     */
+    public function generateMigrationFile(string $name): array
+    {
+        $templateFile = getcwd() . '/core/Templates/Migrations/MigrationTemplate.php';
+        if (!file_exists($templateFile)) {
+            return [
+                'status' => false,
+                'message' => 'Migration template file not found.'
+            ];
+        }
+        $className = ucfirst($name);
+        $timestamp = date('Y_m_d_His');
+        $fileName = $timestamp . '_' . strtolower($name) . '.php';
+        $migrationDir = getcwd() . '/migrations/';
+        if (!file_exists($migrationDir)) {
+            mkdir($migrationDir, 0777, true);
+        }
+        $filePath = $migrationDir . $fileName;
+        if (file_exists($filePath)) {
+            return [
+                'status' => false,
+                'message' => 'Migration file already exists.'
+            ];
+        }
+        $content = str_replace('migrationname', $className, file_get_contents($templateFile));
+        file_put_contents($filePath, $content);
+        return [
+            'status' => true,
+            'message' => 'Migration created: ' . $fileName
+        ];
+    }
+
 }

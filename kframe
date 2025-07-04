@@ -20,12 +20,14 @@ require 'core/Commands/CreateControllerCommand.php';
 require 'core/Commands/CreateModelCommand.php';
 require 'core/Commands/MakeAuth.php';
 require 'core/Commands/MigrationCommand.php';
+require 'core/Commands/CreateMigrationCommand.php';
 
 use Symfony\Component\Console\Application;
 use Core\Commands\CreateControllerCommand;
 use Core\Commands\CreateModelCommand;
 use Core\Commands\MakeAuth;
 use Core\Commands\MigrationCommand;
+use Core\Commands\CreateMigrationCommand;
 
 
 $application = new Application('Welcome to Kframe Developed By Kashif Sohail, Version: ', '1.0.2');
@@ -33,5 +35,6 @@ $application->add(new CreateControllerCommand());
 $application->add(new CreateModelCommand());
 $application->add(new MakeAuth());
 $application->add(new MigrationCommand());
+$application->add(new CreateMigrationCommand());
 
 $application->run();
