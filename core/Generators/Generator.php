@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Core\Generators;
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Database' . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR . 'Migration.php';
-
 define('ROOT_PATH', defined('root_path') ? root_path : dirname(__DIR__, 2));
 
 class Generator {
@@ -284,13 +282,97 @@ class Generator {
      * @param $migrate
      * @return array
      */
-    public  function generateMigration($migrate)
+    public function generateMigration($migrate)
     {
-        $class = new \Migration();
-        $message = $class->up();
+        // Rollback the last migration
+        if ($migrate === 'rollback') {
+            $db = new \Core\Database\Doctrine();
+            $db->rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
+            $result = $db->rawQuery("SELECT * FROM migrations WHERE is_migrate = '1' ORDER BY id DESC LIMIT 1");
+            if (!$result) {
+                return [
+                    'status' => false,
+                    'message' => 'No migrations to rollback.'
+                ];
+            }
+            $className = $result[0]['migration'];
+            // Find the migration file
+            $migrationDir = getcwd() . '/migrations/';
+            $files = glob($migrationDir . '*.php');
+            $fileToRollback = null;
+            foreach ($files as $file) {
+                $base = basename($file, '.php');
+                $parts = explode('_', $base, 5);
+                $fileClass = isset($parts[4]) ? str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $parts[4]))) : null;
+                if ($fileClass === $className) {
+                    $fileToRollback = $file;
+                    break;
+                }
+            }
+            if ($fileToRollback && class_exists($className)) {
+                $instance = new $className();
+                if (method_exists($instance, 'down')) {
+                    $instance->down();
+                    $db->rawQuery("DELETE FROM migrations WHERE migration = '" . $className . "' AND is_migrate = '1' LIMIT 1");
+                    return [
+                        'status' => true,
+                        'message' => 'Rolled back: ' . $className
+                    ];
+                }
+            }
+            return [
+                'status' => false,
+                'message' => 'Could not rollback migration: ' . $className
+            ];
+        }
+        // If the argument is 'migrate', run all migration files in the migrations directory
+        if ($migrate === 'migrate') {
+            $migrationDir = getcwd() . '/migrations/';
+            if (!file_exists($migrationDir)) {
+                return [
+                    'status' => false,
+                    'message' => 'No migrations directory found.'
+                ];
+            }
+            $files = glob($migrationDir . '*.php');
+            if (!$files) {
+                return [
+                    'status' => false,
+                    'message' => 'No migration files found.'
+                ];
+            }
+            $ran = 0;
+            foreach ($files as $file) {
+                require_once $file;
+                // Extract class name from file (e.g., 2024_05_18_123456_create_users_table.php => CreateUsersTable)
+                $base = basename($file, '.php');
+                // Remove timestamp prefix if present
+                $parts = explode('_', $base, 5);
+                $className = isset($parts[4]) ? str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $parts[4]))) : null;
+                if ($className && class_exists($className)) {
+                    // Check if already migrated (by class name)
+                    $db = new \Core\Database\Doctrine();
+                    $db->rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
+                    $result = $db->rawQuery("SELECT * FROM migrations WHERE migration = '" . $className . "' AND is_migrate = '1'");
+                    if (!$result) {
+                        $instance = new $className();
+                        if (method_exists($instance, 'up')) {
+                            $instance->up();
+                            $db->rawQuery("INSERT INTO migrations (migration, is_migrate) VALUES ('" . $className . "', '1')");
+                            $ran++;
+                        }
+                    }
+                }
+            }
+            return [
+                'status' => true,
+                'message' => $ran . ' migration(s) ran.'
+            ];
+        }
+
         return [
-            'status' => true,
-            'message' => $message
+            'status' => false,
+            'message' => 'Nothing to migrate'
         ];
     }
 
@@ -325,7 +407,8 @@ class Generator {
                 'message' => 'Migration template file not found.'
             ];
         }
-        $className = ucfirst($name);
+        // Normalize class name (StudlyCase)
+        $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
         $timestamp = date('Y_m_d_His');
         $fileName = $timestamp . '_' . strtolower($name) . '.php';
         $migrationDir = getcwd() . '/migrations/';
@@ -339,7 +422,17 @@ class Generator {
                 'message' => 'Migration file already exists.'
             ];
         }
-        $content = str_replace('migrationname', $className, file_get_contents($templateFile));
+        // Extract table name from migration name (supports both StudlyCase and snake_case)
+        $tableName = 'table_name';
+        if (preg_match('/create_(.+)_table/i', strtolower($name), $matches)) {
+            $tableName = $matches[1];
+        } elseif (preg_match('/Create([A-Za-z0-9]+)Table/', $className, $matches)) {
+            // Convert CamelCase to snake_case
+            $tableName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $matches[1]));
+        }
+        $content = file_get_contents($templateFile);
+        $content = str_replace('migrationname', $className, $content);
+        $content = str_replace('table_name', $tableName, $content);
         file_put_contents($filePath, $content);
         return [
             'status' => true,

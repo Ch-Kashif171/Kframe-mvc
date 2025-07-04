@@ -1,4 +1,5 @@
 <?php
+
 namespace Core\database_migrations;
 
 use Core\Database\Doctrine;
@@ -21,7 +22,7 @@ class Migrate
      */
     public static function create($table,$fields) {
 
-        $exist = RecordMigration::existTable($table);
+        $exist = self::existTable($table);
 
         if (!$exist) {
             $query = "CREATE TABLE {$table}(";
@@ -36,11 +37,27 @@ class Migrate
             if ($success) {
                 echo "{$table} table has been successfully created \n";
 
-                RecordMigration::saveMigration($table);
+                self::saveMigration($table);
             }
 
         } else {
             echo "{$table} table already exist \n";
+        }
+    }
+
+    /**
+     * Drop a table if it exists
+     * @param string $table
+     */
+    public static function drop($table)
+    {
+        $query = "DROP TABLE IF EXISTS {$table};";
+        $doctrine = new Doctrine();
+        $success = $doctrine->rawQuery($query, true);
+        if ($success) {
+            echo "{$table} table has been dropped successfully\n";
+        } else {
+            echo "Failed to drop {$table} table or it does not exist\n";
         }
     }
 }
