@@ -1,19 +1,20 @@
 <?php
 
-use Core\database_migrations\Migrate;
+use Core\Migrations\Blueprint;
+use Core\Migrations\Migrate;
 
 class migrationname extends Migrate
 {
     public function up()
     {
-         Migrate::create('table_name', [
-             $this->table->increments('id'),
-             $this->table->timestamps(),
-         ]);
+         Migrate::create('table_name', function (Blueprint $table) {
+             $table->increments('id');
+             $table->timestamps();
+         });
     }
 
     public function down()
     {
-         Migrate::drop('table_name');
+        Migrate::drop('table_name');
     }
 } 

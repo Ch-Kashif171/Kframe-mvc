@@ -22,6 +22,7 @@ require_once 'core/Commands/CreateModelCommand.php';
 require_once 'core/Commands/MakeAuth.php';
 require_once 'core/Commands/MigrationCommand.php';
 require_once 'core/Commands/CreateMigrationCommand.php';
+require_once 'core/Commands/RollbackMigrationCommand.php';
 
 use Symfony\Component\Console\Application;
 use Core\Commands\CreateControllerCommand;
@@ -29,6 +30,7 @@ use Core\Commands\CreateModelCommand;
 use Core\Commands\MakeAuth;
 use Core\Commands\MigrationCommand;
 use Core\Commands\CreateMigrationCommand;
+use Core\Commands\RollbackMigrationCommand;
 
 
 $application = new Application('Welcome to Kframe Developed By Kashif Sohail, Version: ', '1.0.2');
@@ -37,5 +39,6 @@ $application->add(new CreateModelCommand());
 $application->add(new MakeAuth());
 $application->add(new MigrationCommand());
 $application->add(new CreateMigrationCommand());
+$application->add(new RollbackMigrationCommand());
 
 $application->run();

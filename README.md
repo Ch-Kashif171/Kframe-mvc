@@ -191,9 +191,33 @@ To create a new migration file, use:
 
 Edit the generated file in the `migrations/` directory to define your schema in the `up()` and `down()` methods.
 
+### Migration Syntax
+
+You can now define your migrations using a callback and the `Blueprint` class:
+
+```php
+Migrate::create('users', function (Blueprint $table) {
+    $table->increments('id');
+    $table->string('name')->nullable();
+    $table->timestamps();
+});
+```
+- The migration system will automatically detect the migration file name for tracking, so you do not need to pass a third argument.
+- Chained methods like `nullable()` and `unique()` work as expected.
+
+To drop a table in your `down()` method:
+
+```php
+Migrate::drop('users');
+```
+
 Then run all pending migrations with:
 
-    php kframe migration migrate
+    php kframe migration:migrate
+
+Run below command to rollback the migrations:
+
+    php kframe migration:rollback
 
 # Register Custom Helper:
 For register custom helpers file in framework, make a directory under app, create a php file in this directory then for register this helper globally in framework include name in 'config/app.php' helpers like:
