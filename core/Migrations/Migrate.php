@@ -27,8 +27,8 @@ class Migrate
             $migrationName = isset($bt[1]['file']) ? basename($bt[1]['file']) : $table;
         }
         // Check if table exists in the database
-        $db_name = env("DB_DATABASE");
-        $doctrine = new \Core\Database\Doctrine();
+        $db_name = config("database.db_database");
+        $doctrine = new Doctrine();
         $tableExistQuery = "SELECT * FROM information_schema.tables WHERE table_schema = '".$db_name."' AND table_name = '".$table."' ";
         $tableExist = $doctrine->rawQuery($tableExistQuery);
         if ($tableExist && count($tableExist) > 0) {

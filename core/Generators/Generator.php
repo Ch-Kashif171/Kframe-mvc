@@ -353,7 +353,7 @@ class Generator {
                 $className = isset($parts[4]) ? str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $parts[4]))) : null;
                 if ($className && class_exists($className)) {
                     // Check if already migrated (by class name)
-                    $db = new \Core\Database\Doctrine();
+                    $db = new Doctrine();
                     $db->rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
                     $result = $db->rawQuery("SELECT * FROM migrations WHERE migration = '" . $className . "' AND is_migrate = '1'");
                     if (!$result) {
