@@ -47,24 +47,23 @@ class SendMail
         return $this;
     }
 
-    public function mailing(){
-        $mail_config = require base_path().'/config/mail.php';
-
+    public function mailing()
+    {
         $mail = new PHPMailer(true);
 
         try {
 
             $mail->SMTPDebug = 0;
             $mail->isSMTP();
-            $mail->Host = $mail_config['host'];
+            $mail->Host = config('mail.host');
             $mail->SMTPAuth = true;
-            $mail->Username = $mail_config['username'];
-            $mail->Password = $mail_config['password'];
-            $mail->SMTPSecure = $mail_config['encryption'];
-            $mail->Port = $mail_config['port'];
+            $mail->Username = config('mail.username');
+            $mail->Password = config('mail.password');
+            $mail->SMTPSecure = config('mail.encryption');
+            $mail->Port = config('mail.port');
 
             //Recipients
-            $mail->setFrom($mail_config['from']['address'], $mail_config['from']['name']);
+            $mail->setFrom(config('mail.from.address'), config('mail.from.name'));
             $mail->addAddress($this->to, 'Kframe');
 
             if (! is_null($this->attachment)){

@@ -1,11 +1,14 @@
 <?php
 declare(strict_types=1);
+if (!defined('root_path')) {
+    define('root_path', dirname(__DIR__, 2));
+}
 
 use Core\Database\Doctrine;
-use Core\Support\DB;
 use Core\Support\Auth;
 use Core\Support\Session;
 use Core\Support\Alert\Toastr;
+use Core\Utils\Redirect;
 
 
 if(!function_exists('dd')) {
@@ -58,7 +61,8 @@ if(!function_exists('path')) {
     /**
      * @return string
      */
-    function path(){
+    function path()
+    {
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https://' : 'http://';
 
         /*get root directory name*/
@@ -117,13 +121,13 @@ if(!function_exists('view')) {
              * Loading view for pdf etc
              */
             ob_start();
-            require_once(root_path . "/views/" . $view . ".php");
+            require_once(root_path . "/views/" . makeView($view) . ".php");
             $res = ob_get_contents();
             ob_end_clean();
 
             return $res;
         } else {
-            return require_once(root_path . "/views/" . $view . ".php");
+            return require_once(root_path . "/views/" . makeView($view) . ".php");
         }
     }
 }
@@ -798,13 +802,18 @@ if(!function_exists('session')) {
 if(!function_exists('getTable')) {
     function getTable($get_class)
     {
-        $table = strtolower($get_class);
-        if (strpos($table, '\\') !== false) {
-            $tbl = explode('\\', $table);
-            return end($tbl);
+        // Get only the class name if namespace is present
+        if (str_contains($get_class, '\\')) {
+            $parts = explode('\\', $get_class);
+            $class = end($parts);
         } else {
-            return strtolower($get_class);
+            $class = $get_class;
         }
+
+        // Convert CamelCase to snake_case
+        $snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $class));
+
+        return $snake;
     }
 }
 
@@ -932,7 +941,7 @@ if(!function_exists('abort')) {
 if(!function_exists('not_fount_image')) {
 
     function not_fount_image() {
-       return url('core/assets/images/404.png');
+        return url('core/assets/images/404.png');
     }
 }
 
@@ -1023,5 +1032,65 @@ if(!function_exists('secure_decrypt')) {
         $iv = substr($c, 0, $ivlen);
         $ciphertext = substr($c, $ivlen);
         return openssl_decrypt($ciphertext, $cipher, $key, 0, $iv);
+    }
+}
+
+if (!function_exists('config')) {
+    /**
+     * Get a config value using dot notation, e.g. config('database.db_username')
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    function config($key, $default = null) {
+        static $configs = [];
+
+        $parts = explode('.', $key, 2);
+        $file = $parts[0];
+        $path = $parts[1] ?? null;
+
+        $configPath = root_path . "/config/{$file}.php"; // Use project root for config files
+
+        // Load and cache config file
+        if (!isset($configs[$file])) {
+            if (file_exists($configPath)) {
+                $configs[$file] = require $configPath;
+            } else {
+                $configs[$file] = [];
+            }
+        }
+
+        // If only file requested
+        if ($path === null) {
+            return $configs[$file];
+        }
+
+        // Traverse nested config keys
+        $value = $configs[$file];
+        foreach (explode('.', $path) as $segment) {
+            if (is_array($value) && array_key_exists($segment, $value)) {
+                $value = $value[$segment];
+            } else {
+                return $default;
+            }
+        }
+
+        return $value;
+    }
+
+    function makeView($view)
+    {
+        return str_replace('.', '/', $view);
+    }
+
+}
+
+if (!function_exists('old')) {
+    function old($key, $default = '') {
+        if (Session::has('old')) {
+            $old = Session::get('old');
+            return isset($old[$key]) ? $old[$key] : $default;
+        }
+        return $default;
     }
 }

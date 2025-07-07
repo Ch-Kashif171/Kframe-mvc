@@ -183,11 +183,18 @@ For create a Controller:
 
     php kframe make:controller ControllerName
 
-Create migration for new table in "migrations/Migration.php" file
-and then run following command:
+## Creating and Running Migrations
+
+To create a new migration file, use:
+
+    php kframe make:migration create_table_name
+
+Edit the generated file in the `migrations/` directory to define your schema in the `up()` and `down()` methods.
+
+Then run all pending migrations with:
 
     php kframe migration migrate
-   
+
 # Register Custom Helper:
 For register custom helpers file in framework, make a directory under app, create a php file in this directory then for register this helper globally in framework include name in 'config/app.php' helpers like:
    ```php 
@@ -209,3 +216,76 @@ For register custom library file in framework, make a directory under app, creat
    ```php
     'libraries' =>  array('libraries/my_library','libraries/other_library'),
    ```
+
+# Migrations
+
+Kframe now supports a Laravel-like migration system for managing your database schema changes.
+
+## Creating a Migration
+
+To create a new migration file, use:
+
+    php kframe make:migration create_users_table
+    # or
+    php kframe make:migration CreateUsersTable
+
+- The generated file will be placed in the `migrations/` directory with a timestamped filename.
+- The migration class name will be StudlyCase (e.g., `CreateUsersTable`).
+- The table name will be automatically extracted as `users` (or `about_us` for `create_about_us_table`).
+
+## Editing a Migration
+
+Edit the generated migration file to define your schema in the `up()` and `down()` methods:
+
+```php
+public function up()
+{
+    Migrate::create('users', [
+        $this->table->increments('id'),
+        $this->table->string('name'),
+        $this->table->timestamps(),
+    ]);
+}
+
+public function down()
+{
+    Migrate::drop('users');
+}
+```
+
+## Running Migrations
+
+To run all pending migrations:
+
+    php kframe migration migrate
+
+- This will scan the `migrations/` directory and run the `up()` method for each migration that hasn't been run yet.
+- Applied migrations are tracked in the `migrations` table in your database.
+- You can safely add new migration files and rerun the command; only new migrations will be executed.
+
+## Rolling Back Migrations
+
+To roll back the most recent migration:
+
+    php kframe migration rollback
+
+- This will call the `down()` method of the latest applied migration and remove it from the `migrations` table.
+- You can run this command multiple times to roll back multiple migrations, one at a time.
+
+# Old Input Values (Form Repopulation)
+
+Kframe automatically supports repopulating form fields with previous input values after validation errors or failed submissions.
+
+## How it works
+- On every POST request, all submitted input values are automatically flashed to the session.
+- If validation or another error occurs, you can use the `old('field_name')` helper in your form fields to repopulate them with the previous input.
+- After a successful submission (when you redirect back with a success message), the old input data is automatically cleared from the session.
+
+## Example usage in forms
+```php
+<input type="text" name="name" value="<?php echo old('name'); ?>">
+<input type="email" name="email" value="<?php echo old('email'); ?>">
+```
+
+## No manual setup needed
+- You do not need to manually flash or clear old input data; it is handled by the framework for all POST requests and successful redirects.

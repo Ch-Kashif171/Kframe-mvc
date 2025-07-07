@@ -1,16 +1,17 @@
 <?php
 
-namespace Core;
+namespace Core\Support;
 
-use Closure;
-use Core\Support\Request;
-use Core\Support\IsRoute;
-use Core\Support\Traits\Middleware;
-use Core\Support\Traits\RouteParam;
-use Core\Support\Traits\Csrf\csrfToken;
-use Core\Exception\Handlers\RouteNotFoundException;
 use App\Controllers\Auth\LoginController;
 use App\Controllers\Auth\RegisterController;
+use Closure;
+use Core\Exception;
+use Core\Exception\Handlers\RouteNotFoundException;
+use Core\Support\Traits\Csrf\csrfToken;
+use Core\Support\Traits\Middleware;
+use Core\Support\Traits\RouteParam;
+use function base_path;
+use function config;
 
 class Route {
 
@@ -21,6 +22,10 @@ class Route {
     public static $namespace;
     public static $middleware;
     public static $param = null;
+    public static $routes = [
+        'GET' => [],
+        'POST' => [],
+    ];
 
     /**
      * @return string
@@ -51,7 +56,27 @@ class Route {
      */
     public static function call($controller, $method, array $params = []) {
         $cont = new $controller();
-        return $cont->$method(new Request(), ...$params);
+        $refMethod = new \ReflectionMethod($cont, $method);
+        $parameters = $refMethod->getParameters();
+        $args = [];
+        if (count($parameters) > 0) {
+            $firstParam = $parameters[0];
+            $type = $firstParam->getType();
+            $isRequestType = false;
+            if ($type && !$type->isBuiltin()) {
+                $typeName = $type instanceof \ReflectionNamedType ? $type->getName() : '';
+                if ($typeName === 'Core\\Support\\Request') {
+                    $isRequestType = true;
+                }
+            }
+            // If the first parameter is type-hinted as Request or named $request, inject it
+            if ($isRequestType || $firstParam->getName() === 'request') {
+                $args[] = new Request();
+            }
+        }
+        // Add route params (skip request if already added)
+        $args = array_merge($args, $params);
+        return $cont->$method(...$args);
     }
 
     /**
@@ -66,13 +91,19 @@ class Route {
         $action = ltrim($action, '/');
         $action_route = '/' . $action;
         $action = static::$prefix ? '/' . static::$prefix . $action_route : $action_route;
+        self::$routes['GET'][] = $action;
         $routeArgs = static::$namespace ? static::$namespace . '\\' . $controllerMethod : $controllerMethod;
         $param_action = static::routeWithValues($action, $get_action);
+        $params = [];
+        $isMatch = false;
         if (!empty($param_action->params)) {
-            $action = $param_action->route;
-            static::$param = $param_action->params;
+            $isMatch = true;
+            $params = $param_action->params;
+            static::$param = $params;
+        } elseif ($get_action == $action) {
+            $isMatch = true;
         }
-        if ($get_action == $action) {
+        if ($isMatch) {
             static::middleware();
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 if (isset($routeArgs[1])) {
@@ -81,7 +112,6 @@ class Route {
                 } else {
                     throw new RouteNotFoundException("please specify a method in route");
                 }
-                $params = static::$param ?? [];
                 self::call($controller, $method, $params);
             }
             IsRoute::checkRoute(true);
@@ -101,6 +131,7 @@ class Route {
         $action =    ltrim($action,'/');
         $action_route =   '/'.$action;
         $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
+        self::$routes['POST'][] = $action;
         $routeArgs = static::$namespace ? static::$namespace.'\\'.$controllerMethod : $controllerMethod;
         if($get_action  ==  $action) {
             static::middleware();
@@ -179,6 +210,25 @@ class Route {
         } else {
             Route::get('register', [RegisterController::class, 'register']);
             Route::post('register', [RegisterController::class, 'save']);
+        }
+    }
+
+    public static function checkMethodNotAllowed() {
+        $requestedUri = self::action();
+        $method = $_SERVER['REQUEST_METHOD'];
+        $otherMethod = $method === 'GET' ? 'POST' : 'GET';
+        if (
+            !in_array($requestedUri, self::$routes[$method]) &&
+            in_array($requestedUri, self::$routes[$otherMethod])
+        ) {
+            http_response_code(405);
+            if (function_exists('config') && config('app.app_env') === 'production') {
+                include base_path('views/errors/405.php');
+            } else {
+                // Use Whoops for pretty error in development
+                throw new \Exception('405 Method Not Allowed: This route only supports ' . $otherMethod . ' requests.');
+            }
+            exit;
         }
     }
 }

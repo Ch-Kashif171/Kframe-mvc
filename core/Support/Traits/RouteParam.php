@@ -14,9 +14,8 @@ trait RouteParam
     private static function routeWithValues($route, $uri)
     {
         $routes = new stdClass();
-        $pattern = preg_replace('/\{[^\/]+\}/', '([^\/]+)', $route);
-        $pattern = str_replace('/', '\/', $pattern);
-        $pattern = '/^' . $pattern . '$/';
+        $pattern = preg_replace('/\{[^\/]+\}/', '([^/]+)', $route);
+        $pattern = '#^' . $pattern . '$#';
         if (preg_match($pattern, $uri, $matches)) {
             array_shift($matches); // Remove the full match
             $routes->route = $route;

@@ -9,11 +9,11 @@ use Whoops\Exception\ErrorException;
 trait Queries
 {
     public $con;
-    public $table;
+    protected $table;
     public $statement;
     public $where;
     public $fields;
-    public $hide_fields;
+    protected $hide_fields;
     public $result;
     public $exception;
 
@@ -75,7 +75,7 @@ trait Queries
             }
             return $result;
         }
-        catch (Exception $e){
+        catch (\Exception $e){
             throw new ErrorException($e->getMessage());
         }
     }

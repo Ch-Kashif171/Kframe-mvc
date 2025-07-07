@@ -9,15 +9,15 @@ trait QueryBuilder
 {
     use Aggregators, Clauses, Statements, Joins;
 
-    public $table;
-    public $hide_fields;
-    public $doctrine;
+    protected $table;
+    protected $hide_fields;
+    protected $doctrine;
 
     public function __construct()
     {
         /*if table not define in model, then by default, model
          *name should be then table name*/
-        if(is_null($this->table)) {
+        if(empty($this->table)) {
             $this->table = getTable(static::class);
         }
 

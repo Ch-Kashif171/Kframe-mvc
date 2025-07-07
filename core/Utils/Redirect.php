@@ -1,13 +1,22 @@
 <?php
-use Core\Support\Session;
 
-use Core\Response;
+namespace Core\Utils;
+
+use Core\Support\General;
+use Core\Support\Session;
+use Core\Utils\Response;
 
 class Redirect
 {
     public function __construct()
     {
         //
+    }
+
+    public function withInput()
+    {
+        General::setOldData();
+        return new Redirect();
     }
 
     /**
