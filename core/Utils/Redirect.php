@@ -1,9 +1,10 @@
 <?php
 
+namespace Core\Utils;
+
 use Core\Support\General;
 use Core\Support\Session;
-
-use Core\Response;
+use Core\Utils\Response;
 
 class Redirect
 {

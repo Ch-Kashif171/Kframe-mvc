@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 use Core\Database\Doctrine;
-use Core\Support\DB;
 use Core\Support\Auth;
 use Core\Support\Session;
 use Core\Support\Alert\Toastr;

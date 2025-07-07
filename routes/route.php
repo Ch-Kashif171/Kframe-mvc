@@ -1,6 +1,6 @@
 <?php
 
 use App\Controllers\HomeController;
-use Core\Route;
+use Core\Support\Route;
 
 Route::get('/', [HomeController::class, 'index']);
