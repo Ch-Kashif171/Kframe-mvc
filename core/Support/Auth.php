@@ -2,7 +2,6 @@
 namespace Core\Support;
 
 use Core\Database\Doctrine;
-use MongoDB\Driver\Exception\AuthenticationException;
 
 class Auth
 {

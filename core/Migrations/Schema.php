@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\database_migrations;
+namespace Core\Migrations;
 
 
 class Schema

@@ -63,14 +63,16 @@ if(!function_exists('path')) {
      */
     function path()
     {
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https://' : 'http://';
-
-        /*get root directory name*/
-        $rootArr = explode('/', $_SERVER['PHP_SELF']);
-        $root = $rootArr[1];
-        $path = $protocol . $_SERVER['SERVER_NAME'] . '/' . $root;
-        return $path;
-
+        if (isset($_SERVER['SERVER_NAME'])) {
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https://' : 'http://';
+            $rootArr = explode('/', $_SERVER['PHP_SELF']);
+            $root = $rootArr[1];
+            $path = $protocol . $_SERVER['SERVER_NAME'] . '/' . $root;
+            return $path;
+        } else {
+            // CLI fallback
+            return defined('root_path') ? root_path : getcwd();
+        }
     }
 }
 

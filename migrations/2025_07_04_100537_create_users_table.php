@@ -1,22 +1,23 @@
 <?php
 
-use Core\database_migrations\Migrate;
+use Core\Migrations\Blueprint;
+use Core\Migrations\Migrate;
 
 class CreateUsersTable extends Migrate
 {
     public function up()
     {
-         Migrate::create('users', [
-             $this->table->increments('id'),
-             $this->table->string('name')->nullable(),
-             $this->table->string('email')->unique(),
-             $this->table->string('password'),
-             $this->table->timestamps(),
-         ]);
+        Migrate::create('users', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('password')->nullable();
+            $table->timestamps();
+        });
     }
 
     public function down()
     {
-         Migrate::drop('users');
+        Migrate::drop('users');
     }
-} 
+}

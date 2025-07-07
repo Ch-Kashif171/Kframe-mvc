@@ -1,14 +1,14 @@
 <?php
 
-namespace Core\database_migrations;
+namespace Core\Migrations;
 
 class Blueprint
 {
     public $statement = '';
+    public $columns = [];
     public function __construct($statement = '')
     {
         $this->statement = $statement;
-
     }
 
     /**
@@ -18,7 +18,8 @@ class Blueprint
     public function increments($column)
     {
         $this->statement = " {$column} INT NOT NULL AUTO_INCREMENT, primary key ({$column}) ";
-        return new Blueprint($this->statement);
+        $this->columns[] = new Blueprint($this->statement);
+        return $this;
     }
 
     /**
@@ -29,7 +30,8 @@ class Blueprint
     public function string($column,$length = 255)
     {
         $this->statement = " {$column} VARCHAR({$length}) ";
-        return new Blueprint($this->statement);
+        $this->columns[] = new Blueprint($this->statement);
+        return $this;
     }
 
     /**
@@ -41,11 +43,12 @@ class Blueprint
     {
         $allow = '';
         foreach ($allowed as $all){
-            $allow .= " '".$all."' ".",";
+            $allow .= " '".$all."' ,";
         }
        $allow = rtrim($allow,',');
         $this->statement = " {$column} ENUM({$allow}) ";
-        return new Blueprint($this->statement);
+        $this->columns[] = new Blueprint($this->statement);
+        return $this;
     }
 
     /**
@@ -55,7 +58,8 @@ class Blueprint
     public function text($column)
     {
         $this->statement = " {$column} text ";
-        return new Blueprint($this->statement);
+        $this->columns[] = new Blueprint($this->statement);
+        return $this;
     }
 
     /**
@@ -66,7 +70,8 @@ class Blueprint
     public function integer($column,$length = 11)
     {
         $this->statement = " {$column} INT({$length}) ";
-        return new Blueprint($this->statement);
+        $this->columns[] = new Blueprint($this->statement);
+        return $this;
     }
 
     /**
@@ -76,7 +81,8 @@ class Blueprint
     public function dateTime($column)
     {
         $this->statement = " {$column} DATETIME ";
-        return new Blueprint($this->statement);
+        $this->columns[] = new Blueprint($this->statement);
+        return $this;
     }
 
     /**
@@ -84,8 +90,11 @@ class Blueprint
      */
     public function unique()
     {
-        $this->statement .= " UNIQUE ";
-        return new Blueprint($this->statement);
+        if (!empty($this->columns)) {
+            $last = count($this->columns) - 1;
+            $this->columns[$last]->statement .= " UNIQUE ";
+        }
+        return $this;
     }
 
     /**
@@ -93,8 +102,11 @@ class Blueprint
      */
     public function nullable()
     {
-        $this->statement .= " NULL ";
-        return new Blueprint($this->statement);
+        if (!empty($this->columns)) {
+            $last = count($this->columns) - 1;
+            $this->columns[$last]->statement .= " NULL ";
+        }
+        return $this;
     }
 
     /**
@@ -102,7 +114,8 @@ class Blueprint
      */
     public function timestamps(){
         $this->statement =  ' created_at timestamp, updated_at timestamp';
-        return new Blueprint($this->statement);
+        $this->columns[] = new Blueprint($this->statement);
+        return $this;
     }
 
 }
