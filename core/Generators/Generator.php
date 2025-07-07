@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Core\Generators;
 
+use Core\Database\Doctrine;
+
 define('ROOT_PATH', defined('root_path') ? root_path : dirname(__DIR__, 2));
 
 class Generator {
@@ -286,7 +288,7 @@ class Generator {
     {
         // Rollback the last migration
         if ($migrate === 'rollback') {
-            $db = new \Core\Database\Doctrine();
+            $db = new Doctrine();
             $db->rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
             $result = $db->rawQuery("SELECT * FROM migrations WHERE is_migrate = '1' ORDER BY id DESC LIMIT 1");
             if (!$result) {

@@ -75,7 +75,7 @@ trait Queries
             }
             return $result;
         }
-        catch (Exception $e){
+        catch (\Exception $e){
             throw new ErrorException($e->getMessage());
         }
     }

@@ -1,10 +1,14 @@
 <?php
 declare(strict_types=1);
+if (!defined('root_path')) {
+    define('root_path', dirname(__DIR__, 2));
+}
 
 use Core\Database\Doctrine;
 use Core\Support\Auth;
 use Core\Support\Session;
 use Core\Support\Alert\Toastr;
+use Core\Utils\Redirect;
 
 
 if(!function_exists('dd')) {
@@ -57,7 +61,8 @@ if(!function_exists('path')) {
     /**
      * @return string
      */
-    function path(){
+    function path()
+    {
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https://' : 'http://';
 
         /*get root directory name*/
@@ -1044,7 +1049,7 @@ if (!function_exists('config')) {
         $file = $parts[0];
         $path = $parts[1] ?? null;
 
-        $configPath = __DIR__ . "/../config/{$file}.php"; // Adjust as per your structure
+        $configPath = root_path . "/config/{$file}.php"; // Use project root for config files
 
         // Load and cache config file
         if (!isset($configs[$file])) {

@@ -6,7 +6,8 @@
 <?php } ?>
 
 <?php if(session()->has('error')){ ?>
-    <i class="fa fa-exclamation-circle"></i>
+    <div class="alert alert-danger">
+        <i class="fa fa-exclamation-circle"></i>
         <i class="fa fa-window-close"> </i> <?php echo session()->get('error');?>
     </div>
 <?php } ?>
