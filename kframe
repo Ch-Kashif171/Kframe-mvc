@@ -14,7 +14,7 @@ $dotenv = new Dotenv(getcwd());
 $dotenv->load();
 /***********************************************************/
 
-require_once 'core/helpers.php';
+require_once 'core/Utils/helpers.php';
 
 require 'core/Commands/CreateControllerCommand.php';
 require 'core/Commands/CreateModelCommand.php';
