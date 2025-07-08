@@ -1,7 +1,7 @@
 {
-    "name": "kfram/mvc",
-    "description": "kfram framework",
-    "keywords": ["framework", "kfram"],
+    "name": "kframe/mvc",
+    "description": "kframe framework",
+    "keywords": ["framework", "kframe"],
     "license" : "MIT",
     "type": "project",
     "authors" : [
