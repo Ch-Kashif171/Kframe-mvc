@@ -12,7 +12,7 @@ class Auth
 
     public function __construct()
     {
-        $this->table = function_exists('config') ? config('auth.table', 'users') : (env('AUTH_TABLE') ?: 'users');
+        $this->table = function_exists('config') ? config('app.table', 'users') : (env('AUTH_TABLE') ?: 'users');
         $this->db = new Doctrine($this->table);
     }
 
@@ -153,7 +153,7 @@ class Auth
      */
     private function getAuthTableFieldsSkipPassword($credentials)
     {
-        $table = function_exists('config') ? config('auth.table', 'users') : (env('AUTH_TABLE') ?: 'users');
+        $table = function_exists('config') ? config('app.table', 'users') : (env('AUTH_TABLE') ?: 'users');
         $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '".env('DB_DATABASE')."' AND TABLE_NAME = '".$table."' ";
         $fields = $this->db->rawQuery($query);
         if ($fields === false) {
