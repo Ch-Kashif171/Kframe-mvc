@@ -18,7 +18,7 @@ class CreateMigrationCommand extends Command
             ->setHelp('This command allows you to create a new migration file.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $generator = Generator::getInstance();
         $output->writeln([
@@ -30,10 +30,10 @@ class CreateMigrationCommand extends Command
 
         if ($result['status']) {
             $output->writeln(["<bg=green;options=bold>{$result['message']}</>"]);
+            return Command::SUCCESS;
         } else {
             $output->writeln(["<bg=red;options=bold>{$result['message']}</>"]);
+            return Command::FAILURE;
         }
-
-        return 0;
     }
 } 

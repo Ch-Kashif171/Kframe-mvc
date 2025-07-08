@@ -19,7 +19,7 @@ class CreateModelCommand extends Command
     ->setHelp("This command allows you to create new Model...");
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output)
+  protected function execute(InputInterface $input, OutputInterface $output): int
   {
     // outputs multiple lines to the console (adding "\n" at the end of each line)
     $generator = Generator::getInstance();
@@ -40,12 +40,12 @@ class CreateModelCommand extends Command
 
     if ($build['status']) {
       $output->writeln(["<bg=green;options=bold>{$build['message']}</>"]);
+      return Command::SUCCESS;
     }
     else {
       $output->writeln(["<bg=red;options=bold>{$build['message']}</>"]);
+      return Command::FAILURE;
     }
-
-      return 0;
   }
 
 }

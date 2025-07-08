@@ -16,14 +16,14 @@ class RollbackMigrationCommand extends Command
             ->setHelp('This command rolls back the last run migration.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $doctrine = new Doctrine();
         $latest = $doctrine->rawQuery('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
         if (!$latest) $latest = [];
         if (count($latest) === 0) {
             $output->writeln('<error>No migrations to rollback.</error>');
-            return 0;
+            return Command::SUCCESS;
         }
         $migrationName = $latest[0]->migration;
         $output->writeln(["Rolling back migration: $migrationName"]);
@@ -37,7 +37,7 @@ class RollbackMigrationCommand extends Command
         }
         if (!$migrationFile) {
             $output->writeln("<error>Migration file for $migrationName not found.</error>");
-            return 1;
+            return Command::FAILURE;
         }
         require_once $migrationFile;
         // Try to find the class in the file
@@ -54,13 +54,13 @@ class RollbackMigrationCommand extends Command
         }
         if (!$migrationClass) {
             $output->writeln("<error>No migration class with a down() method found in $migrationFile.</error>");
-            return 1;
+            return Command::FAILURE;
         }
         $migration = new $migrationClass();
         $migration->down();
         // Remove the migration record
         $doctrine->rawQuery('DELETE FROM migrations WHERE id = ' . (int)$latest[0]->id, true);
         $output->writeln('<info>Rollback complete.</info>');
-        return 0;
+        return Command::SUCCESS;
     }
 } 
