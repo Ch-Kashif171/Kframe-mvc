@@ -5,6 +5,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Core\Database\Doctrine;
+use Core\Support\DB;
 
 class RollbackMigrationCommand extends Command
 {
@@ -18,8 +19,7 @@ class RollbackMigrationCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $doctrine = new Doctrine();
-        $latest = $doctrine->rawQuery('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
+        $latest = DB::rawQuery('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
         if (!$latest) $latest = [];
         if (count($latest) === 0) {
             $output->writeln('<error>No migrations to rollback.</error>');
@@ -59,7 +59,7 @@ class RollbackMigrationCommand extends Command
         $migration = new $migrationClass();
         $migration->down();
         // Remove the migration record
-        $doctrine->rawQuery('DELETE FROM migrations WHERE id = ' . (int)$latest[0]->id, true);
+        DB::rawQuery('DELETE FROM migrations WHERE id = ' . (int)$latest[0]->id, true);
         $output->writeln('<info>Rollback complete.</info>');
         return Command::SUCCESS;
     }

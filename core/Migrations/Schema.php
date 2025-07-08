@@ -2,6 +2,8 @@
 
 namespace Core\Migrations;
 
+use Core\Support\DB;
+
 
 class Schema
 {
@@ -24,8 +26,7 @@ class Schema
         }
         $statement = rtrim($field_statements,',');
         $query .= $statement." );";
-        $doctrine = new Doctrine();
-        $success = $doctrine->rawQuery($query,true);
+        $success = DB::rawQuery($query,true);
         if($success){
             echo "{$table} table has been successfully created \n";
         }

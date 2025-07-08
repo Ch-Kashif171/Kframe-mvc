@@ -3,6 +3,7 @@ namespace Core\Migrations;
 
 use Core\Database\Doctrine;
 use Core\Queries\MigrationQueries;
+use Core\Support\DB;
 
 /**
  * Class MigrationRunner
@@ -14,10 +15,6 @@ class MigrationRunner
      * @var string Directory where migration files are stored.
      */
     protected $migrationsDir;
-    /**
-     * @var Doctrine Database connection instance.
-     */
-    protected $doctrine;
 
     /**
      * MigrationRunner constructor.
@@ -26,7 +23,6 @@ class MigrationRunner
     public function __construct($migrationsDir = 'migrations/')
     {
         $this->migrationsDir = $migrationsDir;
-        $this->doctrine = new Doctrine();
         $this->ensureMigrationsTable();
     }
 
@@ -37,7 +33,7 @@ class MigrationRunner
      */
     public function runAll($output)
     {
-        $this->doctrine->rawQuery(MigrationQueries::CREATE_MIGRATIONS_TABLE, true);
+        DB::rawQuery(MigrationQueries::CREATE_MIGRATIONS_TABLE, true);
         $files = $this->findMigrationFiles();
         $ran = 0;
         foreach ($files as $file) {
@@ -70,7 +66,7 @@ class MigrationRunner
      */
     public function rollbackLast($output)
     {
-        $latest = $this->doctrine->rawQuery(MigrationQueries::selectAll());
+        $latest = DB::rawQuery(MigrationQueries::selectAll());
         if (!$latest) $latest = [];
         if (count($latest) === 0) {
             $output->writeln('<error>No migrations to rollback.</error>');
@@ -108,7 +104,7 @@ class MigrationRunner
         $migration = new $migrationClass();
         $migration->down();
         // Remove the migration record
-        $this->doctrine->rawQuery(MigrationQueries::deleteById($latest[0]->id), true);
+        DB::rawQuery(MigrationQueries::deleteById($latest[0]->id), true);
         $output->writeln('<info>Rollback complete.</info>');
     }
 
@@ -137,7 +133,7 @@ class MigrationRunner
      */
     protected function hasRun($migrationName)
     {
-        $check = $this->doctrine->rawQuery(MigrationQueries::selectByName($migrationName));
+        $check = DB::rawQuery(MigrationQueries::selectByName($migrationName));
         if (!$check) $check = [];
         return count($check) > 0;
     }
@@ -167,6 +163,6 @@ class MigrationRunner
      */
     protected function ensureMigrationsTable()
     {
-        $this->doctrine->rawQuery(MigrationQueries::CREATE_MIGRATIONS_TABLE, true);
+        DB::rawQuery(MigrationQueries::CREATE_MIGRATIONS_TABLE, true);
     }
 } 

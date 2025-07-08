@@ -43,6 +43,12 @@ class QueryBuilder implements QueryBuilderInterface
         return $this;
     }
 
+    public function orderByDesc($field, $order = 'ASC'): QueryBuilderInterface
+    {
+        $this->doctrine = $this->doctrine->orderByDesc($field, $order);
+        return $this;
+    }
+
     public function limit($limit): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->limit($limit);
@@ -100,6 +106,12 @@ class QueryBuilder implements QueryBuilderInterface
     public function take($take): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->take($take);
+        return $this;
+    }
+
+    public function offset($offset): QueryBuilderInterface
+    {
+        $this->doctrine = $this->doctrine->offset($offset);
         return $this;
     }
 
