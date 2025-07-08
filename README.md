@@ -311,5 +311,53 @@ Kframe automatically supports repopulating form fields with previous input value
 <input type="email" name="email" value="<?php echo old('email'); ?>">
 ```
 
+# Validation Rules
+
+Kframe provides a simple validation system for validating form input. You can use the `Validator::validate()` method to check your data against a set of rules.
+
+## Usage Example
+```php
+$fields = [
+    'email' => 'user@example.com',
+    'password' => 'secret',
+];
+
+$rules = [
+    'email' => 'required|mail',
+    'password' => 'required|min:6|max:20',
+];
+
+$validator = Validator::validate($fields, $rules);
+
+if($validation->fails()){
+    return redirect()->backwithErrors($validation->errors());
+}
+```
+
+## Available Validation Rules
+- `required` &mdash; The field must not be empty.
+- `mail` &mdash; The field must be a valid email address.
+- `unique:table,column[,exceptId[,idColumn]]` &mdash; The field value must be unique in the specified database table and column. Optionally, you can exclude a specific ID (useful for updates) and specify the ID column name.
+- `date` &mdash; The field must be a valid date in `d-m-Y` format.
+- `min:N` &mdash; The field must be at least N characters long.
+- `max:N` &mdash; The field must be no more than N characters long.
+- `numeric` &mdash; The field must be numeric.
+- `regex:/pattern/` &mdash; The field must match the given regular expression pattern.
+
+## Example with Unique Rule
+```php
+$rules = [
+    'email' => 'required|mail|unique:users,email',
+];
+```
+
+## Getting Validation Errors
+- `$validator->fails()` &mdash; Returns `true` if there are validation errors.
+- `$validator->messages()` &mdash; Returns all error messages as a string (with `<br>` line breaks).
+- `$validator->errors()` &mdash; Returns all error messages as an array.
+- `$validator->error('field')` &mdash; Returns the error message for a specific field.
+- `$validator->first()` &mdash; Returns the first error message.
+
+
 ## No manual setup needed
 - You do not need to manually flash or clear old input data; it is handled by the framework for all POST requests and successful redirects.

@@ -9,7 +9,8 @@ use Core\Support\Validation\Validator;
 
 class controllername extends Controller
 {
-    public function __construct(){
+    public function __construct()
+    {
         //
     }
 
@@ -20,7 +21,7 @@ class controllername extends Controller
 
   	public function login(Request $request)
   	{
-        $validation = Validator::validate($request->all(),[
+        $validation = Validator::validate($request->all(), [
             'email' => 'required|mail',
             'password' => 'required',
         ]);
@@ -37,7 +38,8 @@ class controllername extends Controller
         }
   	}
 
-    public function logout() {
+    public function logout()
+    {
         Auth::logout();
         return redirect('login');
     }
