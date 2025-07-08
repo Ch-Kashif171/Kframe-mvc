@@ -2,32 +2,35 @@
 namespace Core\Support;
 
 use Core\Database\Doctrine;
+use stdClass;
+use Whoops\Exception\ErrorException;
 
 class Auth
 {
     public $db;
+    public $table;
 
     public function __construct()
     {
-        if(env('AUTH_TABLE') == '' || env('AUTH_TABLE') == 'null'){
-            die("Please define auth table name in .ENV file for authentication");
-        }
-
-        $this->db = new Doctrine(env('AUTH_TABLE'));
-
+        $this->table = function_exists('config') ? config('auth.table', 'users') : (env('AUTH_TABLE') ?: 'users');
+        $this->db = new Doctrine($this->table);
     }
 
     /**
      * @return bool|stdClass
      */
-    public static function user(){
-        $result = (new self)->get();
-        return $result;
+    public static function user()
+    {
+        return (new self)->get();
     }
 
-    public static function id(){
+    /**
+     * @return false
+     */
+    public static function id()
+    {
         $result = (new self)->get();
-        if ($result){
+        if ($result) {
             return $result->id;
         } else {
             return false;
@@ -37,20 +40,23 @@ class Auth
     /**
      * @return bool
      */
-    public static function check(){
-       if(isset($_SESSION['user']) &&  $_SESSION['user'] != ''){
-           $return = true;
-       }else{
-           $return = false;
-       }
+    public static function check()
+    {
+        if(isset($_SESSION['user']) &&  $_SESSION['user'] != ''){
+            $return = true;
+        }else{
+            $return = false;
+        }
         return $return;
     }
 
     /**
      * @param $credentials
      * @return bool
+     * @throws ErrorException
      */
-    public static function attempt($credentials){
+    public static function attempt($credentials): bool
+    {
         $auth_fields = (new self)->getAuthTableFieldsSkipPassword($credentials);
         $result = (new self)->checkUser($auth_fields);
         if($result){
@@ -93,22 +99,22 @@ class Auth
      */
     private function get()
     {
-        if(isset($_SESSION['user'])){
-            /*$result = $this->db->where_array($_SESSION['user'])->first();*/
-            $keys = array_keys((array)$_SESSION['user']);
-            $skiped_result = new \stdClass();
-            foreach ($keys as $key){
-                if (strpos($key, 'password') === false) {
-                    $skiped_result->$key = $_SESSION['user']->$key;
-                }
-            }
-            $result = $skiped_result;
-
-        }else{
-            $result = false;
+        if (!isset($_SESSION['user']) || !is_object($_SESSION['user'])) {
+            return false;
         }
-        return $result;
+
+        $user = $_SESSION['user'];
+        $filteredUser = new stdClass();
+
+        foreach ($user as $key => $value) {
+            if (stripos($key, 'password') === false) {
+                $filteredUser->$key = $value;
+            }
+        }
+
+        return $filteredUser;
     }
+
 
     /**
      * @param $credentials
@@ -118,7 +124,7 @@ class Auth
     private function checkUser($credentials)
     {
 
-       $result = $this->db->where_array($credentials)->first();
+        $result = $this->db->where_array($credentials)->first();
         return $result;
     }
 
@@ -129,7 +135,6 @@ class Auth
      */
     public function verify($credentials,$output)
     {
-
         $verified = array();
         foreach ($credentials as $field=> $credential){
             $verified[] = password_verify($credential, $output->$field );
@@ -144,12 +149,16 @@ class Auth
     /**
      * @param $credentials
      * @return array
+     * @throws ErrorException
      */
     private function getAuthTableFieldsSkipPassword($credentials)
     {
-
-        $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '".env('DB_DATABASE')."' AND TABLE_NAME = '".env('AUTH_TABLE')."' ";
+        $table = function_exists('config') ? config('auth.table', 'users') : (env('AUTH_TABLE') ?: 'users');
+        $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '".env('DB_DATABASE')."' AND TABLE_NAME = '".$table."' ";
         $fields = $this->db->rawQuery($query);
+        if ($fields === false) {
+            $fields = [];
+        }
 
         if(count($fields) > 0) {
 
@@ -167,7 +176,7 @@ class Auth
 
             return $auth_fields;
         }else{
-            throw new \Exception("Please enter valid auth table name in .ENV file");
+            throw new ErrorException("The ". $this->table ." table for authentication is not exists.");
         }
     }
 
