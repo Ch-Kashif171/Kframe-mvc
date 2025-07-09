@@ -10,7 +10,6 @@ class IsRoute
 
 
     public static function checkRoute($route) {
-
         static::$isRoute = $route;
     }
 

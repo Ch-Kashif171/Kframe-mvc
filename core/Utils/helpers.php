@@ -36,7 +36,7 @@ if(!function_exists('asset')) {
      * @return string
      */
     function asset($path){
-        return path() . '/public/' . $path;
+        return path() . '/' . $path;
     }
 }
 

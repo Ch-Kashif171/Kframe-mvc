@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Core\Generators;
 
 use Core\Database\Doctrine;
+use Core\Support\DB;
 
 define('ROOT_PATH', defined('root_path') ? root_path : dirname(__DIR__, 2));
 
@@ -288,9 +289,8 @@ class Generator {
     {
         // Rollback the last migration
         if ($migrate === 'rollback') {
-            $db = new Doctrine();
-            $db->rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
-            $result = $db->rawQuery("SELECT * FROM migrations WHERE is_migrate = '1' ORDER BY id DESC LIMIT 1");
+            DB::rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
+            $result = DB::rawQuery("SELECT * FROM migrations WHERE is_migrate = '1' ORDER BY id DESC LIMIT 1");
             if (!$result) {
                 return [
                     'status' => false,
@@ -315,7 +315,7 @@ class Generator {
                 $instance = new $className();
                 if (method_exists($instance, 'down')) {
                     $instance->down();
-                    $db->rawQuery("DELETE FROM migrations WHERE migration = '" . $className . "' AND is_migrate = '1' LIMIT 1");
+                    DB::rawQuery("DELETE FROM migrations WHERE migration = '" . $className . "' AND is_migrate = '1' LIMIT 1");
                     return [
                         'status' => true,
                         'message' => 'Rolled back: ' . $className
@@ -353,14 +353,13 @@ class Generator {
                 $className = isset($parts[4]) ? str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $parts[4]))) : null;
                 if ($className && class_exists($className)) {
                     // Check if already migrated (by class name)
-                    $db = new Doctrine();
-                    $db->rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
-                    $result = $db->rawQuery("SELECT * FROM migrations WHERE migration = '" . $className . "' AND is_migrate = '1'");
+                    DB::rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
+                    $result = DB::rawQuery("SELECT * FROM migrations WHERE migration = '" . $className . "' AND is_migrate = '1'");
                     if (!$result) {
                         $instance = new $className();
                         if (method_exists($instance, 'up')) {
                             $instance->up();
-                            $db->rawQuery("INSERT INTO migrations (migration, is_migrate) VALUES ('" . $className . "', '1')");
+                            DB::rawQuery("INSERT INTO migrations (migration, is_migrate) VALUES ('" . $className . "', '1')");
                             $ran++;
                         }
                     }

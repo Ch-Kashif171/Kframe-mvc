@@ -1,7 +1,13 @@
 <?php
 
-$whoops = new \Whoops\Run;
-$handler = new \Whoops\Handler\PrettyPageHandler;
+use Whoops\Handler\CallbackHandler;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
+
+use Core\Exception\Log;
+
+$whoops = new Run;
+$handler = new PrettyPageHandler;
 $handler->setEditor('vscode');
 $handler->setApplicationRootPath(getcwd());
 $handler->setPageTitle("Kframe Exception - Something went wrong!");
@@ -10,7 +16,8 @@ $handler->addDataTable('Server', $_SERVER);
 $handler->addDataTable('Request', $_REQUEST);
 $handler->addDataTable('Session', isset($_SESSION) ? $_SESSION : []);
 $handler->addDataTable('Cookies', $_COOKIE);
-$logFile = getcwd() . '/storage/logs/laravel.log';
+
+$logFile = getcwd() . '/logs/kframe.log';
 if (file_exists($logFile)) {
     $lines = @file($logFile);
     $recent = $lines ? array_slice($lines, -20) : [];
@@ -19,12 +26,15 @@ if (file_exists($logFile)) {
 
 if (config("app.app_env") != "production") {
     $whoops->pushHandler($handler);
+    // File logger LAST
+    $whoops->pushHandler(new CallbackHandler(function ($exception, $inspector, $run) {
+        Log::error($exception, 'WHOOPS');
+    }));
     $whoops->register();
 } else {
-    // In production, show a pretty error page
     $whoops->pushHandler(function ($exception, $inspector, $run) {
-       abort(500);
+        Log::error($exception, 'WHOOPS_PROD');
+        abort(500);
     });
-
     $whoops->register();
 }
