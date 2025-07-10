@@ -35,22 +35,19 @@ if(!function_exists('asset')) {
      * @param $path
      * @return string
      */
-    function asset($path)
-    {
-        // Sanitize and validate the path
-        $path = str_replace(['../', '..\\', '//', '\\\\'], '', $path);
-        $path = preg_replace('/[^a-zA-Z0-9\/\-_.]/', '', $path);
+    function asset($path) {
+        $path = preg_replace('/[^a-zA-Z0-9\-._\/]/', '', $path);
         $path = trim($path, '/');
-        
-        // Ensure the path is within the public directory
-        $publicPath = path() . '/public/';
-        $requestedFile = $publicPath . $path;
-        
-        // Check if the resolved path is within the public directory
-        $realPublicPath = realpath($publicPath);
-        $realRequestedFile = realpath($requestedFile);
-        
-        return $publicPath . $path;
+
+        $publicDir = realpath(root_path . '/public');
+        $fullPath = realpath($publicDir . '/' . $path);
+
+        if (!$fullPath || strpos($fullPath, $publicDir) !== 0 || !file_exists($fullPath)) {
+            http_response_code(404);
+           // exit('Asset not found');
+        }
+
+        return url($path);
     }
 }
 
