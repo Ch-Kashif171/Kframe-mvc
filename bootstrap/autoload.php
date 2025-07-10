@@ -1,10 +1,6 @@
 <?php
 session_start();
 
-use Core\Exception\Handlers\MiddlewareNotFoundException;
-use Core\Exception\Handlers\RouteNotFoundException;
-use Core\Support\Route;
-
 define('root_path', getcwd());
 
 require_once root_path.'/vendor/autoload.php';
