@@ -49,8 +49,6 @@
                     <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"><span class="caret"></span></button>
 
                     <ul class="dropdown-menu">
-                        <li><a href="<?php echo url(); ?>"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
-
                         <li><a href="<?php echo url('logout'); ?>"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
                     </ul>
 
