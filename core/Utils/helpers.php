@@ -54,13 +54,13 @@ if(!function_exists('asset')) {
 if(!function_exists('url')) {
 
     /**
-     * @param null $path
+     * @param string|null $path
      * @return string
      */
-    function url($path = null) {
+    function url(?string $path) {
         $base = rtrim(path(), '/');
 
-        if (is_null($path)) {
+        if (preg_match('/^\/+$/', $path)) {
             return $base . '/';
         }
 
@@ -225,7 +225,7 @@ if(!function_exists('redirect')) {
     function redirect($url = null){
         if (!is_null($url)) {
             $url = ltrim($url, '/');
-            return header('Location: ' . url() . $url);
+            return header('Location: ' . url('/') . $url);
 
         } else {
             return new Redirect();
@@ -242,7 +242,7 @@ if(!function_exists('response')) {
     function response($url = null){
         if (!is_null($url)) {
             $url = ltrim($url, '/');
-            return header('Location: ' . url() . $url);
+            return header('Location: ' . url('/') . $url);
 
         } else {
             return new Redirect();
@@ -1113,5 +1113,17 @@ if (!function_exists('old')) {
             return isset($old[$key]) ? $old[$key] : $default;
         }
         return $default;
+    }
+}
+
+if (!function_exists('e')) {
+    /**
+     * Escape HTML entities in a string.
+     * @param string $value
+     * @return string
+     */
+    function e($value)
+    {
+        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
     }
 }

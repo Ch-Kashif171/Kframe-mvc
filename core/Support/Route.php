@@ -163,7 +163,12 @@ class Route {
                     return true; // Halt and mark as handled if middleware returns anything but true
                 }
             }
-            
+
+            // Enforce CSRF protection for POST requests
+            if ($method === 'POST') {
+                self::check(); // Provided by csrfToken trait
+            }
+
             // Execute the controller
             $routeArgs = $handler['namespace'] ? $handler['namespace'] . '\\' . $handler['controller'] : $handler['controller'];
             if (isset($routeArgs[1])) {
@@ -175,9 +180,8 @@ class Route {
             self::call($controller, $method, []);
             IsRoute::checkRoute(true);
             return true; // Route was matched and executed
-        } else {
-            return false; // No route matched
         }
+        return false;
     }
 
     /**

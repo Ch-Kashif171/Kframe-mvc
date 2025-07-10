@@ -1,5 +1,7 @@
 <?php
 
+namespace Core\Dotenv;
+
 /**
  * This is the loaded class.
  *

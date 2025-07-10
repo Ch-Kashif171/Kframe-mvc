@@ -9,25 +9,16 @@ define('root_path', getcwd());
 
 require_once root_path.'/vendor/autoload.php';
 require_once root_path.'/core/Dotenv/Dotenv.php';
-require_once root_path.'/core/Utils/LoadEnv.php';
+require_once root_path. '/core/Utils/LoadEnv.php';
 require_once root_path.'/core/Utils/helpers.php';
 require_once root_path.'/config/app.php';
 require_once root_path.'/core/Exception/whoopsExceptionRegister.php';
 require_once root_path.'/core/Utils/assetsNotFount.php';
-require_once root_path.'/core/Utils/loadfiles.php';
 require_once root_path.'/config/mail.php';
 require_once root_path.'/core/Utils/Redirect.php';
 require_once root_path.'/core/Support/Route.php';
 
-Route::init();
-
-// Execute routes with middleware and set a flag if matched
-$__route_matched = false;
-try {
-    $__route_matched = Route::executeRoutes();
-} catch (MiddlewareNotFoundException|RouteNotFoundException $e) {
-}
-
+$__route_matched = require_once root_path.'/core/Utils/Loader.php';
 // Only run 404 check if no route was matched
 if (!($__route_matched)) {
     require_once root_path.'/core/Utils/checkMethodNotAllowed.php';

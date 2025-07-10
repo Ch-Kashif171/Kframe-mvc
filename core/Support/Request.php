@@ -9,7 +9,7 @@ class Request
 
     public function post($key){
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            return $_POST[$key];
+            return isset($_POST[$key]) ? $this->sanitize($_POST[$key]) : null;
         } else {
             return "You have provided get method";
         }
@@ -19,7 +19,7 @@ class Request
 
     public function get($key){
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            return $_GET[$key];
+            return isset($_GET[$key]) ? $this->sanitize($_GET[$key]) : null;
         } else {
             return "You have provided post method";
         }
@@ -34,9 +34,9 @@ class Request
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $fields = $_GET;
+            $fields = $this->sanitize($_GET);
         } else {
-            $fields = $_POST;
+            $fields = $this->sanitize($_POST);
         }
 
         return array_merge($fields,$file);
@@ -107,7 +107,7 @@ class Request
     public function except(){
 
         $args = func_get_args();
-        $inputs = $_POST;
+        $inputs = $this->sanitize($_POST);
         foreach ($args as $value){
             unset($inputs[$value]);
         }
@@ -117,10 +117,10 @@ class Request
     public function only(){
 
         $args = func_get_args();
-        $inputs = $_POST;
+        $inputs = $this->sanitize($_POST);
         $values = [];
         foreach ($args as $value){
-            $values[$value] = $inputs[$value];
+            $values[$value] = isset($inputs[$value]) ? $inputs[$value] : null;
         }
         return $values;
     }
@@ -138,5 +138,40 @@ class Request
         } else {
             throw new \Exception("$name does not exists");
         }
+    }
+
+    /**
+     * Sanitize a value or array of values.
+     */
+    private function sanitize($data) {
+        if (is_array($data)) {
+            return array_map([$this, 'sanitize'], $data);
+        }
+        return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
+     * Validate an uploaded file (basic checks: type, size, error).
+     * @param array $file The file array from $_FILES
+     * @param array $allowedTypes List of allowed mime types
+     * @param int $maxSize Maximum allowed size in bytes
+     * @return bool|string True if valid, error message if not
+     */
+    public function validateFile($file, $allowedTypes = ['image/jpeg','image/png','application/pdf'], $maxSize = 2097152) {
+        if (!isset($file['error']) || is_array($file['error'])) {
+            return 'Invalid file parameters.';
+        }
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            return 'File upload error.';
+        }
+        if ($file['size'] > $maxSize) {
+            return 'File size exceeds limit.';
+        }
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($file['tmp_name']);
+        if (!in_array($mime, $allowedTypes)) {
+            return 'Invalid file type.';
+        }
+        return true;
     }
 }

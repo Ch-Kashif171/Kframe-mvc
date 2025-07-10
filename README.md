@@ -22,7 +22,7 @@ We can set go back url for 404 error page for production mode in config\app.php.
 Example:
 
    ```php
-    $go_back = url();
+    $go_back = url('/');
    ```
 
 # Routing:
@@ -167,11 +167,24 @@ Then include below snippet to render the pagination on view page like:
     <?php echo $render->links?>
    ```
     
-# CSRF
-There is a csrf token verification helper called csrf_toke() 
-provided to add in each post form (it will include an input field with csrf token value)
+# Security
 
-example: 
+Kframe now includes several important security features by default:
+
+- **Input Sanitization:** All input from ` _POST` and ` _GET` is automatically sanitized in the `Request` class.
+- **CSRF Protection:** CSRF tokens are automatically enforced for all POST requests at the routing layer. You must include the CSRF token in every POST form using `<?php csrf_token(); ?>`.
+- **File Upload Validation:** Use the `validateFile()` method in the `Request` class to validate file uploads (type, size, errors) before processing or moving files.
+- **Output Escaping:** Use the global `e()` helper function to escape user-supplied data in your views and prevent XSS:
+  ```php
+  <?= e($user['name']) ?>
+  ```
+
+# CSRF
+There is a csrf token verification helper called csrf_token() provided to add in each post form (it will include an input field with csrf token value).
+
+**CSRF protection is now enforced automatically for all POST requests.**
+
+Example:
    ```php
     <?php echo csrf_token(); ?>
    ```
