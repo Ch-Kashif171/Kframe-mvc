@@ -1,13 +1,24 @@
 #!/usr/bin/env php
 <?php
 
+use Core\Dotenv\Dotenv;
+use Symfony\Component\Console\Application;
+use Core\Commands\CreateControllerCommand;
+use Core\Commands\CreateModelCommand;
+use Core\Commands\MakeAuth;
+use Core\Commands\MigrationCommand;
+use Core\Commands\CreateMigrationCommand;
+use Core\Commands\RollbackMigrationCommand;
+
+
+
 define('root_path', getcwd());
 
 require_once 'vendor/autoload.php';
 /******************************************************
-*for some reason need to include here these files *
-******************************************************/
-require_once 'core/Dotenv/Dotenv.php';
+ *for some reason need to include here these files *
+ ******************************************************/
+
 require_once 'core/Utils/helpers.php';
 
 /**
@@ -16,21 +27,6 @@ require_once 'core/Utils/helpers.php';
 $dotenv = new Dotenv(getcwd());
 $dotenv->load();
 /***********************************************************/
-
-require_once 'core/Commands/CreateControllerCommand.php';
-require_once 'core/Commands/CreateModelCommand.php';
-require_once 'core/Commands/MakeAuth.php';
-require_once 'core/Commands/MigrationCommand.php';
-require_once 'core/Commands/CreateMigrationCommand.php';
-require_once 'core/Commands/RollbackMigrationCommand.php';
-
-use Symfony\Component\Console\Application;
-use Core\Commands\CreateControllerCommand;
-use Core\Commands\CreateModelCommand;
-use Core\Commands\MakeAuth;
-use Core\Commands\MigrationCommand;
-use Core\Commands\CreateMigrationCommand;
-use Core\Commands\RollbackMigrationCommand;
 
 
 $application = new Application('Welcome to Kframe Developed By Kashif Sohail, Version: ', '1.0.2');
