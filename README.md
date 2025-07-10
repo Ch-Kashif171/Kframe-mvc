@@ -422,7 +422,7 @@ To register your application's route files, follow these steps:
        public static function register(): array
        {
            return [
-               'web.php',
+               'routes/web.php',
                // Add more route files here...
            ];
        }
