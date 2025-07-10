@@ -27,7 +27,7 @@ Example:
 
 # Routing:
 
-We can define routes in route/route.php file as below.
+We can define routes in routes/route.php file as below.
    ```php
     Route::get('/', [App\Controllers\HomeController::class, 'index']);
    ```
