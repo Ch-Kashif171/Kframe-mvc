@@ -199,7 +199,7 @@ class Generator {
         if(file_exists($templatefile)){
 
             $newcontent = file_get_contents($templatefile);
-            $routefile = getcwd(). 'web.php';
+            $routefile = getcwd(). '/routes/web.php';
 
             if(str_contains(file_get_contents($routefile), $newcontent)) {
 
