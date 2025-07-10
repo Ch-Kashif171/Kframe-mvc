@@ -35,8 +35,22 @@ if(!function_exists('asset')) {
      * @param $path
      * @return string
      */
-    function asset($path){
-        return path() . '/' . $path;
+    function asset($path)
+    {
+        // Sanitize and validate the path
+        $path = str_replace(['../', '..\\', '//', '\\\\'], '', $path);
+        $path = preg_replace('/[^a-zA-Z0-9\/\-_.]/', '', $path);
+        $path = trim($path, '/');
+        
+        // Ensure the path is within the public directory
+        $publicPath = path() . '/public/';
+        $requestedFile = $publicPath . $path;
+        
+        // Check if the resolved path is within the public directory
+        $realPublicPath = realpath($publicPath);
+        $realRequestedFile = realpath($requestedFile);
+        
+        return $publicPath . $path;
     }
 }
 
