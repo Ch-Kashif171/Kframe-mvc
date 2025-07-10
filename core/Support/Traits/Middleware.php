@@ -18,7 +18,10 @@ trait Middleware
 
                 if (isset($kernel->routeMiddleware[$middleware])) {
                     $middleware_class = new $kernel->routeMiddleware[$middleware]();
-                    $middleware_class->handle();
+                    $result = $middleware_class->handle();
+                    if ($result === false || $result === null) {
+                        return false; // Stop execution if middleware returns false
+                    }
 
                 } else {
 
@@ -33,7 +36,10 @@ trait Middleware
                 if (isset($kernel->routeMiddleware[$middlewares])) {
 
                     $middleware_class = new $kernel->routeMiddleware[$middlewares]();
-                    $middleware_class->handle();
+                    $result = $middleware_class->handle();
+                    if ($result === false || $result === null) {
+                        return false; // Stop execution if middleware returns false
+                    }
 
                 } else {
                     throw new MiddlewareNotFoundException("Your given middleware did not match");
@@ -41,11 +47,15 @@ trait Middleware
 
             }
         }
+        
+        return true; // All middleware passed
     }
 
     public function middleware($middleware) {
-
-        static::getMiddleware($middleware);
+        $result = static::getMiddleware($middleware);
+        if ($result === false) {
+            exit; // Stop execution if middleware returns false
+        }
     }
 
 }

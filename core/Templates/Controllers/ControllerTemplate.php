@@ -5,7 +5,8 @@ use Core\Support\Request;
 
 class controllername extends Controller
 {
-    public function __construct(){
+    public function __construct()
+    {
         //
     }
 
