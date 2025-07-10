@@ -11,6 +11,8 @@ use Core\Support\DB;
  */
 class MigrationRunner
 {
+    use RecordMigration;
+
     /**
      * @var string Directory where migration files are stored.
      */
@@ -50,7 +52,7 @@ class MigrationRunner
             }
             $migration = new $migrationClass();
             $migration->up();
-            RecordMigration::saveMigration($migrationName);
+            self::saveMigration($migrationName);
             $output->writeln("<info>Migrated: $migrationName</info>");
             $ran++;
         }

@@ -38,7 +38,7 @@ We can define routes in routes/route.php file as below.
 Group route to set prefix and namespace
 
    ```php
-    Route::group(['prefix'=>'admin','namespace'=>'Admin'], function () {
+    Route::group(['prefix'=>'admin'], function () {
         Route::get('dashboard', [App\Controllers\HomeController::class, 'index']);
     });
    ``` 
