@@ -4335,8 +4335,8 @@ class PHPMailer
                     }
                 }
             } else {
-                if (!empty($$current) and strpos($header, ' =?') === 0) {
-                    $$current .= $header;
+                if (!empty($current) and strpos($header, ' =?') === 0) {
+                    $current .= $header;
                 } else {
                     $current = '';
                 }
