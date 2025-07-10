@@ -89,7 +89,7 @@ class Dotenv
     {
         try {
             return $this->loadData();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // suppressing exception
             return array();
         }
