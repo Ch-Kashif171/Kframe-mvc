@@ -4,8 +4,10 @@ if (!defined('root_path')) {
     define('root_path', dirname(__DIR__, 2));
 }
 
+use App\Providers\RouteServiceProvider;
 use Core\Database\Doctrine;
 use Core\Support\Auth;
+use Core\Support\NotFound;
 use Core\Support\Session;
 use Core\Support\Alert\Toastr;
 use Core\Utils\Redirect;
@@ -970,7 +972,7 @@ if(!function_exists('home_url')) {
 
     function home_url()
     {
-        return \Core\Support\NotFound::get_home_url();
+        return NotFound::get_home_url();
     }
 }
 
@@ -1125,5 +1127,17 @@ if (!function_exists('e')) {
     function e($value)
     {
         return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+if (!function_exists('home')) {
+    /**
+     * Escape HTML entities in a string.
+     * @param string $value
+     * @return string
+     */
+    function home(): string
+    {
+        return RouteServiceProvider::HOME;
     }
 }

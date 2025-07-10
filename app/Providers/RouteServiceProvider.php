@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
-class RegisterRoutes
+class RouteServiceProvider
 {
+    public const BACK_URL = '/';
+
+    public const HOME = '/';
+
     public static function register(): array
     {
         return [

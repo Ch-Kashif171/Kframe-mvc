@@ -2,13 +2,13 @@
 
 namespace Core\Support;
 
-use App\Providers\RegisterRoutes;
+use App\Providers\RouteServiceProvider;
 
 class RegisterAllRoutes
 {
     public static function loadAll()
     {
-        $routeFiles = RegisterRoutes::register();
+        $routeFiles = RouteServiceProvider::register();
         foreach ($routeFiles as $file) {
             require_once root_path . '/' . $file;
         }
