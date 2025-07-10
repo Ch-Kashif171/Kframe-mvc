@@ -26,6 +26,8 @@ class Route {
         'GET' => [],
         'POST' => [],
     ];
+    public static $routeMiddleware = []; // Store middleware for individual routes
+    private static $routeHandlers = []; // Store route handlers for execution
 
     /**
      * @return string
@@ -46,7 +48,6 @@ class Route {
 
         return $action;
     }
-
 
     /**
      * @param $controller
@@ -82,81 +83,112 @@ class Route {
     /**
      * @param $action
      * @param $controllerMethod
-     * @return void
+     * @return RouteBuilder
      * @throws Exception\Handlers\MiddlewareNotFoundException
      * @throws RouteNotFoundException
      */
     public static function get($action, $controllerMethod) {
-        $get_action = self::action();
         $action = ltrim($action, '/');
         $action_route = '/' . $action;
         $action = static::$prefix ? '/' . static::$prefix . $action_route : $action_route;
         self::$routes['GET'][] = $action;
-        $routeArgs = static::$namespace ? static::$namespace . '\\' . $controllerMethod : $controllerMethod;
-        $param_action = static::routeWithValues($action, $get_action);
-        $params = [];
-        $isMatch = false;
-        if (!empty($param_action->params)) {
-            $isMatch = true;
-            $params = $param_action->params;
-            static::$param = $params;
-        } elseif ($get_action == $action) {
-            $isMatch = true;
-        }
-        if ($isMatch) {
-            static::middleware();
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                if (isset($routeArgs[1])) {
-                    $controller = $routeArgs[0];
-                    $method = $routeArgs[1];
-                } else {
-                    throw new RouteNotFoundException("please specify a method in route");
-                }
-                self::call($controller, $method, $params);
-            }
-            IsRoute::checkRoute(true);
-        }
+        
+        // Store route information for later execution
+        $routeKey = 'GET:' . $action;
+        self::$routeHandlers[$routeKey] = [
+            'controller' => $controllerMethod,
+            'middleware' => static::$middleware,
+            'namespace' => static::$namespace
+        ];
+        
+        // Create RouteBuilder for chaining
+        $routeBuilder = new RouteBuilder($action, 'GET', $controllerMethod);
+        
+        return $routeBuilder;
     }
 
     /**
      * @param $action
      * @param $controllerMethod
-     * @return void
+     * @return RouteBuilder
      * @throws Exception\Handlers\CsrfException
      * @throws Exception\Handlers\MiddlewareNotFoundException
      * @throws RouteNotFoundException
      */
-    public static function post($action,$controllerMethod){
-        $get_action =   self::action();
-        $action =    ltrim($action,'/');
-        $action_route =   '/'.$action;
-        $action = static::$prefix ? '/'.static::$prefix.$action_route : $action_route;
+    public static function post($action, $controllerMethod) {
+        $action = ltrim($action, '/');
+        $action_route = '/' . $action;
+        $action = static::$prefix ? '/' . static::$prefix . $action_route : $action_route;
         self::$routes['POST'][] = $action;
-        $routeArgs = static::$namespace ? static::$namespace.'\\'.$controllerMethod : $controllerMethod;
-        if($get_action  ==  $action) {
-            static::middleware();
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                static::check();
-                if (isset($routeArgs[1])) {
-                    $controller = $routeArgs[0];
-                    $method = $routeArgs[1];
-                } else {
-                    throw new RouteNotFoundException("please specify a method in route");
+        
+        // Store route information for later execution
+        $routeKey = 'POST:' . $action;
+        self::$routeHandlers[$routeKey] = [
+            'controller' => $controllerMethod,
+            'middleware' => static::$middleware,
+            'namespace' => static::$namespace
+        ];
+        
+        // Create RouteBuilder for chaining
+        $routeBuilder = new RouteBuilder($action, 'POST', $controllerMethod);
+        
+        return $routeBuilder;
+    }
+
+    /**
+     * Execute the matching route with middleware
+     * @throws Exception\Handlers\MiddlewareNotFoundException
+     * @throws RouteNotFoundException
+     */
+    public static function executeRoutes() {
+        $currentAction = self::action();
+        $method = $_SERVER['REQUEST_METHOD'];
+        $routeKey = $method . ':' . $currentAction;
+        
+        // Check if we have a handler for this route
+        if (isset(self::$routeHandlers[$routeKey])) {
+            $handler = self::$routeHandlers[$routeKey];
+
+            // Apply group middleware first
+            $middlewareResult = true;
+            if ($handler['middleware']) {
+                $middlewareResult = static::applyMiddleware($handler['middleware']);
+                if ($middlewareResult !== true) {
+                    return true; // Halt and mark as handled if middleware returns anything but true
                 }
-                $requestWasSuccessful = false;
-                try {
-                    self::call($controller, $method);
-                    $requestWasSuccessful = true;
-                } catch (\Exception $e) {
-                    // Do not rotate token on error
-                    throw $e;
-                }
-                if ($requestWasSuccessful) {
-                    self::rotateToken();
-                }
-                IsRoute::checkRoute(true);
             }
+            
+            // Apply route-specific middleware
+            if (isset(self::$routeMiddleware[$routeKey])) {
+                $middlewareResult = static::applyMiddleware(self::$routeMiddleware[$routeKey]);
+                if ($middlewareResult !== true) {
+                    return true; // Halt and mark as handled if middleware returns anything but true
+                }
+            }
+            
+            // Execute the controller
+            $routeArgs = $handler['namespace'] ? $handler['namespace'] . '\\' . $handler['controller'] : $handler['controller'];
+            if (isset($routeArgs[1])) {
+                $controller = $routeArgs[0];
+                $method = $routeArgs[1];
+            } else {
+                throw new RouteNotFoundException("please specify a method in route");
+            }
+            self::call($controller, $method, []);
+            IsRoute::checkRoute(true);
+            return true; // Route was matched and executed
+        } else {
+            return false; // No route matched
         }
+    }
+
+    /**
+     * @param $middleware
+     * @return bool
+     * @throws Exception\Handlers\MiddlewareNotFoundException
+     */
+    protected static function applyMiddleware($middleware) {
+        return static::getMiddleware($middleware);
     }
 
     /**
@@ -175,12 +207,10 @@ class Route {
         }
 
         if (is_array($type) && isset($type['middleware'])) {
-
             static::$middleware = $type['middleware'];
         }
 
         return $routes();
-
     }
 
     /**

@@ -1,8 +1,11 @@
 <?php
 session_start();
 
-define('root_path', getcwd());
+use Core\Exception\Handlers\MiddlewareNotFoundException;
+use Core\Exception\Handlers\RouteNotFoundException;
+use Core\Support\Route;
 
+define('root_path', getcwd());
 
 require_once root_path.'/vendor/autoload.php';
 require_once root_path.'/core/Dotenv/Dotenv.php';
@@ -14,7 +17,18 @@ require_once root_path.'/core/Utils/assetsNotFount.php';
 require_once root_path.'/core/Utils/loadfiles.php';
 require_once root_path.'/config/mail.php';
 require_once root_path.'/core/Utils/Redirect.php';
-require_once root_path.'/core\Support/Route.php';
+require_once root_path.'/core/Support/Route.php';
 require_once root_path.'/routes/route.php';
-require_once root_path.'/core/Utils/checkMethodNotAllowed.php';
-require_once root_path.'/core/Utils/routeExist.php';
+
+// Execute routes with middleware and set a flag if matched
+$__route_matched = false;
+try {
+    $__route_matched = Route::executeRoutes();
+} catch (MiddlewareNotFoundException|RouteNotFoundException $e) {
+}
+
+// Only run 404 check if no route was matched
+if (!($__route_matched)) {
+    require_once root_path.'/core/Utils/checkMethodNotAllowed.php';
+    require_once root_path.'/core/Utils/routeExist.php';
+}

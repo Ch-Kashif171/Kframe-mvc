@@ -63,6 +63,46 @@ For more than one middleware.
   ```php
       $this->middleware(['auth','web']);
    ```
+
+## Route Middleware
+
+You can also apply middleware directly to routes, similar to Laravel:
+
+### Individual Route Middleware
+
+```php
+// Single middleware
+Route::get('/profile', [ProfileController::class, 'show'])->middleware('auth');
+
+// Multiple middleware
+Route::get('/admin', [AdminController::class, 'index'])->middleware(['auth', 'admin']);
+```
+
+### Group Middleware
+
+```php
+// Apply middleware to all routes in a group
+Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
+    Route::get('dashboard', [DashboardController::class, 'index']);
+    Route::get('users', [UserController::class, 'index']);
+});
+
+// Multiple middleware in group
+Route::group(['prefix' => 'api', 'middleware' => ['auth', 'api']], function () {
+    Route::get('data', [ApiController::class, 'getData']);
+});
+```
+
+### Controller Middleware
+
+You can still use middleware in controller constructors:
+
+```php
+public function __construct()
+{
+    $this->middleware('auth');
+}
+```
 # Template Structure
 
 All code generation templates for controllers, models, routes, and views are now centralized under:
