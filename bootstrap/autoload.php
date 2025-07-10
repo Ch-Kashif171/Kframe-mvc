@@ -18,7 +18,8 @@ require_once root_path.'/core/Utils/loadfiles.php';
 require_once root_path.'/config/mail.php';
 require_once root_path.'/core/Utils/Redirect.php';
 require_once root_path.'/core/Support/Route.php';
-require_once root_path.'/routes/route.php';
+
+Route::init();
 
 // Execute routes with middleware and set a flag if matched
 $__route_matched = false;

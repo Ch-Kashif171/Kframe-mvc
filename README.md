@@ -401,3 +401,57 @@ $rules = [
 
 ## No manual setup needed
 - You do not need to manually flash or clear old input data; it is handled by the framework for all POST requests and successful redirects.
+
+# Kframe Route Registration
+
+## Registering Route Files
+
+To register your application's route files, follow these steps:
+
+1. **Edit `app/Providers/RegisterRoutes.php`**
+
+   This file contains a static `register()` method that returns an array of all your route files:
+
+   ```php
+   <?php
+   
+   namespace App\Providers;
+   
+   class RegisterRoutes
+   {
+       public static function register(): array
+       {
+           return [
+               'web.php',
+               // Add more route files here...
+           ];
+       }
+   }
+   ```
+
+   - Add any new route files to this array.
+
+2. **How the Core Loads Your Routes**
+
+   The core will automatically load all files listed in `RegisterRoutes::register()` when you call:
+
+   ```php
+   \Core\Support\Route::init();
+   ```
+   This is typically done in your `bootstrap/autoload.php`:
+
+   ```php
+   require_once root_path.'/core/Support/Route.php';
+   \Core\Support\Route::init();
+   ```
+
+   You do **not** need to manually require each route file anywhere else.
+
+3. **Summary**
+
+- To add a new route file, just add it to the array in `app/Providers/RegisterRoutes.php`.
+- The core will handle loading all your route files automatically when `Route::init()` is called.
+
+---
+
+For more advanced usage, you can organize your routes into multiple files and simply add them to the array. No need to touch the core or autoload logic beyond the initial setup.

@@ -10,8 +10,6 @@ use Core\Exception\Handlers\RouteNotFoundException;
 use Core\Support\Traits\Csrf\csrfToken;
 use Core\Support\Traits\Middleware;
 use Core\Support\Traits\RouteParam;
-use function base_path;
-use function config;
 
 class Route {
 
@@ -260,5 +258,10 @@ class Route {
             }
             exit;
         }
+    }
+
+    public static function init()
+    {
+        RegisterAllRoutes::loadAll();
     }
 }
