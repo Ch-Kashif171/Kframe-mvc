@@ -57,13 +57,19 @@ if(!function_exists('url')) {
      * @param null $path
      * @return string
      */
-    function url($path = null){
+    function url($path = null) {
+        $base = rtrim(path(), '/');
 
         if (is_null($path)) {
-            return path() . '/';
-        } else {
-            return path() . '/' . $path;
+            return $base . '/';
         }
+
+        // Remove dangerous patterns like ../, //, \\, etc.
+        $path = trim($path, '/');
+        $path = preg_replace('#(\.\./|//|\\\\)#', '', $path);
+        $path = filter_var($path, FILTER_SANITIZE_URL);
+
+        return $base . '/' . $path;
     }
 }
 
@@ -72,19 +78,21 @@ if(!function_exists('path')) {
     /**
      * @return string
      */
-    function path()
+    function path(): string
     {
-        if (isset($_SERVER['SERVER_NAME'])) {
-            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https://' : 'http://';
-            $rootArr = explode('/', $_SERVER['PHP_SELF']);
-            $root = $rootArr[1];
-            $path = $protocol . $_SERVER['SERVER_NAME'] . '/' . $root;
-            return $path;
-        } else {
-            // CLI fallback
+        // CLI fallback (e.g., Artisan or PHPUnit)
+        if (php_sapi_name() === 'cli' || !isset($_SERVER['SERVER_NAME'])) {
             return defined('root_path') ? root_path : getcwd();
         }
+
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+        $host = filter_var($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'], FILTER_SANITIZE_URL);
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? ''; // e.g. /project/index.php
+        $scriptDir = rtrim(str_replace(basename($scriptName), '', $scriptName), '/');
+
+        return rtrim($protocol . $host . $scriptDir, '/');
     }
+
 }
 
 if(!function_exists('full_path')) {
