@@ -105,18 +105,6 @@ public function __construct()
     $this->middleware('auth');
 }
 ```
-# Template Structure
-
-All code generation templates for controllers, models, routes, and views are now centralized under:
-
-    core/Templates/
-
-Organized as:
-- core/Templates/Controllers/ (controller templates)
-- core/Templates/Models/ (model templates)
-- core/Templates/Routes/ (route templates)
-- core/Templates/Views/auth/ (auth view templates)
-- core/Templates/Views/partials/ (partials like header/footer)
 
 Update your generator code and any custom scripts to reference these new locations for scaffolding.
 
