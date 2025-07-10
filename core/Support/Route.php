@@ -223,7 +223,7 @@ class Route {
         ) {
             http_response_code(405);
             if (function_exists('config') && config('app.app_env') === 'production') {
-                include base_path('views/errors/405.php');
+                abort(405);
             } else {
                 // Use Whoops for pretty error in development
                 throw new \Exception('405 Method Not Allowed: This route only supports ' . $otherMethod . ' requests.');

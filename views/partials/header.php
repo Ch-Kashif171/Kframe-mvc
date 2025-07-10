@@ -14,7 +14,7 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="http://localhost/Kframe-mvc/public/css/app.css">
+    <link rel="stylesheet" href="<?php echo asset('public/css/app.css')?>">
     <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
 
     <!-- Scripts -->
@@ -100,10 +100,10 @@
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="http://localhost/Kframe-mvc/">Kframe</a>
+            <a class="navbar-brand" href="<?php echo url()?>">Kframe</a>
         </div>
         <ul class="nav navbar-nav">
-            <li class="active"><a href="http://localhost/Kframe-mvc/">Home</a></li>
+            <li class="active"><a href="<?php echo url()?>">Home</a></li>
         </ul>
 
     </div>

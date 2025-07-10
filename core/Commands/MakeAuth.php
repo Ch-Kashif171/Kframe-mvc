@@ -21,7 +21,7 @@ class MakeAuth extends Command
             ->setHelp("This command allows you to create auth scaffolding...");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // outputs multiple lines to the console (adding "\n" at the end of each line)
         $generator = Generator::getInstance();
@@ -36,14 +36,14 @@ class MakeAuth extends Command
 
         if ($build['status']) {
             $output->writeln(["<bg=green;options=bold>{$build['message']}</>"]);
+            return Command::SUCCESS;
         }
         else {
             foreach ($build['message'] as $error) {
                 $output->writeln(["<bg=red;options=bold>{$error}</>"]);
             }
+            return Command::FAILURE;
         }
-
-        return 0;
 
     }
 

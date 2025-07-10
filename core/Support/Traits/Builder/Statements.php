@@ -27,7 +27,8 @@ trait Statements
     public static function find($id)
     {
         $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->find($id);
+        $data = (new QueryBuilder($instance->table, $instance->hide_fields))->find($id);
+        return $data ? static::hydrate($data) : null;
     }
 
     public static function first()

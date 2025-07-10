@@ -16,10 +16,10 @@ class MigrationCommand extends Command
             ->setHelp('This command runs all pending migrations.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $runner = new MigrationRunner();
         $runner->runAll($output);
-        return 0;
+        return Command::SUCCESS;
     }
 }

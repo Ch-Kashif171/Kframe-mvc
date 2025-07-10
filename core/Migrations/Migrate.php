@@ -5,6 +5,7 @@ namespace Core\Migrations;
 use Core\Database\Doctrine;
 use Core\Migrations\RecordMigration;
 use Core\Migrations\Schema;
+use Core\Support\DB;
 
 class Migrate
 {
@@ -28,9 +29,8 @@ class Migrate
         }
         // Check if table exists in the database
         $db_name = config("database.db_database");
-        $doctrine = new Doctrine();
         $tableExistQuery = "SELECT * FROM information_schema.tables WHERE table_schema = '".$db_name."' AND table_name = '".$table."' ";
-        $tableExist = $doctrine->rawQuery($tableExistQuery);
+        $tableExist = DB::rawQuery($tableExistQuery);
         if ($tableExist && count($tableExist) > 0) {
             echo "{$table} table already exist \n";
             return;
@@ -50,7 +50,7 @@ class Migrate
         }
         $statement = rtrim($field_statements, ',');
         $query .= $statement . " );";
-        $success = $doctrine->rawQuery($query, true);
+        $success = DB::rawQuery($query, true);
         if ($success) {
             echo "{$table} table has been successfully created \n";
             self::saveMigration($migrationName);
@@ -64,8 +64,7 @@ class Migrate
     public static function drop($table)
     {
         $query = "DROP TABLE IF EXISTS {$table};";
-        $doctrine = new Doctrine();
-        $success = $doctrine->rawQuery($query, true);
+        $success = DB::rawQuery($query, true);
         if ($success) {
             echo "{$table} table has been dropped successfully\n";
         } else {

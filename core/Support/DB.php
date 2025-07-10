@@ -32,7 +32,6 @@ class DB
     public static function rawQuery($sql)
     {
         $doctrine = new Doctrine();
-        $result = $doctrine->rawQuery($sql);
-        return $result;
+        return $doctrine->rawQuery($sql);
     }
 }

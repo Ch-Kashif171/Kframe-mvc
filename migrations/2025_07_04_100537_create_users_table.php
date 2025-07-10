@@ -10,7 +10,7 @@ class CreateUsersTable extends Migrate
         Migrate::create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->nullable();
-            $table->string('email')->nullable();
+            $table->string('email')->unique();
             $table->string('password')->nullable();
             $table->timestamps();
         });

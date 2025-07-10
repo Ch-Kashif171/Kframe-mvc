@@ -3,19 +3,19 @@
 namespace Core\Migrations;
 use Core\Database\Doctrine;
 use Core\Queries\MigrationQueries;
+use Core\Support\DB;
 
 trait RecordMigration
 {
 
     public static function existTable($migration_name) {
         $db_name = config("database.db_database");
-        $doctrine = new Doctrine();
         $query = MigrationQueries::tableExists($db_name, 'migrations');
-        $exist = $doctrine->rawQuery($query);
+        $exist = DB::rawQuery($query);
         if (!$exist) $exist = [];
         if (count($exist) > 0) {
             $query = MigrationQueries::selectByName($migration_name);
-            $result = $doctrine->rawQuery($query);
+            $result = DB::rawQuery($query);
             if (!$result) $result = [];
             if (count($result) > 0) {
                 return true;
@@ -34,13 +34,12 @@ trait RecordMigration
         if (!preg_match($pattern, $migration_name)) {
             return;
         }
-        $doctrine = new Doctrine();
-        $doctrine->rawQuery(MigrationQueries::CREATE_MIGRATIONS_TABLE, true);
-        $check = $doctrine->rawQuery(MigrationQueries::selectByName($migration_name));
+        DB::rawQuery(MigrationQueries::CREATE_MIGRATIONS_TABLE, true);
+        $check = DB::rawQuery(MigrationQueries::selectByName($migration_name));
         if (!$check) $check = [];
         if (count($check) == 0) {
             $migrate = MigrationQueries::insert($migration_name);
-            $doctrine->rawQuery($migrate, true);
+            DB::rawQuery($migrate, true);
         }
     }
 
