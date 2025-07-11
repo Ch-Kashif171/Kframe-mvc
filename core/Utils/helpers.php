@@ -219,12 +219,15 @@ if(!function_exists('redirect')) {
      * @param null $url
      * @return \Core\Utils\Redirect
      */
-    function redirect($url = null){
-        $redirector = new Redirect();
+    function redirect($url = null)
+    {
         if (!is_null($url)) {
-            return $redirector->to($url);
+            $url = ltrim($url, '/');
+            return header('Location: ' . url('/') . $url);
+
+        } else {
+            return new Redirect();
         }
-        return $redirector;
     }
 }
 
