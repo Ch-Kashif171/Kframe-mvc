@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Auth;
 
-use App\controllers\Controller;
+use App\Controllers\Controller;
 use Core\Support\Auth;
 use Core\Support\Request;
 use Core\Support\Validation\Validator;
