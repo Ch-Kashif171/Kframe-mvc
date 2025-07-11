@@ -348,17 +348,52 @@ if(!function_exists('include_html')) {
 if(!function_exists('pagination')) {
     function pagination($links)
     {
+        $links = (object)$links;
         $html = '';
+        // Info line with safe defaults
+        $from = $links->from ?? 0;
+        $to = $links->to ?? 0;
+        $total = $links->total ?? 0;
+        if ($total > 0) {
+            $html .= '<div class="pagination-info">Showing ' . $from . ' to ' . $to . ' of ' . $total . ' entries</div>';
+        }
         if (isset($links->last_page) && $links->last_page > 1) {
             $html .= '<ul class="pagination">';
-            if ($links->prev_page_url) {
+            // Previous link (always shown, disabled if on first page)
+            if ($links->current_page <= 1) {
+                $html .= '<li class="disabled"><span>&laquo; Previous</span></li>';
+            } else {
                 $html .= '<li><a href="' . $links->prev_page_url . '">&laquo; Previous</a></li>';
             }
-            for ($i = 1; $i <= $links->last_page; $i++) {
+            $window = 2; // Number of pages to show before/after current
+            $start = max(1, $links->current_page - $window);
+            $end = min($links->last_page, $links->current_page + $window);
+
+            // Always show first page
+            if ($start > 1) {
+                $html .= '<li><a href="' . $links->path . '?page=1">1</a></li>';
+                if ($start > 2) {
+                    $html .= '<li class="disabled"><span>...</span></li>';
+                }
+            }
+
+            for ($i = $start; $i <= $end; $i++) {
                 $active = $i == $links->current_page ? ' class="active"' : '';
                 $html .= '<li' . $active . '><a href="' . $links->path . '?page=' . $i . '">' . $i . '</a></li>';
             }
-            if ($links->next_page_url) {
+
+            // Always show last page
+            if ($end < $links->last_page) {
+                if ($end < $links->last_page - 1) {
+                    $html .= '<li class="disabled"><span>...</span></li>';
+                }
+                $html .= '<li><a href="' . $links->path . '?page=' . $links->last_page . '">' . $links->last_page . '</a></li>';
+            }
+
+            // Next link (always shown, disabled if on last page)
+            if ($links->current_page >= $links->last_page) {
+                $html .= '<li class="disabled"><span>Next &raquo;</span></li>';
+            } else {
                 $html .= '<li><a href="' . $links->next_page_url . '">Next &raquo;</a></li>';
             }
             $html .= '</ul>';

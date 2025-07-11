@@ -527,6 +527,23 @@ class Doctrine
         $pagination = array();
 
         $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
+
+        // Get total count first
+        if(!is_null($this->statement)) {
+            $array_statement = getChildTableAndStatement($this->statement);
+            $sql_statement = "SELECT count(*) as count FROM " . $this->table." ".$array_statement['statement'];
+        }else{
+            $sql_statement = "SELECT count(*) as count FROM " . $this->table;
+        }
+        $count = $this->con->query($sql_statement) ;
+        $total = $count->fetch(\PDO::FETCH_OBJ);
+        $totalCount = (int)$total->count;
+        $lastPage = (int) ceil($totalCount / $limit);
+
+        // If requested page is greater than last page, set to last page
+        if ($page > $lastPage && $lastPage > 0) {
+            $page = $lastPage;
+        }
         $offset = ($page - 1) * $limit;
 
         // Get data for current page
@@ -551,17 +568,6 @@ class Doctrine
             $result = $query->fetchAll(\PDO::FETCH_OBJ);
         }
 
-        // Get total count
-        if(!is_null($this->statement)) {
-            $array_statement = getChildTableAndStatement($this->statement);
-            $sql_statement = "SELECT count(*) as count FROM " . $this->table." ".$array_statement['statement'];
-        }else{
-            $sql_statement = "SELECT count(*) as count FROM " . $this->table;
-        }
-        $count = $this->con->query($sql_statement) ;
-        $total = $count->fetch(\PDO::FETCH_OBJ);
-        $totalCount = (int)$total->count;
-        $lastPage = (int) ceil($totalCount / $limit);
         $from = $totalCount > 0 ? $offset + 1 : 0;
         $to = $totalCount > 0 ? min($offset + $limit, $totalCount) : 0;
 
