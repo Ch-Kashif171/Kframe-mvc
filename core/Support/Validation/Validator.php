@@ -96,7 +96,7 @@ class Validator
         }
 
         if($field != '' && str_contains($rule, 'unique')) {
-            $response = self::isUnique($field, $rule);
+            $response = self::isUnique($name, $field, $rule);
             if (!$response['status']) {
                 self:: $msg[$name] = $response['message'];
             }
@@ -163,7 +163,7 @@ class Validator
      * @param string $rule
      * @return array|bool[]
      */
-    private static function isUnique(string $field, string $rule )
+    private static function isUnique(string $field, $value, string $rule )
     {
         $allRules = explode('|', $rule);
 
@@ -184,7 +184,8 @@ class Validator
                     ];
                 }
 
-                $exists = self::checkUnique($table, $column, $field, $exceptId, $idColumn);
+                // Pass the actual value, not the field name!
+                $exists = self::checkUnique($table, $column, $value, $exceptId, $idColumn);
 
                 if ($exists) {
                     return [
@@ -200,7 +201,7 @@ class Validator
         ];
     }
 
-    private static function checkUnique(string $table, string $column, string $value, $exceptId = null, string $idColumn = 'id'): bool
+    private static function checkUnique(string $table, string $column, $value, $exceptId = null, string $idColumn = 'id'): bool
     {
         $query = DB::table($table)->where($column, '=', $value);
 

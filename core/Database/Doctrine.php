@@ -24,30 +24,21 @@ class Doctrine
      */
     public function first()
     {
-
-        if(!is_null($this->statement)){
-            $array_statement = getChildTableAndStatement($this->statement);
-            if(is_null($this->fields)) {
-                $columns = $this->get_table_columns_except_some($this->table);
-                $sql = "SELECT {$columns} FROM " . $this->table." ".$array_statement['statement'];
-
-            }else{
-                $sql = "SELECT ".$this->fields." FROM " . $this->table."  ".$array_statement['statement'];
-            }
-
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetch(\PDO::FETCH_OBJ);
-
-        }else{
-            if(is_null($this->fields)) {
-                $columns = $this->get_table_columns_except_some($this->table);
-                $sql = "SELECT {$columns} FROM " . $this->table;
-            }else{
-                $sql = "SELECT ".$this->fields." FROM " . $this->table;
-            }
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetch(\PDO::FETCH_OBJ);
+        if (is_null($this->fields)) {
+            $columns = $this->get_table_columns_except_some($this->table);
+        } else {
+            $columns = $this->fields;
         }
+        $sql = "SELECT {$columns} FROM {$this->table}"
+            . $this->joins
+            . $this->wheres
+            . $this->groupBy
+            . $this->having
+            . $this->orderBy
+            . $this->limit
+            . $this->offset;
+        $query = $this->con->query($sql);
+        $this->result = $query->fetch(\PDO::FETCH_OBJ);
         return $this->result;
     }
 
@@ -320,13 +311,31 @@ class Doctrine
      */
     public function update($fields)
     {
+        // Fetch the current record(s) using the current where clause
+        $current = $this->first();
+        if (!$current) {
+            return false;
+        }
+
+        // Remove unchanged fields (dirty checking)
+        foreach ($fields as $name => $value) {
+            if (isset($current->$name) && $current->$name == $value) {
+                unset($fields[$name]);
+            }
+        }
+
+        // If nothing changed, skip update
+        if (empty($fields)) {
+            return true; // No error, nothing to update
+        }
 
         $query = "UPDATE {$this->table} SET ";
         foreach ($fields as $name => $value) {
             $query .= ' '.$name.' = :'.$name.',';
         }
         $query = substr($query, 0, -1);
-        $query .= $this->statement;
+        // Use $this->wheres for the WHERE clause
+        $query .= $this->wheres;
 
         try {
             $exec = $this->con->prepare($query);
@@ -340,7 +349,6 @@ class Doctrine
         catch (Exception $e) {
             throw new ErrorException($e->getMessage());
         }
-
     }
 
     /**
@@ -450,11 +458,6 @@ class Doctrine
      */
     public function where($column, $condition, $value): self
     {
-        // Only strip prefix if there are no joins
-        if (empty($this->joins) && strpos($column, '.') !== false) {
-            list(, $col) = explode('.', $column, 2);
-            $column = $col;
-        }
         if ($this->wheres === '') {
             $this->wheres = " WHERE {$column} {$condition} '" . addslashes($value) . "' ";
         } else {

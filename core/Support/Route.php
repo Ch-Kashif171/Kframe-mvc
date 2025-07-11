@@ -106,13 +106,13 @@ class Route {
                 'namespace' => static::$namespace
             ];
         } else {
-            self::$routes['GET'][] = $action;
-            $routeKey = 'GET:' . $action;
-            self::$routeHandlers[$routeKey] = [
-                'controller' => $controllerMethod,
-                'middleware' => static::$middleware,
-                'namespace' => static::$namespace
-            ];
+        self::$routes['GET'][] = $action;
+        $routeKey = 'GET:' . $action;
+        self::$routeHandlers[$routeKey] = [
+            'controller' => $controllerMethod,
+            'middleware' => static::$middleware,
+            'namespace' => static::$namespace
+        ];
         }
         $routeBuilder = new RouteBuilder($action, 'GET', $controllerMethod);
         return $routeBuilder;
@@ -142,13 +142,13 @@ class Route {
                 'namespace' => static::$namespace
             ];
         } else {
-            self::$routes['POST'][] = $action;
-            $routeKey = 'POST:' . $action;
-            self::$routeHandlers[$routeKey] = [
-                'controller' => $controllerMethod,
-                'middleware' => static::$middleware,
-                'namespace' => static::$namespace
-            ];
+        self::$routes['POST'][] = $action;
+        $routeKey = 'POST:' . $action;
+        self::$routeHandlers[$routeKey] = [
+            'controller' => $controllerMethod,
+            'middleware' => static::$middleware,
+            'namespace' => static::$namespace
+        ];
         }
         $routeBuilder = new RouteBuilder($action, 'POST', $controllerMethod);
         return $routeBuilder;
@@ -188,7 +188,7 @@ class Route {
             if ($method === 'POST') {
                 self::check(); // Provided by csrfToken trait
             }
-
+            
             // Execute the controller
             $routeArgs = $handler['namespace'] ? $handler['namespace'] . '\\' . $handler['controller'] : $handler['controller'];
             if (isset($routeArgs[1])) {
@@ -223,7 +223,7 @@ class Route {
                 if (isset($routeArgs[1])) {
                     $controller = $routeArgs[0];
                     $method = $routeArgs[1];
-                } else {
+        } else {
                     throw new RouteNotFoundException("please specify a method in route");
                 }
                 self::call($controller, $method, $matches);
