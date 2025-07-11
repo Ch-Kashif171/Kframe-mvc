@@ -34,16 +34,6 @@ trait QueryBuilder
         return $this->table;
     }
 
-    public function orderBy($field, $order = 'ASC')
-    {
-        return $this->doctrine->orderBy($field, $order);
-    }
-
-    public function orderByDesc($field)
-    {
-        return $this->doctrine->orderByDesc($field);
-    }
-
     public function groupBy($fields)
     {
         return $this->doctrine->groupBy($fields);

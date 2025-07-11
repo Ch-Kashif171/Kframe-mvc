@@ -9,6 +9,14 @@ use Whoops\Exception\ErrorException;
 class Doctrine
 {
     use Queries;
+    // Add separate properties for each clause
+    protected $joins = '';
+    protected $wheres = '';
+    protected $groupBy = '';
+    protected $having = '';
+    protected $orderBy = '';
+    protected $limit = '';
+    protected $offset = '';
 
     /**
      * @return mixed
@@ -71,30 +79,22 @@ class Doctrine
      */
     public function get()
     {
-        if(!is_null($this->statement)){
-            $array_statement = getChildTableAndStatement($this->statement);
-            if(is_null($this->fields)) {
-                $columns = $this->get_table_columns_except_some($this->table);
-                $sql = "SELECT {$columns} FROM " . $this->table." ".$array_statement['statement'];
-            }else{
-                $sql = "SELECT ".$this->fields." FROM " . $this->table." ".$array_statement['statement'];
-            }
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetchAll(\PDO::FETCH_OBJ);
-        }else{
-
-            if(is_null($this->fields)) {
-                $columns = $this->get_table_columns_except_some($this->table);
-                $sql = "SELECT {$columns} FROM " . $this->table;
-            }else{
-                $sql = "SELECT ".$this->fields." FROM " . $this->table;
-            }
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetchAll(\PDO::FETCH_OBJ);
+        if (is_null($this->fields)) {
+            $columns = $this->get_table_columns_except_some($this->table);
+        } else {
+            $columns = $this->fields;
         }
-
+        $sql = "SELECT {$columns} FROM {$this->table}"
+            . $this->joins
+            . $this->wheres
+            . $this->groupBy
+            . $this->having
+            . $this->orderBy
+            . $this->limit
+            . $this->offset;
+        $query = $this->con->query($sql);
+        $this->result = $query->fetchAll(\PDO::FETCH_OBJ);
         return $this->result;
-
     }
 
     /**
@@ -372,17 +372,13 @@ class Doctrine
      */
     public function orderBy($field, $order = 'ASC'): self
     {
-        $query = " ORDER BY ".$field.' '.$order;
-        $this->statement .= $query;
-
+        $this->orderBy = " ORDER BY {$field} {$order}";
         return $this;
     }
 
     public function orderByDesc($field, $order = 'DESC'): self
     {
-        $query = " ORDER BY ".$field.' '.$order;
-        $this->statement .= $query;
-
+        $this->orderBy = " ORDER BY {$field} DESC";
         return $this;
     }
 
@@ -392,9 +388,7 @@ class Doctrine
      */
     public function groupBy($fields): self
     {
-        $query = " GROUP BY ".$fields;
-        $this->statement .= $query;
-
+        $this->groupBy = " GROUP BY {$fields}";
         return $this;
     }
 
@@ -406,9 +400,7 @@ class Doctrine
      */
     public function having($column,$condition,$value): self
     {
-        $query = " HAVING {$column} {$condition}  '".$value."' ";
-        $this->statement .= $query;
-
+        $this->having = " HAVING {$column} {$condition} '" . addslashes($value) . "' ";
         return $this;
     }
 
@@ -418,8 +410,7 @@ class Doctrine
      */
     public function limit($limit): self
     {
-        $query = " LIMIT {$limit} ";
-        $this->statement .= $query;
+        $this->limit = " LIMIT {$limit} ";
         return $this;
     }
 
@@ -429,8 +420,7 @@ class Doctrine
      */
     public function offset($offset): self
     {
-        $query = " OFFSET {$offset} ";
-        $this->statement .= $query;
+        $this->offset = " OFFSET {$offset} ";
         return $this;
     }
 
@@ -458,19 +448,18 @@ class Doctrine
      * @param $value
      * @return Doctrine
      */
-    public function where($column,$condition,$value): self
+    public function where($column, $condition, $value): self
     {
-
-        $haystack = $this->statement ?? '';
-        if(!str_contains($haystack, 'WHERE')) {
-            $query = " WHERE {$column} {$condition} '".$value."' ";
-
-        }else{
-            $query = " AND {$column} {$condition} '".$value."' ";
+        // Only strip prefix if there are no joins
+        if (empty($this->joins) && strpos($column, '.') !== false) {
+            list(, $col) = explode('.', $column, 2);
+            $column = $col;
         }
-
-        $this->statement .= $query;
-
+        if ($this->wheres === '') {
+            $this->wheres = " WHERE {$column} {$condition} '" . addslashes($value) . "' ";
+        } else {
+            $this->wheres .= " AND {$column} {$condition} '" . addslashes($value) . "' ";
+        }
         return $this;
     }
 
@@ -480,11 +469,18 @@ class Doctrine
      * @param $value
      * @return Doctrine
      */
-    public function orWhere($column,$condition,$value): self
+    public function orWhere($column, $condition, $value): self
     {
-        $query = " OR {$column} {$condition} '".$value."' ";
-        $this->statement .= $query;
-
+        // Only strip prefix if there are no joins
+        if (empty($this->joins) && strpos($column, '.') !== false) {
+            list(, $col) = explode('.', $column, 2);
+            $column = $col;
+        }
+        if ($this->wheres === '') {
+            $this->wheres = " WHERE {$column} {$condition} '" . addslashes($value) . "' ";
+        } else {
+            $this->wheres .= " OR {$column} {$condition} '" . addslashes($value) . "' ";
+        }
         return $this;
     }
 
@@ -497,9 +493,7 @@ class Doctrine
      */
     public function join($table,$column,$equal,$second_column): self
     {
-        $query = "INNER JOIN $table ON $column $equal $second_column ";
-        $this->statement .= $query;
-        $this->statement.="|$this->table|";
+        $this->joins .= " INNER JOIN $table ON $column $equal $second_column ";
         return $this;
     }
 
@@ -512,9 +506,7 @@ class Doctrine
      */
     public function leftJoin($table,$column,$equal,$second_column): self
     {
-        $query = "LEFT JOIN $table ON $column $equal $second_column ";
-        $this->statement .= $query;
-        $this->statement.="|$this->table|";
+        $this->joins .= " LEFT JOIN $table ON $column $equal $second_column ";
         return $this;
     }
 
@@ -529,13 +521,12 @@ class Doctrine
         $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
 
         // Get total count first
-        if(!is_null($this->statement)) {
-            $array_statement = getChildTableAndStatement($this->statement);
-            $sql_statement = "SELECT count(*) as count FROM " . $this->table." ".$array_statement['statement'];
-        }else{
-            $sql_statement = "SELECT count(*) as count FROM " . $this->table;
-        }
-        $count = $this->con->query($sql_statement) ;
+        $sql_statement = "SELECT count(*) as count FROM {$this->table}"
+            . $this->joins
+            . $this->wheres
+            . $this->groupBy
+            . $this->having;
+        $count = $this->con->query($sql_statement);
         $total = $count->fetch(\PDO::FETCH_OBJ);
         $totalCount = (int)$total->count;
         $lastPage = (int) ceil($totalCount / $limit);
@@ -547,26 +538,20 @@ class Doctrine
         $offset = ($page - 1) * $limit;
 
         // Get data for current page
-        if(!is_null($this->statement)){
-            $array_statement = getChildTableAndStatement($this->statement);
-            if(is_null($this->fields)) {
-                $columns = $this->get_table_columns_except_some($this->table);
-                $sql = "SELECT {$columns} FROM " . $this->table." ".$array_statement['statement']." LIMIT {$limit} OFFSET {$offset} ";
-            }else{
-                $sql = "SELECT ".$this->fields." FROM " . $this->table." ".$array_statement['statement']." LIMIT {$limit} OFFSET {$offset} ";
-            }
-            $query = $this->con->query($sql) ;
-            $result = $query->fetchAll(\PDO::FETCH_OBJ);
-        }else{
-            if(is_null($this->fields)) {
-                $columns = $this->get_table_columns_except_some($this->table);
-                $sql = "SELECT {$columns} FROM " . $this->table." LIMIT {$limit} OFFSET {$offset} ";
-            }else{
-                $sql = "SELECT ".$this->fields." FROM " . $this->table." LIMIT {$limit} OFFSET {$offset} ";
-            }
-            $query = $this->con->query($sql) ;
-            $result = $query->fetchAll(\PDO::FETCH_OBJ);
+        if (is_null($this->fields)) {
+            $columns = $this->get_table_columns_except_some($this->table);
+        } else {
+            $columns = $this->fields;
         }
+        $sql = "SELECT {$columns} FROM {$this->table}"
+            . $this->joins
+            . $this->wheres
+            . $this->groupBy
+            . $this->having
+            . $this->orderBy
+            . " LIMIT {$limit} OFFSET {$offset} ";
+        $query = $this->con->query($sql);
+        $result = $query->fetchAll(\PDO::FETCH_OBJ);
 
         $from = $totalCount > 0 ? $offset + 1 : 0;
         $to = $totalCount > 0 ? min($offset + $limit, $totalCount) : 0;
