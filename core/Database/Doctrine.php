@@ -356,8 +356,8 @@ class Doctrine
      */
     public function delete()
     {
-        $query = "delete from {$this->table} ";
-        $query .= $this->statement;
+        $query = "DELETE FROM {$this->table}";
+        $query .= $this->wheres;
 
         try {
             $exec = $this->con->prepare($query);
