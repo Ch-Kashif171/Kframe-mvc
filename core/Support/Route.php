@@ -26,13 +26,18 @@ class Route {
     ];
     public static $routeMiddleware = []; // Store middleware for individual routes
     private static $routeHandlers = []; // Store route handlers for execution
+    // Store dynamic route patterns and their handlers
+    private static $dynamicRoutes = [
+        'GET' => [],
+        'POST' => [],
+    ];
 
     /**
      * @return string
      */
     public static function action(): string
     {
-        $uri     =   $_SERVER['REQUEST_URI'];
+        $uri     =   parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $arr     =   explode('/',$uri);
         unset($arr[0]);
         unset($arr[1]);
@@ -89,19 +94,27 @@ class Route {
         $action = ltrim($action, '/');
         $action_route = '/' . $action;
         $action = static::$prefix ? '/' . static::$prefix . $action_route : $action_route;
-        self::$routes['GET'][] = $action;
-        
-        // Store route information for later execution
-        $routeKey = 'GET:' . $action;
-        self::$routeHandlers[$routeKey] = [
-            'controller' => $controllerMethod,
-            'middleware' => static::$middleware,
-            'namespace' => static::$namespace
-        ];
-        
-        // Create RouteBuilder for chaining
+        // Check for dynamic segments
+        if (strpos($action, '{') !== false) {
+            $pattern = preg_replace('#\{[^/]+\}#', '([^/]+)', $action);
+            $regex = '#^' . $pattern . '$#';
+            self::$dynamicRoutes['GET'][] = [
+                'regex' => $regex,
+                'route' => $action,
+                'controller' => $controllerMethod,
+                'middleware' => static::$middleware,
+                'namespace' => static::$namespace
+            ];
+        } else {
+            self::$routes['GET'][] = $action;
+            $routeKey = 'GET:' . $action;
+            self::$routeHandlers[$routeKey] = [
+                'controller' => $controllerMethod,
+                'middleware' => static::$middleware,
+                'namespace' => static::$namespace
+            ];
+        }
         $routeBuilder = new RouteBuilder($action, 'GET', $controllerMethod);
-        
         return $routeBuilder;
     }
 
@@ -117,19 +130,27 @@ class Route {
         $action = ltrim($action, '/');
         $action_route = '/' . $action;
         $action = static::$prefix ? '/' . static::$prefix . $action_route : $action_route;
-        self::$routes['POST'][] = $action;
-        
-        // Store route information for later execution
-        $routeKey = 'POST:' . $action;
-        self::$routeHandlers[$routeKey] = [
-            'controller' => $controllerMethod,
-            'middleware' => static::$middleware,
-            'namespace' => static::$namespace
-        ];
-        
-        // Create RouteBuilder for chaining
+        // Check for dynamic segments
+        if (strpos($action, '{') !== false) {
+            $pattern = preg_replace('#\{[^/]+\}#', '([^/]+)', $action);
+            $regex = '#^' . $pattern . '$#';
+            self::$dynamicRoutes['POST'][] = [
+                'regex' => $regex,
+                'route' => $action,
+                'controller' => $controllerMethod,
+                'middleware' => static::$middleware,
+                'namespace' => static::$namespace
+            ];
+        } else {
+            self::$routes['POST'][] = $action;
+            $routeKey = 'POST:' . $action;
+            self::$routeHandlers[$routeKey] = [
+                'controller' => $controllerMethod,
+                'middleware' => static::$middleware,
+                'namespace' => static::$namespace
+            ];
+        }
         $routeBuilder = new RouteBuilder($action, 'POST', $controllerMethod);
-        
         return $routeBuilder;
     }
 
@@ -142,8 +163,7 @@ class Route {
         $currentAction = self::action();
         $method = $_SERVER['REQUEST_METHOD'];
         $routeKey = $method . ':' . $currentAction;
-        
-        // Check if we have a handler for this route
+        // 1. Try exact match first
         if (isset(self::$routeHandlers[$routeKey])) {
             $handler = self::$routeHandlers[$routeKey];
 
@@ -180,6 +200,36 @@ class Route {
             self::call($controller, $method, []);
             IsRoute::checkRoute(true);
             return true; // Route was matched and executed
+        }
+        // 2. Try dynamic routes
+        foreach (self::$dynamicRoutes[$method] as $route) {
+            if (preg_match($route['regex'], $currentAction, $matches)) {
+                array_shift($matches); // Remove full match
+                $handler = $route;
+                // Apply group middleware first
+                $middlewareResult = true;
+                if ($handler['middleware']) {
+                    $middlewareResult = static::applyMiddleware($handler['middleware']);
+                    if ($middlewareResult !== true) {
+                        return true;
+                    }
+                }
+                // Apply route-specific middleware (not implemented for dynamic routes yet)
+                // Enforce CSRF protection for POST requests
+                if ($method === 'POST') {
+                    self::check();
+                }
+                $routeArgs = $handler['namespace'] ? $handler['namespace'] . '\\' . $handler['controller'] : $handler['controller'];
+                if (isset($routeArgs[1])) {
+                    $controller = $routeArgs[0];
+                    $method = $routeArgs[1];
+                } else {
+                    throw new RouteNotFoundException("please specify a method in route");
+                }
+                self::call($controller, $method, $matches);
+                IsRoute::checkRoute(true);
+                return true;
+            }
         }
         return false;
     }

@@ -8,6 +8,7 @@ use App\Providers\RouteServiceProvider;
 use Core\Database\Doctrine;
 use Core\Support\Auth;
 use Core\Support\NotFound;
+use Core\Support\Redirector;
 use Core\Support\Session;
 use Core\Support\Alert\Toastr;
 use Core\Utils\Redirect;
@@ -217,16 +218,14 @@ if(!function_exists('redirect')) {
 
     /**
      * @param null $url
-     * @return Redirect|void
+     * @return \Core\Support\Redirector
      */
     function redirect($url = null){
+        $redirector = new Redirector();
         if (!is_null($url)) {
-            $url = ltrim($url, '/');
-            return header('Location: ' . url('/') . $url);
-
-        } else {
-            return new Redirect();
+            return $redirector->to($url);
         }
+        return $redirector;
     }
 }
 
