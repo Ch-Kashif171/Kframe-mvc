@@ -7,26 +7,34 @@ class Request
     private $field = array();
 
 
-    public function post($key){
+    public function post($key)
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return isset($_POST[$key]) ? $this->sanitize($_POST[$key]) : null;
-        } else {
-            return "You have provided get method";
         }
 
-
+        throw new \ErrorException("You are getting input value with post method, while your request is get.");
     }
 
-    public function get($key){
+    public function get($key)
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             return isset($_GET[$key]) ? $this->sanitize($_GET[$key]) : null;
-        } else {
-            return "You have provided post method";
         }
+
+        throw new \ErrorException("You are getting input value with get method, while your request is post");
     }
 
-    public function all(){
+    public function input($key)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            return isset($_GET[$key]) ? $this->sanitize($_GET[$key]) : null;
+        }
+        return isset($_POST[$key]) ? $this->sanitize($_POST[$key]) : null;
+    }
 
+    public function all()
+    {
         $file = [];
         $fields = [];
         if (isset($_FILES)) {
@@ -42,7 +50,8 @@ class Request
         return array_merge($fields,$file);
     }
 
-    public function getFile($file_name) {
+    public function getFile($file_name)
+    {
         if (isset($_FILES)) {
             return $_FILES[$file_name];
         } else {
@@ -50,8 +59,8 @@ class Request
         }
     }
 
-    public function getFiles() {
-
+    public function getFiles()
+    {
         if (isset($_FILES)) {
             return $_FILES;
         } else {
@@ -59,8 +68,8 @@ class Request
         }
     }
 
-    public function hasFile($key) {
-
+    public function hasFile($key)
+    {
         if (isset($_FILES[$key]) && $_FILES[$key]['name'] != '') {
             return true;
         } else {
@@ -68,8 +77,8 @@ class Request
         }
     }
 
-    public function has($key) {
-
+    public function has($key)
+    {
         $field = false;
 
         if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_FILES[$key])) {
@@ -93,7 +102,8 @@ class Request
         return $field;
     }
 
-    private function getFilesName() {
+    private function getFilesName()
+    {
 
         $names = [];
         $files = $_FILES;
@@ -104,8 +114,8 @@ class Request
         return $names;
     }
 
-    public function except(){
-
+    public function except()
+    {
         $args = func_get_args();
         $inputs = $this->sanitize($_POST);
         foreach ($args as $value){
@@ -114,8 +124,8 @@ class Request
         return $inputs;
     }
 
-    public function only(){
-
+    public function only()
+    {
         $args = func_get_args();
         $inputs = $this->sanitize($_POST);
         $values = [];
@@ -143,7 +153,8 @@ class Request
     /**
      * Sanitize a value or array of values.
      */
-    private function sanitize($data) {
+    private function sanitize($data)
+    {
         if (is_array($data)) {
             return array_map([$this, 'sanitize'], $data);
         }
@@ -157,7 +168,8 @@ class Request
      * @param int $maxSize Maximum allowed size in bytes
      * @return bool|string True if valid, error message if not
      */
-    public function validateFile($file, $allowedTypes = ['image/jpeg','image/png','application/pdf'], $maxSize = 2097152) {
+    public function validateFile($file, $allowedTypes = ['image/jpeg','image/png','application/pdf'], $maxSize = 2097152)
+    {
         if (!isset($file['error']) || is_array($file['error'])) {
             return 'Invalid file parameters.';
         }

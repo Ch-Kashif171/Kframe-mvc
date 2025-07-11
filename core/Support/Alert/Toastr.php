@@ -18,22 +18,22 @@ class Toastr
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>';
         if(Toastr::has('success')) {
             $toast = Toastr::get('success');
-            $html .='<script>toastr.success("'.$toast.'");</script>';
+            $html .='<script>toastr.success("'.self::escapeMessage($toast).'");</script>';
         }
 
         if(Toastr::has('error')) {
             $toast = Toastr::get('error');
-            $html .='<script>toastr.error("'.$toast.'");</script>';
+            $html .='<script>toastr.error("'.self::escapeMessage($toast).'");</script>';
         }
 
         if(Toastr::has('warning')) {
             $toast = Toastr::get('warning');
-            $html .='<script>toastr.warning("'.$toast.'");</script>';
+            $html .='<script>toastr.warning("'.self::escapeMessage($toast).'");</script>';
         }
 
         if(Toastr::has('info')) {
             $toast = Toastr::get('info');
-            $html .='<script>toastr.info("'.$toast.'");</script>';
+            $html .='<script>toastr.info("'.self::escapeMessage($toast).'");</script>';
         }
 
     return $html;
@@ -45,7 +45,7 @@ class Toastr
      * @return mixed
      */
     public static function get($type){
-        $toast = $_SESSION[$type];
+        $toast = $_SESSION[$type] ?? null;
         unset($_SESSION[$type]);
         return $toast;
     }
@@ -55,13 +55,7 @@ class Toastr
      * @return bool
      */
     public static function has($type){
-        if(isset($_SESSION[$type])){
-            $toast = true;
-        }else{
-            $toast = false;
-        }
-        return $toast;
-
+        return isset($_SESSION[$type]);
     }
 
     /**
@@ -100,4 +94,16 @@ class Toastr
         return true;
     }
 
+    /**
+     * Escape and convert message to string
+     * @param mixed $message
+     * @return string
+     */
+    private static function escapeMessage($message)
+    {
+        if (is_array($message)) {
+            $message = json_encode($message);
+        }
+        return htmlspecialchars((string) $message, ENT_QUOTES, 'UTF-8');
+    }
 }

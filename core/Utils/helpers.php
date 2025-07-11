@@ -21,13 +21,16 @@ if(!function_exists('dd')) {
      * @return void
      */
     function dd(...$vars) {
-        header('Content-Type: application/json');
-        if (count($vars) === 1) {
-            echo json_encode($vars[0], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        } else {
-            echo json_encode($vars, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        // Clean (erase) the output buffer if any
+        while (ob_get_level()) {
+            ob_end_clean();
         }
-        exit;
+        echo '<pre style="background:#222;color:#fff;padding:16px;font-size:12px;z-index:9999;">';
+        foreach ($vars as $var) {
+            print_r($var);
+        }
+        echo '</pre>';
+        die(1);
     }
 }
 
@@ -37,18 +40,10 @@ if(!function_exists('asset')) {
      * @param $path
      * @return string
      */
-    function asset($path) {
+    function asset($path)
+    {
         $path = preg_replace('/[^a-zA-Z0-9\-._\/]/', '', $path);
         $path = trim($path, '/');
-
-        $publicDir = realpath(root_path . '/public');
-        $fullPath = realpath($publicDir . '/' . $path);
-
-        if (!$fullPath || strpos($fullPath, $publicDir) !== 0 || !file_exists($fullPath)) {
-            http_response_code(404);
-           // exit('Asset not found');
-        }
-
         return url($path);
     }
 }
