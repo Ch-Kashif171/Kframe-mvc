@@ -526,21 +526,10 @@ class Doctrine
     {
         $pagination = array();
 
-        if(isset($_GET['page']) && $_GET['page'] > 2){
-            $p_limit = $_GET['page']-1;
-            $offset = $p_limit*($limit);
-            $page = $_GET['page'];
-        } elseif(isset($_GET['page']) && $_GET['page'] == 2){
-            $offset = $limit;
-            $page = $_GET['page'];
-        } elseif(isset($_GET['page']) && $_GET['page'] == 1){
-            $offset = 0;
-            $page = 1;
-        } else{
-            $offset = 0;
-            $page = 1;
-        }
+        $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
+        $offset = ($page - 1) * $limit;
 
+        // Get data for current page
         if(!is_null($this->statement)){
             $array_statement = getChildTableAndStatement($this->statement);
             if(is_null($this->fields)) {
@@ -552,18 +541,17 @@ class Doctrine
             $query = $this->con->query($sql) ;
             $result = $query->fetchAll(\PDO::FETCH_OBJ);
         }else{
-
             if(is_null($this->fields)) {
                 $columns = $this->get_table_columns_except_some($this->table);
                 $sql = "SELECT {$columns} FROM " . $this->table." LIMIT {$limit} OFFSET {$offset} ";
             }else{
                 $sql = "SELECT ".$this->fields." FROM " . $this->table." LIMIT {$limit} OFFSET {$offset} ";
             }
-
             $query = $this->con->query($sql) ;
             $result = $query->fetchAll(\PDO::FETCH_OBJ);
         }
 
+        // Get total count
         if(!is_null($this->statement)) {
             $array_statement = getChildTableAndStatement($this->statement);
             $sql_statement = "SELECT count(*) as count FROM " . $this->table." ".$array_statement['statement'];
@@ -572,59 +560,26 @@ class Doctrine
         }
         $count = $this->con->query($sql_statement) ;
         $total = $count->fetch(\PDO::FETCH_OBJ);
-        $current_count = count($result);
+        $totalCount = (int)$total->count;
+        $lastPage = (int) ceil($totalCount / $limit);
+        $from = $totalCount > 0 ? $offset + 1 : 0;
+        $to = $totalCount > 0 ? min($offset + $limit, $totalCount) : 0;
 
-        if($current_count == 0){
-            $from = null;
-            $to = null;
-            $next_page  = null;
-            $current = 1;
-            $prev_page = null;
-            $last_page = 1;
-            $last_page_url = full_path().'?page=1';
-        }else{
-
-            $dynamic_total = ceil(($total->count/$limit));
-            if ($dynamic_total > $total->count){
-                $dynamic_total = $total->count;
-            }
-            $next =  (int)$page+1;
-            if ($next > $dynamic_total){
-                $next = (int)$page;
-            }
-            $next_page  = full_path().'?page='.$next;
-
-            $prev =  (int)$page-1;
-            $prev_page  = full_path().'?page='.$prev;
-
-            $current = (int)$page;
-
-            $last_page = ceil(($total->count/$limit));
-
-            $last_page_url = full_path().'?page='.$dynamic_total;
-
-        }
-
-        if($current_count > 0){
-            $pagination['data'] = $result;
-        }else{
-            $pagination['data'] = array();
-        }
-
-        $pagination['current_page'] = $current;
-        $pagination['first_page_url']= full_path().'?page=1';
-        $pagination['last_page']= $last_page;
-        $pagination['last_page_url']= $last_page_url;
-        $pagination['next_page_url']= $next_page;
-        $pagination['path']= full_path();
-        $pagination['per_page']= $limit;
-
-        $pagination['prev_page_url']= $prev_page;
-
-        $pagination['total']= (int)$total->count;
+        $baseUrl = full_path();
+        $pagination['data'] = $result;
+        $pagination['current_page'] = $page;
+        $pagination['per_page'] = $limit;
+        $pagination['total'] = $totalCount;
+        $pagination['last_page'] = $lastPage;
+        $pagination['from'] = $from;
+        $pagination['to'] = $to;
+        $pagination['first_page_url'] = $baseUrl . '?page=1';
+        $pagination['last_page_url'] = $baseUrl . '?page=' . $lastPage;
+        $pagination['next_page_url'] = $page < $lastPage ? $baseUrl . '?page=' . ($page + 1) : null;
+        $pagination['prev_page_url'] = $page > 1 ? $baseUrl . '?page=' . ($page - 1) : null;
+        $pagination['path'] = $baseUrl;
 
         return $pagination;
-
     }
 
     public function simplePaginate($limit)

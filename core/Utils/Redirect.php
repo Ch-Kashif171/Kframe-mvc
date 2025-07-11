@@ -4,10 +4,11 @@ namespace Core\Utils;
 
 use Core\Support\General;
 use Core\Support\Session;
-use Core\Utils\Response;
 
 class Redirect
 {
+    protected $url;
+
     public function __construct()
     {
         //
@@ -32,6 +33,27 @@ class Redirect
     }
 
     /**
+     * Redirect to a specific URL
+     * @param string $url
+     * @return $this
+     */
+    public function to($url)
+    {
+        $this->url = url($url);
+        return $this;
+    }
+
+    /**
+     * Perform the redirect
+     * @return void
+     */
+    public function go()
+    {
+        header('Location: ' . $this->url);
+        exit;
+    }
+
+    /**
      * @param $data
      */
     public function backWithErrors($data){
@@ -40,8 +62,20 @@ class Redirect
     }
 
     public function backWith($key,$message){
-        Session::flash($key,$message);
+        Session::put($key, $message);
         return header('Location: ' . $_SERVER['HTTP_REFERER']);
+    }
+
+    /**
+     * Attach a flash message and redirect
+     * @param string $type
+     * @param string $message
+     * @return void
+     */
+    public function with($type, $message)
+    {
+        Session::put($type, $message);
+        $this->go();
     }
 
     public function json($data){

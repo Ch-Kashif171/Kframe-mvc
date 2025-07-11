@@ -8,7 +8,6 @@ use App\Providers\RouteServiceProvider;
 use Core\Database\Doctrine;
 use Core\Support\Auth;
 use Core\Support\NotFound;
-use Core\Support\Redirector;
 use Core\Support\Session;
 use Core\Support\Alert\Toastr;
 use Core\Utils\Redirect;
@@ -218,10 +217,10 @@ if(!function_exists('redirect')) {
 
     /**
      * @param null $url
-     * @return \Core\Support\Redirector
+     * @return \Core\Utils\Redirect
      */
     function redirect($url = null){
-        $redirector = new Redirector();
+        $redirector = new Redirect();
         if (!is_null($url)) {
             return $redirector->to($url);
         }
@@ -350,60 +349,20 @@ if(!function_exists('pagination')) {
     function pagination($links)
     {
         $html = '';
-        $show = showPages($links);
-
-        if ($show != 0) {
-            if (isset($_GET['page'])) {
-                $page = $_GET['page'];
-            } else {
-                $page = 1;
+        if (isset($links->last_page) && $links->last_page > 1) {
+            $html .= '<ul class="pagination">';
+            if ($links->prev_page_url) {
+                $html .= '<li><a href="' . $links->prev_page_url . '">&laquo; Previous</a></li>';
             }
-            $disabled = '';
-            if ($page == 1){
-                $prev = '<span class="page-link">&laquo; First</span>';
-                $disabled = 'disabled';
-            } else {
-                $prev = '<a class="page-link" href="' . $links->first_page_url . '" rel="next">&laquo; First</a>';
+            for ($i = 1; $i <= $links->last_page; $i++) {
+                $active = $i == $links->current_page ? ' class="active"' : '';
+                $html .= '<li' . $active . '><a href="' . $links->path . '?page=' . $i . '">' . $i . '</a></li>';
             }
-            if ($page == 1) {
-                $prev .= '<span class="page-link"><i class="fa fa-long-arrow-left "></i></span>';
-                $disabled = 'disabled';
-            } else {
-
-                $prev .= ' <a href="' . $links->prev_page_url . '"><i class="fa fa-long-arrow-left "></i></a>';
-                $disabled = '';
+            if ($links->next_page_url) {
+                $html .= '<li><a href="' . $links->next_page_url . '">Next &raquo;</a></li>';
             }
-
-            $html = '<ul class="pagination" role="navigation">
-        <li class="page-item ' . $disabled . '" aria-disabled="true">
-        ' . $prev . '
-        </li>';
-
-            if ($page == $show) {
-                $disabled = 'disabled';
-                $nexLink = 'javascript:void(0);';
-            } else {
-                $nexLink = $links->next_page_url;
-                $disabled = '';
-            }
-
-            if ($page < $show) {
-
-                $html .= '<li class="page-item ' . $disabled . '">
-            <a class="page-link" href="' . $nexLink . '" rel="next"><i class="fa fa-long-arrow-right "></i></a></li>';
-
-                $html .= '<li class="page-item ' . $disabled . '">
-            <a class="page-link" href="' . $links->last_page_url . '" rel="next">Last &raquo;</a></li>';
-
-            } else {
-                $html .= '<li class="page-item disabled"><span class="page-link"><i class="fa fa-long-arrow-right "></i></span></li>';
-
-                $html .= '<li class="page-item disabled"><span class="page-link">Last &raquo;</span></li>';
-            }
-
             $html .= '</ul>';
         }
-
         return $html;
     }
 }
