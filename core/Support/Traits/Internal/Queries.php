@@ -131,8 +131,7 @@ trait Queries
                 $columns .= $field->COLUMN_NAME.',';
             }
         }
-        $select_columns = rtrim($columns,',');
-        return $select_columns;
+        return rtrim($columns,',');
     }
 
 }

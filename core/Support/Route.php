@@ -203,7 +203,7 @@ class Route {
                 if (isset($routeArgs[1])) {
                     $controller = $routeArgs[0];
                     $method = $routeArgs[1];
-        } else {
+                } else {
                     throw new RouteNotFoundException("please specify a method in route");
                 }
                 self::call($controller, $method, $matches);
