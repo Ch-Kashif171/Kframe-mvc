@@ -49,18 +49,15 @@ class Doctrine
      */
     public function find($id)
     {
-
-        if(is_null($this->fields)) {
+        // Support joins and custom select logic, like first()
+        if (is_null($this->fields)) {
             $columns = $this->get_table_columns_except_some($this->table);
-            $sql = "SELECT {$columns} FROM " . $this->table." WHERE id = ".$id;
-
-        }else{
-            $sql = "SELECT ".$this->fields." FROM " . $this->table." WHERE id = ".$id;
+        } else {
+            $columns = $this->fields;
         }
-
-        $query = $this->con->query($sql) ;
+        $sql = "SELECT {$columns} FROM " . $this->table . $this->joins . " WHERE " . $this->table . ".id = " . $id;
+        $query = $this->con->query($sql);
         $this->result = $query->fetch(\PDO::FETCH_OBJ);
-
         return $this->result;
     }
 
@@ -301,6 +298,13 @@ class Doctrine
     public function select()
     {
         $fields = func_get_args();
+        // Convert 'table*' to 'table.*' for Laravel-like syntax
+        foreach ($fields as &$field) {
+            if (preg_match('/^([a-zA-Z0-9_]+)\*$/', $field, $matches)) {
+                $field = $matches[1] . '.*';
+            }
+        }
+        unset($field);
         $this->fields = implode(',', $fields);
         return new Doctrine($this->table,$this->hide_fields,$this->statement,$this->fields);
     }

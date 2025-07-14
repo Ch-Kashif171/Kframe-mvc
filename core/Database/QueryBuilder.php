@@ -3,7 +3,7 @@ namespace Core\Database;
 
 class QueryBuilder implements QueryBuilderInterface
 {
-    protected $doctrine;
+    protected Doctrine $doctrine;
 
     public function __construct($table, $hide_fields = null)
     {
