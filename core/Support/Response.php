@@ -1,7 +1,5 @@
 <?php
-namespace Core\Utils;
-
-use Core\Support\Session;
+namespace Core\Support;
 
 class Response
 {

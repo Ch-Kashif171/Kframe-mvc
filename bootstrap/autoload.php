@@ -11,7 +11,7 @@ require_once root_path.'/config/app.php';
 require_once root_path.'/core/Exception/whoopsExceptionRegister.php';
 require_once root_path.'/core/Utils/assetsNotFount.php';
 require_once root_path.'/config/mail.php';
-require_once root_path.'/core/Utils/Redirect.php';
+require_once root_path.'/core/Support/Redirect.php';
 require_once root_path.'/core/Support/Route.php';
 
 $__route_matched = require_once root_path.'/core/Utils/Loader.php';

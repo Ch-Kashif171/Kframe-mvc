@@ -6,11 +6,11 @@ if (!defined('root_path')) {
 
 use App\Providers\RouteServiceProvider;
 use Core\Database\Doctrine;
+use Core\Support\Alert\Toastr;
 use Core\Support\Auth;
 use Core\Support\NotFound;
+use Core\Support\Redirect;
 use Core\Support\Session;
-use Core\Support\Alert\Toastr;
-use Core\Utils\Redirect;
 
 
 if(!function_exists('dd')) {
@@ -217,7 +217,7 @@ if(!function_exists('redirect')) {
 
     /**
      * @param null $url
-     * @return \Core\Utils\Redirect
+     * @return \Core\Support\Redirect
      */
     function redirect($url = null)
     {

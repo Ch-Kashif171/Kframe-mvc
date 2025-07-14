@@ -1,9 +1,6 @@
 <?php
 
-namespace Core\Utils;
-
-use Core\Support\General;
-use Core\Support\Session;
+namespace Core\Support;
 
 class Redirect
 {
