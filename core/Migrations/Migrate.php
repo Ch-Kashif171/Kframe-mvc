@@ -2,9 +2,6 @@
 
 namespace Core\Migrations;
 
-use Core\Database\Doctrine;
-use Core\Migrations\RecordMigration;
-use Core\Migrations\Schema;
 use Core\Support\DB;
 
 class Migrate
@@ -64,11 +61,25 @@ class Migrate
     public static function drop($table)
     {
         $query = "DROP TABLE IF EXISTS {$table};";
-        $success = DB::rawQuery($query, true);
-        if ($success) {
+        try {
+            DB::rawQuery($query, true);
             echo "{$table} table has been dropped successfully\n";
-        } else {
+        } catch (\Exception $e) {
             echo "Failed to drop {$table} table or it does not exist\n";
+        }
+    }
+
+    /**
+     * Drop a table only if it exists (no warning if not present)
+     * @param string $table
+     */
+    public static function dropIfExists($table)
+    {
+        $db_name = config('database.db_database');
+        $tableExistQuery = "SELECT * FROM information_schema.tables WHERE table_schema = '".$db_name."' AND table_name = '".$table."' ";
+        $tableExist = \Core\Support\DB::rawQuery($tableExistQuery);
+        if ($tableExist && count($tableExist) > 0) {
+            self::drop($table);
         }
     }
 }

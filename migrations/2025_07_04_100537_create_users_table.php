@@ -2,6 +2,7 @@
 
 use Core\Migrations\Blueprint;
 use Core\Migrations\Migrate;
+use Core\Support\DB;
 
 class CreateUsersTable extends Migrate
 {
@@ -18,6 +19,6 @@ class CreateUsersTable extends Migrate
 
     public function down()
     {
-        Migrate::drop('users');
+        Migrate::dropIfExists('users');
     }
 }

@@ -20,6 +20,8 @@ require_once 'vendor/autoload.php';
  ******************************************************/
 
 require_once 'core/Utils/helpers.php';
+require_once 'core/Migrations/Migrate.php';
+require_once 'core/Migrations/Blueprint.php';
 
 /**
  * sent second @param, file name if load file other then .env

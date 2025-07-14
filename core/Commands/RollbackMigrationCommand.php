@@ -39,8 +39,8 @@ class RollbackMigrationCommand extends Command
             $output->writeln("<error>Migration file for $migrationName not found.</error>");
             return Command::FAILURE;
         }
-        require_once $migrationFile;
-        // Try to find the class in the file
+
+        // Get classes before requiring the migration file
         $classesBefore = get_declared_classes();
         require_once $migrationFile;
         $classesAfter = get_declared_classes();
