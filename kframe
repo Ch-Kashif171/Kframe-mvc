@@ -10,8 +10,6 @@ use Core\Commands\MigrationCommand;
 use Core\Commands\CreateMigrationCommand;
 use Core\Commands\RollbackMigrationCommand;
 
-
-
 define('root_path', getcwd());
 
 require_once 'vendor/autoload.php';
@@ -29,7 +27,6 @@ require_once 'core/Migrations/Blueprint.php';
 $dotenv = new Dotenv(getcwd());
 $dotenv->load();
 /***********************************************************/
-
 
 $application = new Application('Welcome to Kframe Developed By Kashif Sohail, Version: ', '1.0.2');
 $application->add(new CreateControllerCommand());

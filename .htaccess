@@ -9,6 +9,17 @@ RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 
+# Disable directory listing
+Options -Indexes
+
+# Allow direct access only to index.php, public assets, and deny access to sensitive directories
+<FilesMatch "^(index\.php|favicon\.ico|robots\.txt)$">
+    Require all granted
+</FilesMatch>
+
+# Deny access to sensitive directories if accessed directly
+RedirectMatch 403 ^/(app|core|config|migrations|logs|routes|views|bootstrap|vendor|tests|database|storage|resources|node_modules)(/|$)
+
 # Hide a specific file
 <Files .env>
     Order allow,deny

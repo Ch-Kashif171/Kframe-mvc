@@ -1,0 +1,23 @@
+====================
+[2025-07-14 13:19:50] [WHOOPS]
+Type: Exception
+Message: 404 - File not found: /Kframe-mvc/public/public/css/app.css
+File: C:\laragon\www\Kframe-mvc\core\Utils\assetsNotFount.php (Line 9)
+Trace:
+#0 C:\laragon\www\Kframe-mvc\bootstrap\autoload.php(12): require_once()
+#1 C:\laragon\www\Kframe-mvc\index.php(2): require_once('C:\\laragon\\www\\...')
+#2 {main}
+====================
+
+====================
+[2025-07-14 13:19:58] [WHOOPS]
+Type: Core\Exception\Handlers\RouteNotFoundException
+Message: Your given route did not match
+File: C:\laragon\www\Kframe-mvc\core\Support\RouteNotFount.php (Line 13)
+Trace:
+#0 C:\laragon\www\Kframe-mvc\core\Utils\routeExist.php(19): Core\Support\RouteNotFount::check()
+#1 C:\laragon\www\Kframe-mvc\bootstrap\autoload.php(21): require_once('C:\\laragon\\www\\...')
+#2 C:\laragon\www\Kframe-mvc\index.php(2): require_once('C:\\laragon\\www\\...')
+#3 {main}
+====================
+
