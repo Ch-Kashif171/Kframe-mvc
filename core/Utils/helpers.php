@@ -223,11 +223,11 @@ if(!function_exists('redirect')) {
     {
         if (!is_null($url)) {
             $url = ltrim($url, '/');
-            return header('Location: ' . url('/') . $url);
-
-        } else {
-            return new Redirect();
+            header('Location: ' . url('/') . $url);
+            exit;
         }
+
+        return new Redirect();
     }
 }
 
@@ -240,11 +240,11 @@ if(!function_exists('response')) {
     function response($url = null){
         if (!is_null($url)) {
             $url = ltrim($url, '/');
-            return header('Location: ' . url('/') . $url);
+            header('Location: ' . url('/') . $url);
+            exit;
 
-        } else {
-            return new Redirect();
         }
+        return new Redirect();
     }
 }
 
@@ -284,9 +284,7 @@ if(!function_exists('model')) {
         $class = end($model_array);
 
         $model = new $class();
-        $doctrine = new Doctrine($model->table());
-
-        return $doctrine;
+        return new Doctrine($model->table());
     }
 }
 
@@ -302,9 +300,7 @@ if(!function_exists('load')) {
         $model_array = explode('/', $model);
         $class = end($model_array);
 
-        $model = new $class();
-
-        return $model;
+        return new $class();
     }
 }
 
@@ -492,29 +488,30 @@ if(!function_exists('withErrors')) {
 }
 
 if(!function_exists('errors')) {
+    /**
+     * @param $key
+     * @return false|mixed
+     */
     function errors($key)
     {
-        $exist = Session::has('errors');
-        if ($exist) {
-            $errors = Session::get('errors');
-
-            if (isset($errors)) {
-                $error_bag = [];
-                foreach ($errors as $k=> $error) {
-                    //debug($errors);
-                    if (isset($error[$key])){
-                        $error_bag[$key] = $error[$key];
-                        Session::forget_array('errors',$k,$key);
-                        break;
-                    }
-                }
-                return $error_bag[$key];
-            } else {
-                return false;
-            }
-        } else {
+        if (!Session::has('errors')) {
             return false;
         }
+
+        $errors = Session::get('errors');
+        if (empty($errors)) {
+            return false;
+        }
+
+        foreach ($errors as $k => $error) {
+            if (isset($error[$key])) {
+                $message = $error[$key];
+                Session::forget_array('errors', $k, $key);
+                return $message;
+            }
+        }
+
+        return false;
     }
 }
 
