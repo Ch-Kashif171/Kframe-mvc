@@ -10,10 +10,12 @@ use Core\Exception\Handlers\RouteNotFoundException;
 use Core\Support\Traits\Csrf\csrfToken;
 use Core\Support\Traits\Middleware;
 use Core\Support\Traits\RouteParam;
+use Core\Support\Traits\RouteRegistrar;
+use Core\Support\Traits\RouteContext;
 
 class Route {
 
-    use csrfToken, Middleware, RouteParam;
+    use csrfToken, Middleware, RouteParam, RouteRegistrar;
 
     public $exit = '';
     public static $prefix;
@@ -91,31 +93,20 @@ class Route {
      * @throws RouteNotFoundException
      */
     public static function get($action, $controllerMethod) {
-        $action = ltrim($action, '/');
-        $action_route = '/' . $action;
-        $action = static::$prefix ? '/' . static::$prefix . $action_route : $action_route;
-        // Check for dynamic segments
-        if (strpos($action, '{') !== false) {
-            $pattern = preg_replace('#\{[^/]+\}#', '([^/]+)', $action);
-            $regex = '#^' . $pattern . '$#';
-            self::$dynamicRoutes['GET'][] = [
-                'regex' => $regex,
-                'route' => $action,
-                'controller' => $controllerMethod,
-                'middleware' => static::$middleware,
-                'namespace' => static::$namespace
-            ];
-        } else {
-        self::$routes['GET'][] = $action;
-        $routeKey = 'GET:' . $action;
-        self::$routeHandlers[$routeKey] = [
-            'controller' => $controllerMethod,
-            'middleware' => static::$middleware,
-            'namespace' => static::$namespace
-        ];
-        }
-        $routeBuilder = new RouteBuilder($action, 'GET', $controllerMethod);
-        return $routeBuilder;
+        $context = new RouteContext(
+            'GET',
+            $action,
+            $controllerMethod,
+            static::$prefix,
+            static::$namespace,
+            static::$middleware
+        );
+        return static::registerRoute(
+            $context,
+            self::$routes,
+            self::$dynamicRoutes,
+            self::$routeHandlers
+        );
     }
 
     /**
@@ -127,31 +118,20 @@ class Route {
      * @throws RouteNotFoundException
      */
     public static function post($action, $controllerMethod) {
-        $action = ltrim($action, '/');
-        $action_route = '/' . $action;
-        $action = static::$prefix ? '/' . static::$prefix . $action_route : $action_route;
-        // Check for dynamic segments
-        if (strpos($action, '{') !== false) {
-            $pattern = preg_replace('#\{[^/]+\}#', '([^/]+)', $action);
-            $regex = '#^' . $pattern . '$#';
-            self::$dynamicRoutes['POST'][] = [
-                'regex' => $regex,
-                'route' => $action,
-                'controller' => $controllerMethod,
-                'middleware' => static::$middleware,
-                'namespace' => static::$namespace
-            ];
-        } else {
-        self::$routes['POST'][] = $action;
-        $routeKey = 'POST:' . $action;
-        self::$routeHandlers[$routeKey] = [
-            'controller' => $controllerMethod,
-            'middleware' => static::$middleware,
-            'namespace' => static::$namespace
-        ];
-        }
-        $routeBuilder = new RouteBuilder($action, 'POST', $controllerMethod);
-        return $routeBuilder;
+        $context = new RouteContext(
+            'POST',
+            $action,
+            $controllerMethod,
+            static::$prefix,
+            static::$namespace,
+            static::$middleware
+        );
+        return static::registerRoute(
+            $context,
+            self::$routes,
+            self::$dynamicRoutes,
+            self::$routeHandlers
+        );
     }
 
     /**

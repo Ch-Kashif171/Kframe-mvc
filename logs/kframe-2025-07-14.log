@@ -1,0 +1,24 @@
+====================
+[2025-07-14 06:24:33] [WHOOPS]
+Type: Core\Exception\Handlers\RouteNotFoundException
+Message: Your given route did not match
+File: C:\laragon\www\Kframe-mvc\core\Support\RouteNotFount.php (Line 13)
+Trace:
+#0 C:\laragon\www\Kframe-mvc\core\Utils\routeExist.php(19): Core\Support\RouteNotFount::check()
+#1 C:\laragon\www\Kframe-mvc\bootstrap\autoload.php(21): require_once('C:\\laragon\\www\\...')
+#2 C:\laragon\www\Kframe-mvc\index.php(2): require_once('C:\\laragon\\www\\...')
+#3 {main}
+====================
+
+====================
+[2025-07-14 06:24:40] [WHOOPS]
+Type: Core\Exception\Handlers\RouteNotFoundException
+Message: Your given route did not match
+File: C:\laragon\www\Kframe-mvc\core\Support\RouteNotFount.php (Line 13)
+Trace:
+#0 C:\laragon\www\Kframe-mvc\core\Utils\routeExist.php(19): Core\Support\RouteNotFount::check()
+#1 C:\laragon\www\Kframe-mvc\bootstrap\autoload.php(21): require_once('C:\\laragon\\www\\...')
+#2 C:\laragon\www\Kframe-mvc\index.php(2): require_once('C:\\laragon\\www\\...')
+#3 {main}
+====================
+
