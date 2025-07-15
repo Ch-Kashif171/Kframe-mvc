@@ -13,7 +13,7 @@ define('root_path', getcwd());
 |
 */
 
-require_once root_path.'/vendor/autoload.php';
+require_once root_path . '/vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ require_once root_path.'/vendor/autoload.php';
 |
 */
 
-$app = require_once __DIR__.'/bootstrap/app.php';
+$app = require_once root_path . '/bootstrap/app.php';
 
 /*
 |--------------------------------------------------------------------------
