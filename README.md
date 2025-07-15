@@ -348,6 +348,3 @@ To register your application's route files, follow these steps:
 For more advanced usage, you can organize your routes into multiple files and simply add them to the array. No need to touch the core or autoload logic beyond the initial setup.
 
 ---
-
-## No manual setup needed
-- You do not need to manually flash or clear old input data; it is handled by the framework for all POST requests and successful redirects.
