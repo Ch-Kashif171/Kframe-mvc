@@ -39,16 +39,6 @@ trait QueryBuilder
         return $this->doctrine->groupBy($fields);
     }
 
-    public function limit($limit)
-    {
-        return $this->doctrine->limit($limit);
-    }
-
-    public function offset($offset)
-    {
-        return $this->doctrine->offset($offset);
-    }
-
     public function take($take)
     {
         return $this->doctrine->take($take);

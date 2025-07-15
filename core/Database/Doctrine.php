@@ -24,19 +24,21 @@ class Doctrine
      */
     public function first()
     {
-        if (is_null($this->fields)) {
-            $columns = $this->get_table_columns_except_some($this->table);
+        if (empty($this->fields)) {
+            $columns = '*';
         } else {
             $columns = $this->fields;
         }
+        $limitClause = $this->limit ?: '';
+        $offsetClause = $this->offset ?: '';
         $sql = "SELECT {$columns} FROM {$this->table}"
             . $this->joins
             . $this->wheres
             . $this->groupBy
             . $this->having
             . $this->orderBy
-            . $this->limit
-            . $this->offset;
+            . $limitClause
+            . $offsetClause;
         $query = $this->con->query($sql);
         $this->result = $query->fetch(\PDO::FETCH_OBJ);
         return $this->result;
@@ -50,8 +52,8 @@ class Doctrine
     public function find($id)
     {
         // Support joins and custom select logic, like first()
-        if (is_null($this->fields)) {
-            $columns = $this->get_table_columns_except_some($this->table);
+        if (empty($this->fields)) {
+            $columns = '*';
         } else {
             $columns = $this->fields;
         }
@@ -67,19 +69,21 @@ class Doctrine
      */
     public function get()
     {
-        if (is_null($this->fields)) {
-            $columns = $this->get_table_columns_except_some($this->table);
+        if (empty($this->fields)) {
+            $columns = '*';
         } else {
             $columns = $this->fields;
         }
+        $limitClause = $this->limit ?: '';
+        $offsetClause = $this->offset ?: '';
         $sql = "SELECT {$columns} FROM {$this->table}"
             . $this->joins
             . $this->wheres
             . $this->groupBy
             . $this->having
             . $this->orderBy
-            . $this->limit
-            . $this->offset;
+            . $limitClause
+            . $offsetClause;
         $query = $this->con->query($sql);
         $this->result = $query->fetchAll(\PDO::FETCH_OBJ);
         return $this->result;
@@ -544,9 +548,13 @@ class Doctrine
         }
         $offset = ($page - 1) * $limit;
 
+        // Use existing $this->limit/$this->offset if set, otherwise use paginate's
+        $limitClause = $this->limit ?: " LIMIT {$limit} ";
+        $offsetClause = $this->offset ?: " OFFSET {$offset} ";
+
         // Get data for current page
-        if (is_null($this->fields)) {
-            $columns = $this->get_table_columns_except_some($this->table);
+        if (empty($this->fields)) {
+            $columns = '*';
         } else {
             $columns = $this->fields;
         }
@@ -556,7 +564,8 @@ class Doctrine
             . $this->groupBy
             . $this->having
             . $this->orderBy
-            . " LIMIT {$limit} OFFSET {$offset} ";
+            . $limitClause
+            . $offsetClause;
         $query = $this->con->query($sql);
         $result = $query->fetchAll(\PDO::FETCH_OBJ);
 
