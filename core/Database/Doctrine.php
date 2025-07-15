@@ -392,7 +392,7 @@ class Doctrine
         return $this;
     }
 
-    public function orderByDesc($field, $order = 'DESC'): self
+    public function orderByDesc($field): self
     {
         $this->orderBy = " ORDER BY {$field} DESC";
         return $this;

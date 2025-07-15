@@ -11,6 +11,7 @@ namespace Core\Database;
  * @method object|null firstOrFail()
  * @method bool exists()
  * @method QueryBuilderInterface orderBy($field, $order = 'ASC')
+ * @method QueryBuilderInterface orderByDesc($field)
  * @method QueryBuilderInterface limit($limit)
  * @method int count()
  * @method float|int sum($column)
@@ -49,6 +50,7 @@ interface QueryBuilderInterface
     public function firstOrFail();
     public function exists(): bool;
     public function orderBy($field, $order = 'ASC'): QueryBuilderInterface;
+    public function orderByDesc($field): QueryBuilderInterface;
     public function limit($limit): QueryBuilderInterface;
     public function count(): int;
     public function sum($column);

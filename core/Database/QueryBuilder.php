@@ -43,9 +43,9 @@ class QueryBuilder implements QueryBuilderInterface
         return $this;
     }
 
-    public function orderByDesc($field, $order = 'ASC'): QueryBuilderInterface
+    public function orderByDesc($field): QueryBuilderInterface
     {
-        $this->doctrine = $this->doctrine->orderByDesc($field, $order);
+        $this->doctrine = $this->doctrine->orderByDesc($field);
         return $this;
     }
 
