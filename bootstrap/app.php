@@ -17,7 +17,7 @@ use Core\Support\LoadEnv;
 $app = new Application();
 
 // Only bound class-based services you want to access later
-$app->bind('dotenv', new LoadEnv(root_path));
+$app->singleton('dotenv', LoadEnv::class, [root_path]);
 
 /*
 |--------------------------------------------------------------------------

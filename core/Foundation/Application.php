@@ -52,23 +52,31 @@ class Application
 
     /**
      * @param $key
-     * @param $concrete
-     * @return mixed
+     * @return mixed|null
      */
-    public function bind($key, $concrete): mixed
+    public function get($key)
+    {
+        return $this->bindings[$key] ?? null;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $concrete
+     * @param array $args
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    public function bind(string $key, mixed $concrete, array $args = []): mixed
     {
         if (!isset($this->bindings[$key])) {
-            if (is_object($concrete) || is_callable($concrete)) {
-                // Store object instance or closure directly
-                $this->bindings[$key] = $concrete;
+            if (is_callable($concrete)) {
+                $this->bindings[$key] = $concrete();
             } elseif (is_string($concrete) && class_exists($concrete)) {
-                // Instantiate class if class name is given
-                $this->bindings[$key] = new $concrete();
+                $reflection = new \ReflectionClass($concrete);
+                $this->bindings[$key] = $reflection->newInstanceArgs($args);
             } elseif (is_string($concrete) && file_exists($concrete)) {
-                // Fallback: require file for legacy support
                 $this->bindings[$key] = require_once $concrete;
             } else {
-                // Store as is (could be array, scalar, etc.)
                 $this->bindings[$key] = $concrete;
             }
         }
@@ -76,12 +84,15 @@ class Application
     }
 
     /**
-     * @param $key
-     * @return mixed|null
+     * @param string $key
+     * @param mixed $concrete
+     * @param array $args
+     * @return mixed
+     * @throws \ReflectionException
      */
-    public function get($key)
+    public function singleton(string $key, mixed $concrete, array $args = []): mixed
     {
-        return $this->bindings[$key] ?? null;
+        return $this->bind($key, $concrete, $args);
     }
 
     /**
