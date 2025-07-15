@@ -298,7 +298,7 @@ class Doctrine
     public function select()
     {
         $fields = func_get_args();
-        // Convert 'table*' to 'table.*' for Laravel-like syntax
+        // Convert 'table*' to 'table.*'
         foreach ($fields as &$field) {
             if (preg_match('/^([a-zA-Z0-9_]+)\*$/', $field, $matches)) {
                 $field = $matches[1] . '.*';

@@ -15,7 +15,7 @@ use Core\Support\Session;
 
 if(!function_exists('dd')) {
     /**
-     * Dump and die with pretty JSON output (API-style, like Laravel for APIs).
+     * Dump and die with pretty JSON output (API-style).
      *
      * @param mixed ...$vars
      * @return void

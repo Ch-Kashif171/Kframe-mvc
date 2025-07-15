@@ -139,7 +139,8 @@ class Route {
      * @throws Exception\Handlers\MiddlewareNotFoundException
      * @throws RouteNotFoundException
      */
-    public static function executeRoutes() {
+    public static function executeRoutes(): bool
+    {
         $currentAction = self::action();
         $method = $_SERVER['REQUEST_METHOD'];
         $routeKey = $method . ':' . $currentAction;
