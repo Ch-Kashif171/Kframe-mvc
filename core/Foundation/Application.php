@@ -35,16 +35,6 @@ class Application
     ];
 
     /**
-     * @return void
-     */
-    protected function includeFiles()
-    {
-        foreach ($this->includes as $file) {
-            require_once root_path . $file;
-        }
-    }
-
-    /**
      * @return string
      */
     public static function version(): string
@@ -120,6 +110,16 @@ class Application
         }
 
         return true;
+    }
+
+    /**
+     * @return void
+     */
+    protected function includeFiles()
+    {
+        foreach ($this->includes as $file) {
+            require_once root_path . $file;
+        }
     }
 
 }

@@ -2,8 +2,7 @@
 session_start();
 
 use Core\Foundation\Application;
-use Core\Dotenv\Dotenv;
-use Core\Support\Redirect;
+use Core\Support\LoadEnv;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,9 +16,8 @@ use Core\Support\Redirect;
 */
 $app = new Application();
 
-// Only bind class-based services you want to access later
-$app->bind('dotenv', new Dotenv(root_path));
-$app->bind('redirect', new Redirect());
+// Only bound class-based services you want to access later
+$app->bind('dotenv', new LoadEnv(root_path));
 
 /*
 |--------------------------------------------------------------------------
