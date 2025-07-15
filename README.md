@@ -106,8 +106,6 @@ public function __construct()
 }
 ```
 
-Update your generator code and any custom scripts to reference these new locations for scaffolding.
-
 # Builtin Support Classes:
 There are some nice Support classes like:
 
@@ -343,13 +341,13 @@ To register your application's route files, follow these steps:
 
 - Add any new route files to this array.
 
-2. **Summary**
-
 - To add a new route file, just add it to the array in `app/Providers/RegisterRoutes.php`.
 - These will load all your route files automatically
----
+
 
 For more advanced usage, you can organize your routes into multiple files and simply add them to the array. No need to touch the core or autoload logic beyond the initial setup.
+
+---
 
 ## No manual setup needed
 - You do not need to manually flash or clear old input data; it is handled by the framework for all POST requests and successful redirects.
