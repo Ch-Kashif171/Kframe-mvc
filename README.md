@@ -241,7 +241,7 @@ Migrate::create('users', function (Blueprint $table) {
 To drop a table in your `down()` method:
 
 ```php
-Migrate::drop('users');
+Migrate::dropIfExists('users');
 ```
 
 Then run all pending migrations with:
@@ -251,83 +251,6 @@ Then run all pending migrations with:
 Run below command to rollback the migrations:
 
     php kframe migration:rollback
-
-# Register Custom Helper:
-For register custom helpers file in framework, make a directory under app, create a php file in this directory then for register this helper globally in framework include name in 'config/app.php' helpers like:
-   ```php 
-    'helpers' =>  array('helpers/my_helper'),
-   ```
-
-For more then one:
-   ```php
-    'helpers' =>  array('helpers/my_helper','helpers/my_other_helper'),
-   ``` 
-    
-# Register Custom Libraries:
-For register custom library file in framework, make a directory under app, create a php file in this directory then for register this library globally in framework include name in 'config/app.php' libraries like:
-   ```php
-    'libraries' =>  array('libraries/my_library'),
-   ```
-    
- For more then one:
-   ```php
-    'libraries' =>  array('libraries/my_library','libraries/other_library'),
-   ```
-
-# Migrations
-
-Kframe now supports a Laravel-like migration system for managing your database schema changes.
-
-## Creating a Migration
-
-To create a new migration file, use:
-
-    php kframe make:migration create_users_table
-    # or
-    php kframe make:migration CreateUsersTable
-
-- The generated file will be placed in the `migrations/` directory with a timestamped filename.
-- The migration class name will be StudlyCase (e.g., `CreateUsersTable`).
-- The table name will be automatically extracted as `users` (or `about_us` for `create_about_us_table`).
-
-## Editing a Migration
-
-Edit the generated migration file to define your schema in the `up()` and `down()` methods:
-
-```php
-public function up()
-{
-    Migrate::create('users', [
-        $this->table->increments('id'),
-        $this->table->string('name'),
-        $this->table->timestamps(),
-    ]);
-}
-
-public function down()
-{
-    Migrate::drop('users');
-}
-```
-
-## Running Migrations
-
-To run all pending migrations:
-
-    php kframe migration migrate
-
-- This will scan the `migrations/` directory and run the `up()` method for each migration that hasn't been run yet.
-- Applied migrations are tracked in the `migrations` table in your database.
-- You can safely add new migration files and rerun the command; only new migrations will be executed.
-
-## Rolling Back Migrations
-
-To roll back the most recent migration:
-
-    php kframe migration rollback
-
-- This will call the `down()` method of the latest applied migration and remove it from the `migrations` table.
-- You can run this command multiple times to roll back multiple migrations, one at a time.
 
 # Old Input Values (Form Repopulation)
 
@@ -391,10 +314,6 @@ $rules = [
 - `$validator->error('field')` &mdash; Returns the error message for a specific field.
 - `$validator->first()` &mdash; Returns the first error message.
 
-
-## No manual setup needed
-- You do not need to manually flash or clear old input data; it is handled by the framework for all POST requests and successful redirects.
-
 # Kframe Route Registration
 
 ## Registering Route Files
@@ -422,29 +341,15 @@ To register your application's route files, follow these steps:
    }
    ```
 
-   - Add any new route files to this array.
+- Add any new route files to this array.
 
-2. **How the Core Loads Your Routes**
-
-   The core will automatically load all files listed in `RegisterRoutes::register()` when you call:
-
-   ```php
-   \Core\Support\Route::init();
-   ```
-   This is typically done in your `bootstrap/autoload.php`:
-
-   ```php
-   require_once root_path.'/core/Support/Route.php';
-   \Core\Support\Route::init();
-   ```
-
-   You do **not** need to manually require each route file anywhere else.
-
-3. **Summary**
+2. **Summary**
 
 - To add a new route file, just add it to the array in `app/Providers/RegisterRoutes.php`.
-- The core will handle loading all your route files automatically when `Route::init()` is called.
-
+- These will load all your route files automatically
 ---
 
 For more advanced usage, you can organize your routes into multiple files and simply add them to the array. No need to touch the core or autoload logic beyond the initial setup.
+
+## No manual setup needed
+- You do not need to manually flash or clear old input data; it is handled by the framework for all POST requests and successful redirects.
