@@ -19,10 +19,10 @@ class Application
      * @var array|string[]
      */
     protected array $includes = [
+        '/core/Utils/assetsNotFount.php',
         '/core/Utils/helpers.php',
         '/config/app.php',
         '/core/Exception/whoopsExceptionRegister.php',
-        '/core/Utils/assetsNotFount.php',
         '/config/mail.php',
     ];
 
