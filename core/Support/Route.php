@@ -295,8 +295,4 @@ class Route {
         }
     }
 
-    public static function init()
-    {
-        RegisterAllRoutes::loadAll();
-    }
 }

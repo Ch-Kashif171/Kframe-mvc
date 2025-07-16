@@ -8,6 +8,7 @@ use Core\Exception\Log;
 use Core\Exception\Whoops;
 use Core\Support\AssetsNotFound;
 use Core\Support\LoadEnv;
+use Core\Support\RegisterAllRoutes;
 use Core\Support\Route;
 
 class Application
@@ -28,7 +29,7 @@ class Application
     ];
 
     /**
-     * @var array|string[] 
+     * @var array|string[]
      */
     protected array $postIncludes = [
         '/config/mail.php',
@@ -144,7 +145,7 @@ class Application
         $this->includeFiles();
 
         // Initialize all routes
-        Route::init();
+        RegisterAllRoutes::loadAll();
 
         // Try to execute the matched route
         $routeMatched = false;
