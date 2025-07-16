@@ -2,10 +2,20 @@
 
 namespace Core\Support;
 
+/**
+ * Class AssetsNotFound
+ *
+ * Handles 404 errors for missing static assets (css, js, images, etc.).
+ *
+ * @package Core\Support
+ */
 class AssetsNotFound
 {
     /**
-     * @throws \Exception
+     * Check if the requested asset exists, and throw a 404 exception if not.
+     *
+     * @return bool True if asset exists or not an asset request
+     * @throws \Exception If the asset is not found
      */
     public static function run()
     {
