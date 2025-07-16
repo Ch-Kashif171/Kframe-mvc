@@ -8,6 +8,7 @@ use App\Providers\RouteServiceProvider;
 use Core\Database\Doctrine;
 use Core\Support\Alert\Toastr;
 use Core\Support\Auth;
+use Core\Support\ModelFactory;
 use Core\Support\NotFound;
 use Core\Support\Redirect;
 use Core\Support\Session;
@@ -276,15 +277,9 @@ if(!function_exists('model')) {
      * @param $model
      * @return mixed
      */
-    function model($model){
-
-        $base = __DIR__ . '/../';
-        require_once($base . "app/models/" . $model . ".php");
-        $model_array = explode('/', $model);
-        $class = end($model_array);
-
-        $model = new $class();
-        return new Doctrine($model->table());
+    function model($model)
+    {
+        return ModelFactory::make($model);
     }
 }
 
@@ -294,7 +289,8 @@ if(!function_exists('load')) {
      * @param $model
      * @return mixed
      */
-    function load($model){
+    function load($model)
+    {
         $base = __DIR__ . '/../';
         require_once($base . "app/models/" . $model . ".php");
         $model_array = explode('/', $model);

@@ -10,8 +10,6 @@ use Core\Commands\MigrationCommand;
 use Core\Commands\CreateMigrationCommand;
 use Core\Commands\RollbackMigrationCommand;
 
-
-
 define('root_path', getcwd());
 
 require_once 'vendor/autoload.php';

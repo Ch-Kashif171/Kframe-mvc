@@ -121,6 +121,10 @@ class Application
         }
     }
 
+    /**
+     * @return void
+     * @throws \ReflectionException
+     */
     protected function registerSingletons(): void
     {
         $this->singleton('dotenv', LoadEnv::class, [root_path]);
