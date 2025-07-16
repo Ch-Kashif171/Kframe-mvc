@@ -5,6 +5,9 @@ namespace Core\Foundation;
 use Core\Exception\Handlers\MiddlewareNotFoundException;
 use Core\Exception\Handlers\RouteNotFoundException;
 use Core\Exception\Log;
+use Core\Exception\Whoops;
+use Core\Support\AssetsNotFound;
+use Core\Support\LoadEnv;
 use Core\Support\Route;
 
 class Application
@@ -19,11 +22,17 @@ class Application
      * @var array|string[]
      */
     protected array $includes = [
-        '/core/Utils/assetsNotFount.php',
         '/core/Utils/helpers.php',
         '/config/app.php',
-        '/core/Exception/whoopsExceptionRegister.php',
+        // Add other files to include before singletons here
+    ];
+
+    /**
+     * @var array|string[] 
+     */
+    protected array $postIncludes = [
         '/config/mail.php',
+        // Add other files to include after singletons here
     ];
 
     /**
@@ -93,6 +102,38 @@ class Application
     public function singleton(string $key, mixed $concrete, array $args = []): mixed
     {
         return $this->bind($key, $concrete, $args);
+    }
+
+    /**
+     * Boot the application: load files and register services in order.
+     */
+    public function boot(): void
+    {
+        foreach ($this->includes as $file) {
+            $this->includeFile($file);
+        }
+
+        $this->registerSingletons();
+
+        foreach ($this->postIncludes as $file) {
+            $this->includeFile($file);
+        }
+    }
+
+    protected function registerSingletons(): void
+    {
+        $this->singleton('dotenv', LoadEnv::class, [root_path]);
+        $this->singleton('assetsNotFound', [AssetsNotFound::class, 'run']);
+        $this->singleton('whoops', [Whoops::class, 'handle']);
+        // Add more singletons here as needed
+    }
+
+    /**
+     * Helper to include a file from root_path.
+     */
+    protected function includeFile(string $path): void
+    {
+        require_once root_path . $path;
     }
 
     /**

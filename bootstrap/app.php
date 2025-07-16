@@ -1,8 +1,6 @@
 <?php
-session_start();
 
 use Core\Foundation\Application;
-use Core\Support\LoadEnv;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,8 +14,8 @@ use Core\Support\LoadEnv;
 */
 $app = new Application();
 
-// Only bound class-based services you want to access later
-$app->singleton('dotenv', LoadEnv::class, [root_path]);
+//  Boot the application: load files and register services in order.
+$app->boot();
 
 /*
 |--------------------------------------------------------------------------
