@@ -188,7 +188,7 @@ php kframe migration:rollback
 
 ## 🧩 Extending Routes
 
-Register route files in `app/Providers/RegisterRoutes.php`:
+Register route files in `app/Providers/RouteServiceProvider.php`:
 
 ```php
 return [

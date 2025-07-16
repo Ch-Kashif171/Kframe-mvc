@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 if (!defined('root_path')) {
+    // Always resolve to the project root, even if called from public/index.php
     define('root_path', dirname(__DIR__, 2));
 }
 
@@ -57,7 +58,6 @@ if(!function_exists('url')) {
      */
     function url(?string $path) {
         $base = rtrim(path(), '/');
-
         if (preg_match('/^\/+$/', $path)) {
             return $base . '/';
         }
@@ -80,7 +80,7 @@ if(!function_exists('path')) {
     {
         // CLI fallback (e.g., Artisan or PHPUnit)
         if (php_sapi_name() === 'cli' || !isset($_SERVER['SERVER_NAME'])) {
-            return defined('root_path') ? root_path : getcwd();
+            return defined('root_path') ? root_path : root_path;
         }
 
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
@@ -328,7 +328,7 @@ if(!function_exists('include_html')) {
      * @param $path
      */
     function include_html($path){
-        $viewPath = getcwd() . '/views/' . $path;
+        $viewPath = root_path . '/views/' . $path;
         if (strpos($path,'.php') === false) {
             $viewPath .= '.php';
         }

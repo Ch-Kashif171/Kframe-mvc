@@ -39,19 +39,14 @@ class Route {
      */
     public static function action(): string
     {
-        $uri     =   parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $arr     =   explode('/',$uri);
-        unset($arr[0]);
-        unset($arr[1]);
-        $action = implode('/', $arr);
+        $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $basePath   = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 
-        if ($action == ''){
-            $action  =   '/';
-        } else {
-            $action = '/' . $action;
-        }
+        // Remove base path from URI (like /project/public)
+        $uri = '/' . ltrim(str_replace($basePath, '', $requestUri), '/');
 
-        return $action;
+        // Normalize empty to root
+        return $uri === '' ? '/' : $uri;
     }
 
     /**
@@ -101,6 +96,7 @@ class Route {
             static::$namespace,
             static::$middleware
         );
+
         return static::registerRoute(
             $context,
             self::$routes,

@@ -88,13 +88,13 @@ class Generator {
      */
     public  function generateModel($modelname){
 
-        if (file_exists(getcwd(). '/app/models'.'/'.$modelname.'.php')) {
+        if (file_exists(root_path . '/app/models'.'/'.$modelname.'.php')) {
             return [
                 'status' => false,
                 'message' => ucfirst($modelname).'Model Build Not Successful, Model Already Exist'
             ];
         }
-        $templatefile = getcwd(). '/core/Templates/Models/ModelTemplate.php';
+        $templatefile = root_path . '/core/Templates/Models/ModelTemplate.php';
         if(file_exists($templatefile)){
 
             if (strpos($modelname,'\\') !== false){
@@ -109,7 +109,7 @@ class Generator {
 
             if( strpos(file_get_contents($templatefile),'modelname') !== false) {
                 $newcontent = str_replace('modelname', $model_class_name, file_get_contents($templatefile));
-                $modelfile = getcwd(). '/app/models'.'/'.$modelname.'.php';
+                $modelfile = root_path . '/app/models'.'/'.$modelname.'.php';
                 fopen($modelfile, 'w');
                 file_put_contents($modelfile,$newcontent);
                 return [
@@ -134,20 +134,20 @@ class Generator {
     {
         $response['errors'] = [];
 
-        if (!file_exists(getcwd(). '/app/controllers/Auth')) {
-            mkdir(getcwd(). '/app/Controllers/Auth', 0777, true);
+        if (!file_exists(root_path . '/app/controllers/Auth')) {
+            mkdir(root_path . '/app/Controllers/Auth', 0777, true);
         }
 
         /*loginController*/
         $controllerName = 'Login';
-        if (file_exists(getcwd(). '/app/Controllers/Auth/LoginController.php')) {
+        if (file_exists(root_path . '/app/Controllers/Auth/LoginController.php')) {
             $response['errors'][] = 'LoginController Already Exist';
         }
-        $templatefile = getcwd(). '/core/Templates/Controllers/AuthControllerTemplate.php';
+        $templatefile = root_path . '/core/Templates/Controllers/AuthControllerTemplate.php';
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
-                $controllerfile = getcwd(). '/app/Controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
+                $controllerfile = root_path . '/app/Controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
                 $newfile = fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
             }
@@ -159,14 +159,14 @@ class Generator {
 
         /*RegisterController*/
         $controllerName = 'Register';
-        if (file_exists(getcwd(). '/app/Controllers/Auth/RegisterController.php')) {
+        if (file_exists(root_path . '/app/Controllers/Auth/RegisterController.php')) {
             $response['errors'][] = 'RegisterController Already Exist';
         }
-        $templatefile = getcwd(). '/core/Templates/Controllers/RegisterControllerTemplate.php';
+        $templatefile = root_path. '/core/Templates/Controllers/RegisterControllerTemplate.php';
         if(file_exists($templatefile)){
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
-                $controllerfile = getcwd(). '/app/Controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
+                $controllerfile = root_path. '/app/Controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
                 $newfile = fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
             }
@@ -195,11 +195,11 @@ class Generator {
      * @return array
      */
     private function generateRoutes() {
-        $templatefile = getcwd(). '/core/Templates/Routes/RouteTemplate.php';
+        $templatefile = root_path. '/core/Templates/Routes/RouteTemplate.php';
         if(file_exists($templatefile)){
 
             $newcontent = file_get_contents($templatefile);
-            $routefile = getcwd(). '/routes/web.php';
+            $routefile = root_path. '/routes/web.php';
 
             if(str_contains(file_get_contents($routefile), $newcontent)) {
 
@@ -224,28 +224,28 @@ class Generator {
     }
 
     private function generateViews() {
-        if (!file_exists(getcwd(). '/views/auth')) {
-            mkdir(getcwd(). '/views/auth', 0777, true);
+        if (!file_exists(root_path. '/views/auth')) {
+            mkdir(root_path. '/views/auth', 0777, true);
         }
 
         /*loginController*/
-        if (file_exists(getcwd(). '/views/auth/login.php')) {
+        if (file_exists(root_path. '/views/auth/login.php')) {
             return [
                 'status' => false,
                 'message' => 'Login view already exist'
             ];
         }
-        if (file_exists(getcwd(). '/views/auth/register.php')) {
+        if (file_exists(root_path. '/views/auth/register.php')) {
             return [
                 'status' => false,
                 'message' => 'Register view already exist'
             ];
         }
-        $register_template = getcwd(). '/core/Templates/Views/auth/register.php';
+        $register_template = root_path. '/core/Templates/Views/auth/register.php';
         if(file_exists($register_template)){
 
             $newcontent = file_get_contents($register_template);
-            $register_view = getcwd(). '/views/auth/register.php';
+            $register_view = root_path. '/views/auth/register.php';
             file_put_contents($register_view,$newcontent);
         }  else {
             return [
@@ -254,11 +254,11 @@ class Generator {
             ];
         }
 
-        $login_template = getcwd(). '/core/Templates/Views/auth/login.php';
+        $login_template = root_path. '/core/Templates/Views/auth/login.php';
         if(file_exists($login_template)){
 
             $newcontent = file_get_contents($login_template);
-            $login_view = getcwd(). '/views/auth/login.php';
+            $login_view = root_path. '/views/auth/login.php';
             file_put_contents($login_view,$newcontent);
         }  else {
             return [
@@ -267,11 +267,11 @@ class Generator {
             ];
         }
 
-        $header_template = getcwd(). '/core/Templates/Views/partials/header.php';
+        $header_template = root_path. '/core/Templates/Views/partials/header.php';
         if(file_exists($header_template)){
 
             $newcontent = file_get_contents($header_template);
-            $header_view = getcwd(). '/views/partials/header.php';
+            $header_view = root_path. '/views/partials/header.php';
             file_put_contents($header_view,$newcontent);
         }  else {
             return [
@@ -299,7 +299,7 @@ class Generator {
             }
             $className = $result[0]['migration'];
             // Find the migration file
-            $migrationDir = getcwd() . '/migrations/';
+            $migrationDir = root_path . '/migrations/';
             $files = glob($migrationDir . '*.php');
             $fileToRollback = null;
             foreach ($files as $file) {
@@ -329,7 +329,7 @@ class Generator {
         }
         // If the argument is 'migrate', run all migration files in the migrations directory
         if ($migrate === 'migrate') {
-            $migrationDir = getcwd() . '/migrations/';
+            $migrationDir = root_path . '/migrations/';
             if (!file_exists($migrationDir)) {
                 return [
                     'status' => false,
@@ -401,7 +401,7 @@ class Generator {
      */
     public function generateMigrationFile(string $name): array
     {
-        $templateFile = getcwd() . '/core/Templates/Migrations/MigrationTemplate.php';
+        $templateFile = root_path . '/core/Templates/Migrations/MigrationTemplate.php';
         if (!file_exists($templateFile)) {
             return [
                 'status' => false,
@@ -412,7 +412,7 @@ class Generator {
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
         $timestamp = date('Y_m_d_His');
         $fileName = $timestamp . '_' . strtolower($name) . '.php';
-        $migrationDir = getcwd() . '/migrations/';
+        $migrationDir = root_path . '/migrations/';
         if (!file_exists($migrationDir)) {
             mkdir($migrationDir, 0777, true);
         }

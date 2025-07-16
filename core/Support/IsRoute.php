@@ -8,7 +8,6 @@ class IsRoute
 
     private static $isRoute;
 
-
     public static function checkRoute($route) {
         static::$isRoute = $route;
     }

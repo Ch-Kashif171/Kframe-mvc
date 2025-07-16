@@ -1,6 +1,6 @@
 <?php
 
-define('root_path', getcwd());
+define('root_path', dirname(__DIR__));
 
 /*
 |--------------------------------------------------------------------------
@@ -34,4 +34,4 @@ $app = require_once root_path . '/bootstrap/app.php';
 |--------------------------------------------------------------------------
 | This function responsible to initiate the application instances.
 */
-$app->init();
+$app->init(); 

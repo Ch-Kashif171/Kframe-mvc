@@ -98,7 +98,7 @@ class Loader
     protected function ensureFileIsReadable()
     {
         if (!is_readable($this->filePath) || !is_file($this->filePath)) {
-            throw new Exception(sprintf('Unable to read the environment file at %s.', $this->filePath));
+            throw new \Exception(sprintf('Unable to read the environment file at %s.', $this->filePath));
         }
     }
 

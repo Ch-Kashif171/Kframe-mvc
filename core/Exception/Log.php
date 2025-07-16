@@ -48,7 +48,7 @@ class Log
      */
     protected static function getLogFile($logChannel)
     {
-        $logDir = getcwd() . '/logs/';
+        $logDir = root_path . '/logs/';
         if ($logChannel === 'daily') {
             $date = date('Y-m-d');
             return $logDir . "kframe-{$date}.log";

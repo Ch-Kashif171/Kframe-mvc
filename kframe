@@ -10,7 +10,7 @@ use Core\Commands\MigrationCommand;
 use Core\Commands\CreateMigrationCommand;
 use Core\Commands\RollbackMigrationCommand;
 
-define('root_path', getcwd());
+const root_path = __DIR__;
 
 require_once 'vendor/autoload.php';
 /******************************************************
@@ -24,6 +24,7 @@ require_once 'core/Migrations/Blueprint.php';
 /**
  * sent second @param, file name if load file other then .env
  */
+
 $dotenv = new Dotenv(root_path);
 $dotenv->load();
 /***********************************************************/

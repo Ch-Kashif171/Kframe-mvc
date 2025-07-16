@@ -45,6 +45,7 @@ trait RouteRegistrar
                 'namespace' => $context->namespace
             ];
         }
+
         return new RouteBuilder($action, $context->httpMethod, $context->controllerMethod);
     }
 } 
