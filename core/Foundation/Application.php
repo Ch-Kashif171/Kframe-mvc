@@ -107,6 +107,7 @@ class Application
 
     /**
      * Boot the application: load files and register services in order.
+     * @throws \ReflectionException
      */
     public function boot(): void
     {

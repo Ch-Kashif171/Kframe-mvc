@@ -22,7 +22,7 @@ require_once 'core/Migrations/Migrate.php';
 require_once 'core/Migrations/Blueprint.php';
 
 /**
- * sent second @param, file name if load file other then .env
+ * sent second @param, file name if load file other than .env
  */
 
 $dotenv = new Dotenv(root_path);

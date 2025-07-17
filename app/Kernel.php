@@ -7,7 +7,7 @@ use App\Middleware\Authenticate;
 class Kernel
 {
 
-    public $routeMiddleware = [
+    public array $routeMiddleware = [
         'auth' => Authenticate::class,
     ];
 }

@@ -1,18 +1,10 @@
 <?php include_html('partials/header.php');?>
 
-<!-- Main Container -->
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">Home</div>
-                <div class="panel-body text-center">
-                    <h1 class="welcome-title">Welcome</h1>
-                    <hr>
-                    <p class="subtitle">Kframe</p>
-                </div>
-            </div>
-        </div>
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-content text-center">
+        <h1 class="welcome-title">Welcome to <span class="brand-highlight">Kframe</span></h1>
+        <p class="subtitle">A modern, lightweight PHP MVC framework for rapid development.</p>
     </div>
 </div>
 
