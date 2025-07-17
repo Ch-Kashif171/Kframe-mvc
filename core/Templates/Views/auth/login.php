@@ -1,0 +1,33 @@
+<?php include_html('partials/header.php'); ?>
+
+<div class="auth-centered-section">
+    <div class="auth-card">
+        <h2 class="auth-title">Sign In</h2>
+        <form action="<?php echo url('login')?>" method="post">
+            <?php include_html('flash/messages.php'); ?>
+            <?php csrf_token(); ?>
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" class="form-control <?php echo (has_error('email')?'error':'') ?>" id="email" name="email" placeholder="Enter your email">
+                <?php if (has_error('email')) { ?>
+                    <span class="text text-danger" role="alert">
+                        <strong><?php echo errors('email');?></strong>
+                    </span>
+                <?php } ?>
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password</label>
+                <input type="password" class="form-control <?php echo (has_error('password')?'error':'') ?>" id="pwd" name="password" placeholder="Enter your password">
+                <?php if (has_error('password')) { ?>
+                    <span class="text text-danger" role="alert">
+                        <strong><?php echo errors('password');?></strong>
+                    </span>
+                <?php } ?>
+            </div>
+            <button class="btn btn-auth-primary" type="submit">Sign In</button>
+            <div class="auth-switch-link">Don't have an account? <a href="<?php echo url('/signup'); ?>">Sign Up</a></div>
+        </form>
+    </div>
+</div>
+
+<?php include_html('partials/footer.php'); ?>

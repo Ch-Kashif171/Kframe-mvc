@@ -206,18 +206,21 @@ footer a:hover {
     border: none;
 }
 .navbar-inverse, .navbar-custom {
-    background: #232b36 !important;
+    background: #2c3e50 !important;
     border: none;
     box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
 }
 .navbar-inverse .navbar-brand,
-.navbar-inverse .navbar-nav > li > a {
-    color: #ecf0f1 !important;
+.navbar-inverse .navbar-nav > li > a,
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-nav > li > a {
+    color: #fff !important;
     font-weight: 600;
     letter-spacing: 1px;
     text-shadow: none;
 }
-.navbar-inverse .navbar-nav > li > a:hover {
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-custom .navbar-nav > li > a:hover {
     background-color: #34495e;
     color: #fff !important;
 }
@@ -546,21 +549,27 @@ footer {
     }
 }
 .btn-signup, .btn-signin {
-    background: #fff !important;
-    color: #232b36 !important;
+    background: transparent !important;
+    color: #fff !important;
     border: 1px solid #b2d0ce;
     font-weight: 600;
     box-shadow: none;
     transition: background 0.2s, color 0.2s, border 0.2s;
 }
 .btn-signup:hover, .btn-signin:hover {
-    background: #f0f4f8 !important;
-    color: #2d3a4a !important;
+    background: #34495e !important;
+    color: #fff !important;
     border: 1px solid #a3b8c2;
 }
 .navbar-nav .nav-item.active > .nav-link {
-    background: #f0f4f8 !important;
-    color: #232b36 !important;
+    background: #080808 !important;
+    color: #fff !important;
+    width: 65px;
     font-weight: 700;
-    border-radius: 8px;
+    border-radius: 5px;
+    padding-left: 10px !important;
+}
+.navbar-nav .nav-link,
+.navbar-brand {
+    font-size: 14px;
 }

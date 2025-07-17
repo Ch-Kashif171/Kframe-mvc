@@ -33,7 +33,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                <li class="nav-item<?php echo ($_SERVER['REQUEST_URI'] === '/' ? ' active' : ''); ?>">
+                <li class="nav-item active">
                     <a class="nav-link" href="<?php echo url('/'); ?>">Home</a>
                 </li>
             </ul>
