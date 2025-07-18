@@ -19,8 +19,8 @@ class controllername extends Controller
         return view('auth/login');
     }
 
-  	public function login(Request $request)
-  	{
+    public function login(Request $request)
+    {
         $validation = Validator::validate($request->all(), [
             'email' => 'required|mail',
             'password' => 'required',
@@ -30,13 +30,14 @@ class controllername extends Controller
             return redirect()->backWithErrors($validation->errors());
         }
 
-        if (Auth::attempt(['email'=>$request->post('email'),'password'=>$request->post('password')])){
-            return redirect('/');
-        } else {
-
-            return redirect()->backWith('error','credentials did not match with our record');
+        if (Auth::attempt([
+            'email' => $request->post('email'),
+            'password'=>$request->post('password')
+        ])) {
+            return redirect(home());
         }
-  	}
+        return redirect()->backWith('error','credentials did not match with our record');
+    }
 
     public function logout()
     {

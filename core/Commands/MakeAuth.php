@@ -39,9 +39,7 @@ class MakeAuth extends Command
             return Command::SUCCESS;
         }
         else {
-            foreach ($build['message'] as $error) {
-                $output->writeln(["<bg=red;options=bold>{$error}</>"]);
-            }
+            $output->writeln(["<bg=red;options=bold>{$build['message']}</>"]);
             return Command::FAILURE;
         }
 

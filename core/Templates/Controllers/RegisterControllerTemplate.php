@@ -43,6 +43,6 @@ class controllername extends Controller
             'password' => $request->post('password')
         ]);
 
-        return redirect('/');
+        return redirect(home());
   	}
 }

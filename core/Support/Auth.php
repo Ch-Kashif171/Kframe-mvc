@@ -64,20 +64,20 @@ class Auth
     {
         $auth_fields = (new self)->getAuthTableFieldsSkipPassword($credentials);
         $result = (new self)->checkUser($auth_fields);
-        if($result){
-            $verify = (new self)->verify($credentials,$result);
-            if($verify){
+        if($result) {
+            $verify = (new self)->verify($credentials, $result);
+            if($verify) {
                 session_regenerate_id(true); // Prevent session fixation
                 $_SESSION['user'] = $result;
                 return true;
-            }else{
+            } else {
                 self::logout();
                 return false;
             }
-        }else{
-            self::logout();
-            return false;
         }
+
+        self::logout();
+        return false;
     }
 
     /**
@@ -126,11 +126,9 @@ class Auth
      * @return mixed
      * @throws \Whoops\Exception\ErrorException
      */
-    private function checkUser($credentials)
+    private function checkUser($credentials): mixed
     {
-
-        $result = $this->db->where_array($credentials)->first();
-        return $result;
+        return $this->db->where_array($credentials)->userFound();
     }
 
     /**

@@ -11,6 +11,7 @@ trait Queries
     public $con;
     protected $table;
     public $statement;
+    public $where_statement;
     public $where;
     public $fields;
     protected $hide_fields;
@@ -39,21 +40,25 @@ trait Queries
     public function where_array($data)
     {
         $count = 1;
-        $query = '';
-        foreach ($data as $column=> $value){
-            if($count == 1){
-                $query .= " WHERE ".$column." = '".$value."' ";
-            }else{
-                $query .= " AND ".$column." = '".$value."' ";
+        foreach ($data as $column=> $value) {
+            if($count == 1 && $this->where_statement == '') {
+                $this->where_statement .= " WHERE ".$column." = '".$value."' ";
+            } else {
+                $this->where_statement .= " AND ".$column." = '".$value."' ";
             }
+
             $count++;
         }
 
-        if ($query != ''){
-            $this->statement .= $query;
-        }
-
         return $this;
+    }
+
+    public function userFound()
+    {
+        $sql = "SELECT * FROM {$this->table} {$this->where_statement}";
+        $query = $this->con->query($sql);
+        $this->result = $query->fetch(\PDO::FETCH_OBJ);
+        return $this->result;
     }
 
     /**

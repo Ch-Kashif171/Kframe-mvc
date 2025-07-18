@@ -132,6 +132,116 @@ class Generator {
      */
     public  function generateAuth($controllerName)
     {
+        $response[] = $this->generateAuthControllers();
+        $response[] = $this->generateRoutes();
+        $response[] = $this->generateViews();
+
+        $errorMessages = [];
+        foreach ($response as $errors) {
+            foreach ($errors['errors'] as $error) {
+                $errorMessages[] = $error;
+            }
+        }
+
+        if (!empty($errorMessages)) {
+            return [
+                'status' => false,
+                'message' => implode("\n", $errorMessages)
+            ];
+        }
+        return [
+            'status' => true,
+            'message' => 'Auth Scaffolding Created successfully'
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function generateRoutes()
+    {
+        $response['errors'] = [];
+        $templatefile = root_path. '/core/Templates/Routes/RouteTemplate.php';
+        if(file_exists($templatefile)){
+
+            $newcontent = file_get_contents($templatefile);
+            $routefile = root_path. '/routes/web.php';
+
+            if(str_contains(file_get_contents($routefile), $newcontent)) {
+                $response['errors'][] = "Auth routes already exists!";
+            } else {
+                $newfile = fopen($routefile, 'a');
+                file_put_contents($routefile, $newcontent,FILE_APPEND | LOCK_EX);
+            }
+        }
+
+        return $response;
+    }
+
+    private function generateViews()
+    {
+        $response['errors'] = [];
+        if (!file_exists(root_path. '/views/auth')) {
+            mkdir(root_path. '/views/auth', 0777, true);
+        }
+
+        /*loginController*/
+        if (file_exists(root_path. '/views/auth/login.php')) {
+            $response['errors'][] = 'Login view already exist';
+        }
+        if (file_exists(root_path. '/views/auth/register.php')) {
+            $response['errors'][] = 'Register view already exist';
+        }
+
+        //Register View
+        $register_template = root_path. '/core/Templates/Views/auth/register.php';
+        if(file_exists($register_template)){
+
+            $newcontent = file_get_contents($register_template);
+            $register_view = root_path. '/views/auth/register.php';
+            file_put_contents($register_view,$newcontent);
+        }  else {
+            $response['errors'][] = 'Register view template file not found';
+        }
+
+        //Login View
+        $login_template = root_path. '/core/Templates/Views/auth/login.php';
+        if(file_exists($login_template)){
+
+            $newcontent = file_get_contents($login_template);
+            $login_view = root_path. '/views/auth/login.php';
+            file_put_contents($login_view,$newcontent);
+        }  else {
+            $response['errors'][] = 'Login view template file not found';
+        }
+
+        //Update Header View
+        $header_template = root_path. '/core/Templates/Views/partials/header.php';
+        if(file_exists($header_template)){
+
+            $newcontent = file_get_contents($header_template);
+            $header_view = root_path. '/views/partials/header.php';
+            file_put_contents($header_view,$newcontent);
+        }  else {
+            $response['errors'][] = 'Header view template file not found';
+        }
+
+        // Create Home View
+        $register_template = root_path. '/core/Templates/Views/home.php';
+        if(file_exists($register_template)){
+
+            $newcontent = file_get_contents($register_template);
+            $register_view = root_path. '/views/home.php';
+            file_put_contents($register_view,$newcontent);
+        }  else {
+            $response['errors'][] = 'Home view template file not found';
+        }
+
+        return $response;
+    }
+
+    private function generateAuthControllers()
+    {
         $response['errors'] = [];
 
         if (!file_exists(root_path . '/app/controllers/Auth')) {
@@ -176,109 +286,17 @@ class Generator {
         }
         /*RegisterController*/
 
-        $this->generateRoutes();
-        $this->generateViews();
-
-        if (!empty($response['errors'])) {
-            return [
-                'status' => false,
-                'message' => $response['errors']
-            ];
-        }
-        return [
-            'status' => true,
-            'message' => 'Auth Scaffolding Created successfully'
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    private function generateRoutes() {
-        $templatefile = root_path. '/core/Templates/Routes/RouteTemplate.php';
-        if(file_exists($templatefile)){
-
-            $newcontent = file_get_contents($templatefile);
-            $routefile = root_path. '/routes/web.php';
-
-            if(str_contains(file_get_contents($routefile), $newcontent)) {
-
-                return [
-                    'status' => false,
-                    'message' => "Auth routes already exists!",
-                ];
-            }
-
-            $newfile = fopen($routefile, 'a');
-            file_put_contents($routefile, $newcontent,FILE_APPEND | LOCK_EX);
-
-            return [
-                'status' => true,
-                'Message' => 'Auth Routes has been created.',
-            ];
-        }
-        return [
-            'status' => false,
-            'Message' => 'Failed to create auth routes.',
-        ];
-    }
-
-    private function generateViews() {
-        if (!file_exists(root_path. '/views/auth')) {
-            mkdir(root_path. '/views/auth', 0777, true);
-        }
-
-        /*loginController*/
-        if (file_exists(root_path. '/views/auth/login.php')) {
-            return [
-                'status' => false,
-                'message' => 'Login view already exist'
-            ];
-        }
-        if (file_exists(root_path. '/views/auth/register.php')) {
-            return [
-                'status' => false,
-                'message' => 'Register view already exist'
-            ];
-        }
-        $register_template = root_path. '/core/Templates/Views/auth/register.php';
-        if(file_exists($register_template)){
-
-            $newcontent = file_get_contents($register_template);
-            $register_view = root_path. '/views/auth/register.php';
-            file_put_contents($register_view,$newcontent);
+        // Create Home Controller
+        $home_template = root_path. '/core/Templates/Controllers/HomeController.php';
+        if(file_exists($home_template)){
+            $newcontent = file_get_contents($home_template);
+            $home_controller = root_path. '/app/Controllers/HomeController.php';
+            file_put_contents($home_controller,$newcontent);
         }  else {
-            return [
-                'status' => false,
-                'message' => 'Register view template file not found'
-            ];
+            $response['errors'][] = 'Home controller template file not found';
         }
 
-        $login_template = root_path. '/core/Templates/Views/auth/login.php';
-        if(file_exists($login_template)){
-
-            $newcontent = file_get_contents($login_template);
-            $login_view = root_path. '/views/auth/login.php';
-            file_put_contents($login_view,$newcontent);
-        }  else {
-            return [
-                'status' => false,
-                'message' => 'Login view template file not found'
-            ];
-        }
-
-        $header_template = root_path. '/core/Templates/Views/partials/header.php';
-        if(file_exists($header_template)){
-
-            $newcontent = file_get_contents($header_template);
-            $header_view = root_path. '/views/partials/header.php';
-            file_put_contents($header_view,$newcontent);
-        }  else {
-            return [
-                'status' => false,
-                'message' => 'Header view template file not found'
-            ];
-        }
+        return $response;
     }
 
     /**

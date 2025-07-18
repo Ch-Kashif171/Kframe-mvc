@@ -34,13 +34,29 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="<?php echo url('/'); ?>">Home</a>
+                    <a class="nav-link" href="<?php echo url('/home'); ?>">Home</a>
                 </li>
             </ul>
-            <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-                <li class="nav-item"><a href="<?php echo url('/register'); ?>" class="btn btn-signup nav-btn-mobile"><i class="fa fa-user-plus"></i> Sign Up</a></li>
-                <li class="nav-item"><a href="<?php echo url('/login'); ?>" class="btn btn-signin nav-btn-mobile"><i class="fa fa-sign-in"></i> Sign In</a></li>
-            </ul>
+            <?php if (!auth()->check()) { ?>
+                <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+                    <li class="nav-item"><a href="<?php echo url('/register'); ?>" class="btn btn-signup nav-btn-mobile"><i class="fa fa-user-plus"></i> Sign Up</a></li>
+                    <li class="nav-item"><a href="<?php echo url('/login'); ?>" class="btn btn-signin nav-btn-mobile"><i class="fa fa-sign-in"></i> Sign In</a></li>
+                </ul>
+            <?php } else { ?>
+                <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-user-circle-o me-2" style="font-size: 1.3rem;"></i>
+                            <?php echo htmlspecialchars(auth()->user()->name ?? 'User'); ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="<?php echo url('/logout'); ?>">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            <?php } ?>
         </div>
     </div>
 </nav>

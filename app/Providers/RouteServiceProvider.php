@@ -6,7 +6,7 @@ class RouteServiceProvider
 {
     public const BACK_URL = '/';
 
-    public const HOME = '/';
+    public const HOME = '/home';
 
     public static function register(): array
     {
