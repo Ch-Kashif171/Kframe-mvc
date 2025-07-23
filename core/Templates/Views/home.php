@@ -6,7 +6,7 @@
         <h1 class="welcome-title">Welcome Home!</h1>
         <p class="subtitle">You are logged in to your Kframe dashboard.<br>Start building your application or explore the features below.</p>
         <div class="home-actions" style="margin-top:32px;">
-            <a href="#" class="btn btn-outline-secondary" style="margin: 0 0 10px 0;">View Documentation</a>
+            <a href="<?php echo url('documentation'); ?>" class="btn btn-outline-secondary" style="margin: 0 0 10px 0;">View Documentation</a>
         </div>
     </div>
 </div>

@@ -22,14 +22,14 @@ class Route {
     public static $namespace;
     public static $middleware;
     public static $param = null;
-    public static $routes = [
+    public static array $routes = [
         'GET' => [],
         'POST' => [],
     ];
-    public static $routeMiddleware = []; // Store middleware for individual routes
-    private static $routeHandlers = []; // Store route handlers for execution
+    public static array $routeMiddleware = []; // Store middleware for individual routes
+    private static array $routeHandlers = []; // Store route handlers for execution
     // Store dynamic route patterns and their handlers
-    private static $dynamicRoutes = [
+    private static array $dynamicRoutes = [
         'GET' => [],
         'POST' => [],
     ];
@@ -54,8 +54,10 @@ class Route {
      * @param $method
      * @param array $params
      * @return mixed
+     * @throws \ReflectionException
      */
-    public static function call($controller, $method, array $params = []) {
+    public static function call($controller, $method, array $params = [])
+    {
         $cont = new $controller();
         $refMethod = new \ReflectionMethod($cont, $method);
         $parameters = $refMethod->getParameters();
@@ -87,7 +89,13 @@ class Route {
      * @throws Exception\Handlers\MiddlewareNotFoundException
      * @throws RouteNotFoundException
      */
-    public static function get($action, $controllerMethod) {
+    public static function get($action, $controllerMethod)
+    {
+        if ($controllerMethod instanceof Closure) {
+            // If it's a closure, store it directly
+            $controllerMethod = ['closure' => $controllerMethod];
+        }
+
         $context = new RouteContext(
             'GET',
             $action,
@@ -114,6 +122,12 @@ class Route {
      * @throws RouteNotFoundException
      */
     public static function post($action, $controllerMethod) {
+
+        if ($controllerMethod instanceof Closure) {
+            // If it's a closure, store it directly
+            $controllerMethod = ['closure' => $controllerMethod];
+        }
+
         $context = new RouteContext(
             'POST',
             $action,
@@ -152,7 +166,7 @@ class Route {
                     return true; // Halt and mark as handled if middleware returns anything but true
                 }
             }
-            
+
             // Apply route-specific middleware
             if (isset(self::$routeMiddleware[$routeKey])) {
                 $middlewareResult = static::applyMiddleware(self::$routeMiddleware[$routeKey]);
@@ -165,16 +179,21 @@ class Route {
             if ($method === 'POST') {
                 self::check(); // Provided by csrfToken trait
             }
-            
+
             // Execute the controller
-            $routeArgs = $handler['namespace'] ? $handler['namespace'] . '\\' . $handler['controller'] : $handler['controller'];
-            if (isset($routeArgs[1])) {
-                $controller = $routeArgs[0];
-                $method = $routeArgs[1];
+            if (isset($handler['controller']['closure'])) {
+                $response = $handler['controller']['closure']();
             } else {
-                throw new RouteNotFoundException("please specify a method in route");
+                $routeArgs = $handler['namespace'] ? $handler['namespace'] . '\\' . $handler['controller'] : $handler['controller'];
+                if (isset($routeArgs[1])) {
+                    $controller = $routeArgs[0];
+                    $method = $routeArgs[1];
+                    $response = (new $controller)->$method();
+                } else {
+                    throw new RouteNotFoundException("please specify a method in route");
+                }
             }
-            self::call($controller, $method, []);
+            echo $response; // Output the response
             IsRoute::checkRoute(true);
             return true; // Route was matched and executed
         }

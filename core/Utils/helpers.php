@@ -125,7 +125,7 @@ if(!function_exists('view')) {
      * @param bool $loadHtml
      * @return mixed|string
      */
-    function view($view, $datas = array(), $loadHtml = false){
+    function view($view, $datas = [], $loadHtml = false){
         /*this is for original data get from pagination data*/
         $data = extractDataIfExistPagination($datas);
 
@@ -148,6 +148,15 @@ if(!function_exists('view')) {
         } else {
             return require_once(root_path . "/views/" . makeView($view) . ".php");
         }
+    }
+
+    /**
+     * @param $view
+     * @return mixed
+     */
+    function coreView($view)
+    {
+        return require_once(root_path . "/" . makeView($view) . ".php");
     }
 }
 
