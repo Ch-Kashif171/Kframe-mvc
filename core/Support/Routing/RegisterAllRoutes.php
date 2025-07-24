@@ -3,6 +3,7 @@
 namespace Core\Support\Routing;
 
 use App\Providers\RouteServiceProvider;
+use Core\Support\Facades\Route;
 use function coreView;
 
 class RegisterAllRoutes

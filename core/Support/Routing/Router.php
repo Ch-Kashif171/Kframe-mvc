@@ -9,7 +9,7 @@ use Core\Support\Traits\RouteParam;
 use Core\Support\Traits\RouteRegistrar;
 use Core\Support\Traits\RouteContext;
 
-class Route
+class Router
 {
     use csrfToken, Middleware, RouteParam, RouteRegistrar;
 

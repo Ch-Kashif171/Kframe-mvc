@@ -7,9 +7,10 @@ use Core\Exception\Handlers\RouteNotFoundException;
 use Core\Exception\Log;
 use Core\Exception\Whoops;
 use Core\Support\AssetsNotFound;
+use Core\Support\Facades\Route;
 use Core\Support\LoadEnv;
 use Core\Support\Routing\RegisterAllRoutes;
-use Core\Support\Routing\Route;
+use Core\Support\Routing\Router;
 
 class Application
 {
@@ -148,6 +149,9 @@ class Application
     public function init(): bool
     {
         $this->includeFiles();
+
+        // Bind route facade
+        app('router', new Router());
 
         // Initialize all routes
         RegisterAllRoutes::loadAll();

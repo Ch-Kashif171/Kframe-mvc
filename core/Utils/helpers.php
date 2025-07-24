@@ -8,6 +8,7 @@ if (!defined('root_path')) {
 use App\Providers\RouteServiceProvider;
 use Core\Support\Alert\Toastr;
 use Core\Support\Auth;
+use Core\Support\Container\App;
 use Core\Support\LoadView;
 use Core\Support\ModelFactory;
 use Core\Support\Response;
@@ -824,14 +825,33 @@ if(!function_exists('captcha')) {
 }
 
 
-if(!function_exists('app')) {
+if (!function_exists('app')) {
 
-    /**
-     * @return \Core\Foundation\Application
-     */
-    function app()
+    function app(?string $key = null, mixed $concrete = null): mixed
     {
-        return new \Core\Foundation\Application();
+        static $container;
+
+        if (!$container) {
+            $container = new App();
+        }
+
+        // Binding
+        if ($key && $concrete) {
+            if ($concrete instanceof Closure) {
+                $container->bind($key, $concrete);
+            } else {
+                $container->singleton($key, $concrete);
+            }
+
+            return $concrete;
+        }
+
+        // Resolving
+        if ($key) {
+            return $container->make($key);
+        }
+
+        return $container;
     }
 }
 
