@@ -1,3 +1,4 @@
+
 # Kframe
 
 > **Lightweight. Laravel-Inspired. 100% Custom.**
@@ -17,6 +18,26 @@ Kframe is **not a Laravel clone**. It's a fresh micro-framework for small to med
 * ✅ CLI commands for models, controllers, and migrations
 * ✅ Useful helpers: captcha, mail, toastr, pagination
 * ✅ Simple, extendable, and easy to read/learn
+
+---
+
+## ✨ Features
+
+* Auth Scaffolding (`Route::authenticate()`)
+* Pagination: `paginate()` / `simplePaginate()`
+* Flash messages (Toastr)
+* Captcha: `captcha()` / `verifyCaptcha()`
+* Old input repopulation: `old('field')`
+* Eloquent-style Relationships: `hasOne()`, `hasMany()`, `belongsTo()` now supported in models
+
+---
+
+## 🛡️ Security
+
+* ✅ **CSRF Protection**: `<?php csrf_token(); ?>` inside `<form>`
+* ✅ **Output escaping**: `<?= e($value) ?>`
+* ✅ **File upload validation**
+* ✅ **Automatic input sanitization**
 
 ---
 
@@ -87,15 +108,6 @@ Use middleware in controllers:
 ```php
 $this->middleware(['auth', 'web']);
 ```
-
----
-
-## 🛡️ Security
-
-* ✅ **CSRF Protection**: `<?php csrf_token(); ?>` inside `<form>`
-* ✅ **Output escaping**: `<?= e($value) ?>`
-* ✅ **File upload validation**
-* ✅ **Automatic input sanitization**
 
 ---
 
@@ -176,13 +188,38 @@ php kframe migration:rollback
 
 ---
 
-## ✨ Features
+## 🔗 Defining Relationships
 
-* Auth Scaffolding (`Route::authenticate()`)
-* Pagination: `paginate()` / `simplePaginate()`
-* Flash messages (Toastr)
-* Captcha: `captcha()` / `verifyCaptcha()`
-* Old input repopulation: `old('field')`
+Define Laravel-style relationships directly in your models.
+
+### One-to-One
+
+```php
+public function profile()
+{
+    return $this->hasOne(Profile::class, 'user_id');
+}
+```
+
+### One-to-Many
+
+```php
+public function posts()
+{
+    return $this->hasMany(Post::class, 'user_id');
+}
+```
+
+### Inverse (Belongs To)
+
+```php
+public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+```
+
+> 📝 Note: Eager loading is not yet supported but is planned in a future update.
 
 ---
 

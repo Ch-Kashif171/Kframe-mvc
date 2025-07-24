@@ -126,4 +126,22 @@ class Router
     {
         MethodChecker::check(self::$routes);
     }
+
+    /**
+     * @param string $routeKey
+     * @param array $middlewares
+     * @return void
+     */
+    public static function addRouteMiddleware(string $routeKey, array $middlewares): void
+    {
+        self::$routeMiddleware[$routeKey] = $middlewares;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getRouteMiddleware(): array
+    {
+        return self::$routeMiddleware;
+    }
 }

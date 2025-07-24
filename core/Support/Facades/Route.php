@@ -11,6 +11,7 @@ use Closure;
  * @method static \Core\Support\Routing\Router authenticate(array $disable = null)
  * @method static \Core\Support\Routing\Router checkMethodNotAllowed()
  * @method static \Core\Support\Routing\Router executeRoutes()
+ * @method static \Core\Support\Routing\Router addRouteMiddleware($routeKey, $middleware)
  *
  * @see \Core\Support\Routing\Router
  */

@@ -96,6 +96,27 @@
 
     <hr>
 
+    <h2>🛡️ Security</h2>
+    <ul>
+        <li>✅ CSRF Protection: <code>&lt;?php csrf_token(); ?&gt;</code> inside <code>&lt;form&gt;</code></li>
+        <li>✅ Output escaping: <code>&lt;?= e($value) ?&gt;</code></li>
+        <li>✅ File upload validation</li>
+        <li>✅ Automatic input sanitization</li>
+    </ul>
+
+    <hr>
+
+    <h2>✨ Features</h2>
+    <ul>
+        <li>Auth Scaffolding (<code>Route::authenticate()</code>)</li>
+        <li>Pagination: <code>paginate()</code> / <code>simplePaginate()</code></li>
+        <li>Flash messages (Toastr)</li>
+        <li>Captcha: <code>captcha()</code> / <code>verifyCaptcha()</code></li>
+        <li>Old input repopulation: <code>old('field')</code></li>
+    </ul>
+
+    <hr>
+
     <h2>🧱 Installation</h2>
     <p>Make sure you have <strong>PHP 8+</strong> and <strong>Composer</strong> installed.</p>
     <pre>composer install</pre>
@@ -136,16 +157,6 @@ AUTH_TABLE=users</pre>
 ];</pre>
     <p>Use middleware in controllers:</p>
     <pre>$this->middleware(['auth', 'web']);</pre>
-
-    <hr>
-
-    <h2>🛡️ Security</h2>
-    <ul>
-        <li>✅ CSRF Protection: <code>&lt;?php csrf_token(); ?&gt;</code> inside <code>&lt;form&gt;</code></li>
-        <li>✅ Output escaping: <code>&lt;?= e($value) ?&gt;</code></li>
-        <li>✅ File upload validation</li>
-        <li>✅ Automatic input sanitization</li>
-    </ul>
 
     <hr>
 
@@ -201,16 +212,35 @@ php kframe migration:rollback</pre>
 
     <hr>
 
-    <h2>✨ Features</h2>
-    <ul>
-        <li>Auth Scaffolding (<code>Route::authenticate()</code>)</li>
-        <li>Pagination: <code>paginate()</code> / <code>simplePaginate()</code></li>
-        <li>Flash messages (Toastr)</li>
-        <li>Captcha: <code>captcha()</code> / <code>verifyCaptcha()</code></li>
-        <li>Old input repopulation: <code>old('field')</code></li>
-    </ul>
+    <h2>🔗 Defining Relationships</h2>
+    <h3>Define Laravel-style relationships directly in your models.</h3>
+    <h3>One-to-One</h3>
+    <pre>
+public function profile()
+{
+    return $this->hasOne(Profile::class, 'user_id');
+}
+</pre>
 
-    <hr>
+    <h3>One-to-Many</h3>
+    <pre>
+public function posts()
+{
+    return $this->hasMany(Post::class, 'user_id');
+}
+</pre>
+
+    <h3>Inverse (Belongs To)</h3>
+    <pre>
+public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}</pre>
+
+    <blockquote>
+   📝 Note: Eager loading is not yet supported but is planned in a future update.
+    </blockquote>
+
 
     <h2>🧩 Extending Routes</h2>
     <p>Register route files in <code>app/Providers/RouteServiceProvider.php</code>:</p>

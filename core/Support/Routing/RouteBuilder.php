@@ -2,6 +2,8 @@
 
 namespace Core\Support\Routing;
 
+use Core\Support\Facades\Route;
+
 class RouteBuilder
 {
     private $action;
@@ -23,13 +25,7 @@ class RouteBuilder
     public function middleware($middleware)
     {
         $routeKey = $this->method . ':' . $this->action;
-        
-        if (is_array($middleware)) {
-            Route::$routeMiddleware[$routeKey] = $middleware;
-        } else {
-            Route::$routeMiddleware[$routeKey] = [$middleware];
-        }
-        
+        Route::addRouteMiddleware($routeKey, is_array($middleware) ? $middleware : [$middleware]);
         return $this;
     }
 } 
