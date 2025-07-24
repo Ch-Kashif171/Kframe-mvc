@@ -8,8 +8,8 @@ use Core\Exception\Log;
 use Core\Exception\Whoops;
 use Core\Support\AssetsNotFound;
 use Core\Support\LoadEnv;
-use Core\Support\RegisterAllRoutes;
-use Core\Support\Route;
+use Core\Support\Routing\RegisterAllRoutes;
+use Core\Support\Routing\Route;
 
 class Application
 {

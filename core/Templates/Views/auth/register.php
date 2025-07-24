@@ -34,7 +34,7 @@
                 <?php } ?>
             </div>
             <button class="btn btn-auth-primary" type="submit">Sign Up</button>
-            <div class="auth-switch-link">Already have an account? <a href="<?php echo url('/signin'); ?>">Sign In</a></div>
+            <div class="auth-switch-link">Already have an account? <a href="<?php echo url('/login'); ?>">Sign In</a></div>
         </form>
     </div>
 </div>

@@ -1,6 +1,7 @@
 <?php
 
-use Core\Support\Route;
+
+use Core\Support\Routing\Route;
 
 try {
     Route::checkMethodNotAllowed();

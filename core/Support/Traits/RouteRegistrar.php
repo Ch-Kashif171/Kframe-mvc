@@ -2,8 +2,7 @@
 
 namespace Core\Support\Traits;
 
-use Core\Support\RouteBuilder;
-use Core\Support\Traits\RouteContext;
+use Core\Support\Routing\RouteBuilder;
 
 trait RouteRegistrar
 {

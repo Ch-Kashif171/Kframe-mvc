@@ -258,7 +258,7 @@ class Generator {
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
                 $controllerfile = root_path . '/app/Controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
-                $newfile = fopen($controllerfile, 'w');
+                fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
             }
             else {
@@ -277,7 +277,7 @@ class Generator {
             if( strpos(file_get_contents($templatefile),'controllername') !== false) {
                 $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
                 $controllerfile = root_path. '/app/Controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
-                $newfile = fopen($controllerfile, 'w');
+                fopen($controllerfile, 'w');
                 file_put_contents($controllerfile,$newcontent);
             }
             else {
@@ -287,9 +287,11 @@ class Generator {
         /*RegisterController*/
 
         // Create Home Controller
+        $homeController = 'HomeController';
         $home_template = root_path. '/core/Templates/Controllers/HomeController.php';
-        if(file_exists($home_template)){
-            $newcontent = file_get_contents($home_template);
+        if(file_exists($home_template)) {
+            $newcontent = str_replace('controllername', $homeController, file_get_contents($templatefile));
+            //$newcontent = file_get_contents($home_template);
             $home_controller = root_path. '/app/Controllers/HomeController.php';
             file_put_contents($home_controller,$newcontent);
         }  else {

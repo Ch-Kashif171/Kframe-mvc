@@ -2,7 +2,7 @@
 
 namespace Core\Support\Traits\Internal;
 
-use Core\Database\connection\database;
+use Core\Database\Connection\Database;
 use Core\Database\Doctrine;
 use Whoops\Exception\ErrorException;
 
@@ -18,6 +18,9 @@ trait Queries
     public $result;
     public $exception;
 
+    /**
+     * @throws \Core\Exception\Handlers\DBException
+     */
     public function __construct($table = null, $hidden_fields = null, $statement = null, $fields = null)
     {
         $this->table  =   $table;
@@ -40,7 +43,7 @@ trait Queries
     public function where_array($data)
     {
         $count = 1;
-        foreach ($data as $column=> $value) {
+        foreach ($data as $column => $value) {
             if($count == 1 && $this->where_statement == '') {
                 $this->where_statement .= " WHERE ".$column." = '".$value."' ";
             } else {

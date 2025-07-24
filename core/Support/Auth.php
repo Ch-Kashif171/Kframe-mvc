@@ -14,7 +14,7 @@ class Auth
      */
     private mixed $database;
 
-    public function __construct()
+    public function initDB()
     {
         $this->table = function_exists('config') ? config('app.table', 'users') : (env('AUTH_TABLE') ?: 'users');
         $this->database = config('database.db_database');
@@ -128,6 +128,7 @@ class Auth
      */
     private function checkUser($credentials): mixed
     {
+        self::initDB();
         return $this->db->where_array($credentials)->userFound();
     }
 
@@ -136,7 +137,7 @@ class Auth
      * @param $output
      * @return bool
      */
-    public function verify($credentials,$output)
+    public function verify($credentials,$output): bool
     {
         $verified = array();
         foreach ($credentials as $field=> $credential){
@@ -144,9 +145,8 @@ class Auth
         }
         if(in_array(true,$verified)){
             return true;
-        }else{
-            return false;
         }
+        return false;
     }
 
     /**
@@ -156,6 +156,7 @@ class Auth
      */
     private function getAuthTableFieldsSkipPassword($credentials)
     {
+        self::initDB();
         $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '".$this->database."' AND TABLE_NAME = '".$this->table."' ";
         $fields = $this->db->rawQuery($query);
         if ($fields === false) {
@@ -167,7 +168,7 @@ class Auth
             $auth_fields = array();
             $key = 0;
             foreach ($fields as $field) {
-                if (strpos($field->COLUMN_NAME, 'password') === false) {
+                if (!str_contains($field->COLUMN_NAME, 'password')) {
                     if (isset($credentials[$field->COLUMN_NAME])) {
                         $auth_fields[$field->COLUMN_NAME] = $credentials[$field->COLUMN_NAME];
                     }
@@ -177,9 +178,9 @@ class Auth
             }
 
             return $auth_fields;
-        }else{
-            throw new ErrorException("The ". $this->table ." table for authentication is not exists.");
         }
+
+        throw new ErrorException("The ". $this->table ." table for authentication is not exists.");
     }
 
 }

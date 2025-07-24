@@ -6,10 +6,10 @@ if (!defined('root_path')) {
 }
 
 use App\Providers\RouteServiceProvider;
-use Core\Database\Doctrine;
 use Core\Support\Alert\Toastr;
 use Core\Support\Auth;
 use Core\Support\ModelFactory;
+use Core\Support\Response;
 use Core\Support\NotFound;
 use Core\Support\Redirect;
 use Core\Support\Session;
@@ -247,14 +247,9 @@ if(!function_exists('response')) {
      * @param null $url
      * @return Redirect|void
      */
-    function response($url = null){
-        if (!is_null($url)) {
-            $url = ltrim($url, '/');
-            header('Location: ' . url('/') . $url);
-            exit;
-
-        }
-        return new Redirect();
+    function response()
+    {
+        return new Response();
     }
 }
 

@@ -25,7 +25,7 @@
                 <?php } ?>
             </div>
             <button class="btn btn-auth-primary" type="submit">Sign In</button>
-            <div class="auth-switch-link">Don't have an account? <a href="<?php echo url('/signup'); ?>">Sign Up</a></div>
+            <div class="auth-switch-link">Don't have an account? <a href="<?php echo url('/register'); ?>">Sign Up</a></div>
         </form>
     </div>
 </div>

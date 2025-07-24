@@ -1,8 +1,10 @@
 <?php
 
-namespace Core\Support;
+namespace Core\Support\Routing;
 
 use Core\Exception\Handlers\RouteNotFoundException;
+use function abort;
+use function config;
 
 class RouteNotFount
 {

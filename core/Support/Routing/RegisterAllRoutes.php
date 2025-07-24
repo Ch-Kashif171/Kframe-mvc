@@ -1,8 +1,9 @@
 <?php
 
-namespace Core\Support;
+namespace Core\Support\Routing;
 
 use App\Providers\RouteServiceProvider;
+use function coreView;
 
 class RegisterAllRoutes
 {
