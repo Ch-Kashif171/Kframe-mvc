@@ -139,7 +139,7 @@ class Auth
      */
     public function verify($credentials,$output): bool
     {
-        $verified = array();
+        $verified = [];
         foreach ($credentials as $field=> $credential){
             $verified[] = password_verify($credential, $output->$field );
         }
@@ -165,7 +165,7 @@ class Auth
 
         if(count($fields) > 0) {
 
-            $auth_fields = array();
+            $auth_fields = [];
             $key = 0;
             foreach ($fields as $field) {
                 if (!str_contains($field->COLUMN_NAME, 'password')) {

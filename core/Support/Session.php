@@ -39,7 +39,7 @@ class Session
      */
     public static function push($key,$array){
         if(!isset($_SESSION[$key])){
-            $_SESSION[$key] = array();
+            $_SESSION[$key] = [];
         }else{
             $_SESSION[$key] = $_SESSION[$key];
         }

@@ -91,7 +91,7 @@ class Dotenv
             return $this->loadData();
         } catch (\Exception $e) {
             // suppressing exception
-            return array();
+            return [];
         }
     }
 

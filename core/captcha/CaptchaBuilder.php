@@ -16,7 +16,7 @@ class CaptchaBuilder implements CaptchaBuilderInterface
     /**
      * @var array
      */
-    protected $fingerprint = array();
+    protected $fingerprint = [];
 
     /**
      * @var bool
@@ -26,10 +26,10 @@ class CaptchaBuilder implements CaptchaBuilderInterface
     /**
      * @var array
      */
-    protected $textColor = array();
+    protected $textColor = [];
 
 
-    protected $background = array();
+    protected $background = [];
 
     /**
      * @var array
@@ -39,7 +39,7 @@ class CaptchaBuilder implements CaptchaBuilderInterface
     /**
      * @var array
      */
-    protected $backgroundImages = array();
+    protected $backgroundImages = [];
 
     /**
      * @var resource
@@ -392,7 +392,7 @@ class CaptchaBuilder implements CaptchaBuilderInterface
             $this->fingerprint = $fingerprint;
             $this->useFingerprint = true;
         } else {
-            $this->fingerprint = array();
+            $this->fingerprint = [];
             $this->useFingerprint = false;
         }
 
@@ -580,7 +580,7 @@ class CaptchaBuilder implements CaptchaBuilderInterface
     protected function rand($min, $max)
     {
         if (!is_array($this->fingerprint)) {
-            $this->fingerprint = array();
+            $this->fingerprint = [];
         }
 
         if ($this->useFingerprint) {

@@ -30,7 +30,7 @@ class Loader
      *
      * @var array
      */
-    public $variableNames = array();
+    public $variableNames = [];
 
     /**
      * Create a new loader instance.

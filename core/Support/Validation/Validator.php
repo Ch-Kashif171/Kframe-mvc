@@ -1,8 +1,8 @@
 <?php
 /**
- *this class is written by @Kashif Sohail
- * Simple Validator class for show validation messages,
- * @validate() static function call to check the validation rules
+ * This class is written by @Kashif Sohail
+ * Simple Validator class for showing validation messages.
+ * Use Validator::validate() to check validation rules.
  */
 
 namespace Core\Support\Validation;
@@ -11,197 +11,182 @@ use Core\Support\DB;
 
 class Validator
 {
-    public static $msg = array();
-    public function __construct()
+    protected static array $messages = [];
+
+    /**
+     * @param array $fields
+     * @param array $rules
+     * @return Validator|string
+     */
+    public static function validate(array $fields, array $rules): Validator|string
     {
-        //
-    }
+        if (empty($rules)) {
+            return "Please provide the validation rules.";
+        }
 
-    public static function validate($fields,$validate){
-
-        if ( count($validate)> 0) {
-            foreach ($validate as $name => $valid) {
-
-                if (array_key_exists($name, $fields)) {
-                    self::valid($name, $fields[$name], $valid);
-                }
+        foreach ($rules as $name => $rule) {
+            if (array_key_exists($name, $fields)) {
+                self::applyRules($name, $fields[$name], $rule);
             }
-            return new Validator();
-        } else {
-            return "please provide the validation rules";
         }
+
+        return new self();
     }
 
-    public function fails(){
-        if(count(self::$msg) > 0 ){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    public function messages(){
-        if(count(self::$msg) > 0 ){
-            $errors = '';
-            foreach (self::$msg as $ms){
-                $errors .= $ms."<br>";
-            }
-            return $errors;
-        }else{
-            return true;
-        }
-    }
-
-    public function errors(){
-        if(count(self::$msg) > 0 ){
-            return self::$msg;
-        }else{
-            return true;
-        }
-    }
-
-    public function error($name){
-
-        if(count(self::$msg) > 0 ){
-            return self::$msg[$name];
-        }else{
-            return true;
-        }
-    }
-
-    public function first(){
-        if(count(self::$msg) > 0 ) {
-            $msg = array_reverse(self::$msg);
-            return array_pop($msg);
-        }else{
-            return true;
-        }
-    }
-
-    public static function escape($value) {
-        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-    }
-
-
-    private static function valid($name,$field,$rule)
+    /**
+     * @return bool
+     */
+    public function fails(): bool
     {
-        if($field == '' && str_contains($rule, 'required')){
-            self::$msg[$name] =  "The ".self::splitField($name)." field is required.";
-        }
-
-        if($field != '' && str_contains($rule, 'mail')) {
-            if (!filter_var($field, FILTER_VALIDATE_EMAIL)) {
-                self::$msg[$name] = "The ".self::splitField($name)." field is not a valid email.";
-            }
-        }
-
-        if($field != '' && str_contains($rule, 'unique')) {
-            $response = self::isUnique($name, $field, $rule);
-            if (!$response['status']) {
-                self:: $msg[$name] = $response['message'];
-            }
-        }
-        if($field != '' && str_contains($rule, 'date')) {
-            $is_valid = self::validate_date($field);
-            if (!$is_valid) {
-                self::$msg[$name] = "The ".self::splitField($name)." field is not a valid date.";
-            }
-        }
-
-        if($field != '' && str_contains($rule, 'min')) {
-            $r = self::getRule($rule,'min:');
-            if ($r > 0 && strlen($field) < $r) {
-                self::$msg[$name] = "The minimum length of ".self::splitField($name)." should be {$r}";
-            }
-        }
-
-        if($field != '' && str_contains($rule, 'max')) {
-            $r = self::getRule($rule,'max:');
-            if ($r > 0 && strlen($field) > $r) {
-                self::$msg[$name] = "The maximum length of ".self::splitField($name)." should be {$r}";
-            }
-        }
-
-        if($field != '' && str_contains($rule, 'numeric')) {
-            if (!is_numeric($field)) {
-                self::$msg[$name] = "The ".self::splitField($name)." field must be numeric.";
-            }
-        }
-
-        if($field != '' && str_contains($rule, 'regex:')) {
-            $pattern = self::getRule($rule, 'regex:');
-            if (!preg_match($pattern, $field)) {
-                self::$msg[$name] = "The ".self::splitField($name)." field format is invalid.";
-            }
-        }
-
-        return self::$msg;
+        return !empty(self::$messages);
     }
 
-    private static function validate_date($date){
-        $d = \DateTime::createFromFormat('d-m-Y', $date);
-        return $d && $d->format('d-m-Y') === $date;
+    /**
+     * @return string|bool
+     */
+    public function messages(): string|bool
+    {
+        return $this->fails() ? implode("<br>", self::$messages) : true;
     }
 
-    private static function splitField($name){
-        return str_replace('_',' ',$name);
-    }
-
-    private static function getRule($rule,$check){
-        $length = 0;
-        $array = explode('|',$rule);
-        foreach ($array as $ar){
-            if(strpos($ar,$check) !== false){
-                $length = str_replace($check,'',$ar);
-            }
-        }
-        return $length;
+    /**
+     * @return array|bool
+     */
+    public function errors(): array|bool
+    {
+        return $this->fails() ? self::$messages : true;
     }
 
     /**
      * @param string $field
-     * @param string $rule
-     * @return array|bool[]
+     * @return string|bool
      */
-    private static function isUnique(string $field, $value, string $rule )
+    public function error(string $field): string|bool
     {
-        $allRules = explode('|', $rule);
-
-        foreach ($allRules as $rulePart) {
-            if (str_starts_with($rulePart, 'unique:')) {
-                $params = substr($rulePart, 7);
-                $segments = explode(',', $params);
-
-                $table      = trim($segments[0]);
-                $column     = trim($segments[1]);
-                $exceptId   = $segments[2] ?? null;
-                $idColumn   = $segments[3] ?? 'id';
-
-                if (count($segments) < 2) {
-                    return [
-                        'status' => false,
-                        'message' => "Invalid unique rule format for $column. Use unique:table,column[,exceptId[,idColumn]]"
-                    ];
-                }
-
-                // Pass the actual value, not the field name!
-                $exists = self::checkUnique($table, $column, $value, $exceptId, $idColumn);
-
-                if ($exists) {
-                    return [
-                        'status' => false,
-                        'message' => "The $field has already been taken."
-                    ];
-                }
-            }
-        }
-
-        return [
-            'status' => true
-        ];
+        return self::$messages[$field] ?? true;
     }
 
-    private static function checkUnique(string $table, string $column, $value, $exceptId = null, string $idColumn = 'id'): bool
+    /**
+     * @return string|bool
+     */
+    public function first(): string|bool
+    {
+        return $this->fails() ? reset(self::$messages) : true;
+    }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    public static function escape(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @param string $rules
+     * @return void
+     */
+    private static function applyRules(string $name, mixed $value, string $rules): void
+    {
+        $rulesArray = explode('|', $rules);
+
+        foreach ($rulesArray as $rule) {
+
+            match (true) {
+                $rule === 'required' && $value === '' => self::addMessage($name, 'field is required.'),
+
+                $rule === 'mail' && $value !== '' && !filter_var($value, FILTER_VALIDATE_EMAIL) =>
+                self::addMessage($name, 'field is not a valid email.'),
+
+                str_starts_with($rule, 'unique:') && $value !== '' => self::checkUniqueness($name, $value, $rule),
+
+                $rule === 'date' && $value !== '' && !self::validateDate($value) =>
+                self::addMessage($name, 'field is not a valid date.'),
+
+                str_starts_with($rule, 'min:') && $value !== '' && strlen($value) < (int)substr($rule, 4) =>
+                self::addMessage($name, "minimum length should be " . substr($rule, 4)),
+
+                str_starts_with($rule, 'max:') && $value !== '' && strlen($value) > (int)substr($rule, 4) =>
+                self::addMessage($name, "maximum length should be " . substr($rule, 4)),
+
+                $rule === 'numeric' && $value !== '' && !is_numeric($value) =>
+                self::addMessage($name, 'field must be numeric.'),
+
+                $rule === 'alphabet' && $value !== '' && !preg_match('/^[\p{L}\s\-]+$/u', $value) =>
+                self::addMessage($name, 'field must contain only alphabetic characters.'),
+
+                str_starts_with($rule, 'regex:') && $value !== '' && !preg_match(substr($rule, 6), $value) =>
+                self::addMessage($name, 'field format is invalid.'),
+
+                default => null,
+            };
+        }
+    }
+
+    /**
+     * @param string $field
+     * @param string $message
+     * @return void
+     */
+    private static function addMessage(string $field, string $message): void
+    {
+        self::$messages[$field] = "The " . self::humanize($field) . " $message";
+    }
+
+    /**
+     * @param string $date
+     * @return bool
+     */
+    private static function validateDate(string $date): bool
+    {
+        $d = \DateTime::createFromFormat('d-m-Y', $date);
+        return $d && $d->format('d-m-Y') === $date;
+    }
+
+    /**
+     * @param string $field
+     * @return string
+     */
+    private static function humanize(string $field): string
+    {
+        return str_replace('_', ' ', $field);
+    }
+
+    /**
+     * @param string $field
+     * @param mixed $value
+     * @param string $rule
+     * @return void
+     */
+    private static function checkUniqueness(string $field, mixed $value, string $rule): void
+    {
+        $parts = explode(',', substr($rule, 7));
+
+        if (count($parts) < 2) {
+            self::$messages[$field] = "Invalid unique rule format for $field.";
+            return;
+        }
+
+        [$table, $column, $exceptId, $idColumn] = array_pad($parts, 4, null);
+        $idColumn = $idColumn ?? 'id';
+
+        if (self::recordExists($table, $column, $value, $exceptId, $idColumn)) {
+            self::addMessage($field, 'has already been taken.');
+        }
+    }
+
+    /**
+     * @param string $table
+     * @param string $column
+     * @param mixed $value
+     * @param mixed|null $exceptId
+     * @param string $idColumn
+     * @return bool
+     */
+    private static function recordExists(string $table, string $column, mixed $value, mixed $exceptId = null, string $idColumn = 'id'): bool
     {
         $query = DB::table($table)->where($column, '=', $value);
 
@@ -211,7 +196,4 @@ class Validator
 
         return $query->exists();
     }
-
-
-
 }

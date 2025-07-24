@@ -8,6 +8,7 @@ if (!defined('root_path')) {
 use App\Providers\RouteServiceProvider;
 use Core\Support\Alert\Toastr;
 use Core\Support\Auth;
+use Core\Support\LoadView;
 use Core\Support\ModelFactory;
 use Core\Support\Response;
 use Core\Support\NotFound;
@@ -42,7 +43,7 @@ if(!function_exists('asset')) {
      * @param $path
      * @return string
      */
-    function asset($path)
+    function asset($path): string
     {
         $path = preg_replace('/[^a-zA-Z0-9\-._\/]/', '', $path);
         $path = trim($path, '/');
@@ -56,7 +57,8 @@ if(!function_exists('url')) {
      * @param string|null $path
      * @return string
      */
-    function url(?string $path) {
+    function url(?string $path): string
+    {
         $base = rtrim(path(), '/');
         if (preg_match('/^\/+$/', $path)) {
             return $base . '/';
@@ -125,29 +127,9 @@ if(!function_exists('view')) {
      * @param bool $loadHtml
      * @return mixed|string
      */
-    function view($view, $datas = [], $loadHtml = false){
-        /*this is for original data get from pagination data*/
-        $data = extractDataIfExistPagination($datas);
-
-        /*this is for getting pagination links var from original pagination data*/
-        $data2 = extractPaginationData($datas);
-
-        extract($data);  /*convert array key as variable here*/
-        extract($data2); /*convert array key as variable here*/
-
-        if ($loadHtml) {
-            /**
-             * Loading view for pdf etc
-             */
-            ob_start();
-            require_once(root_path . "/views/" . makeView($view) . ".php");
-            $res = ob_get_contents();
-            ob_end_clean();
-
-            return $res;
-        } else {
-            return require_once(root_path . "/views/" . makeView($view) . ".php");
-        }
+    function view($view, $datas = [], bool $loadHtml = false): mixed
+    {
+        return LoadView::View($view, $datas, $loadHtml);
     }
 
     /**
@@ -157,69 +139,6 @@ if(!function_exists('view')) {
     function coreView($view)
     {
         return require_once(root_path . "/" . makeView($view) . ".php");
-    }
-}
-
-if(!function_exists('extractDataIfExistPagination')) {
-
-    /**
-     * @param $data
-     * @return array
-     */
-    function extractDataIfExistPagination($data){
-
-        $result = array();
-        foreach ($data as $key => $d) {
-            if (! is_object($d)) {
-                if (isset($d['data'])) {
-                    $result[$key] = $d['data'];
-                } elseif (isset($d['simple']['data'])) {
-                    $result[$key] = $d['simple']['data'];
-                } else {
-                    $result = $data;
-                }
-            } else {
-                $result = $data;
-            }
-        }
-
-        return $result;
-    }
-}
-
-if(!function_exists('extractPaginationData')) {
-
-    /**
-     * @param $data
-     * @return array|string
-     */
-    function extractPaginationData($data){
-
-        $response = array();
-        $result['render'] = new stdClass();
-        foreach ($data as $key => $d) {
-            if (! is_object($d)) {
-                if (isset($d['data'])) {
-                    $response[$key] = $d['data']; //assign data before pagination and unset
-                    unset($d['data']);
-                    /*here call pagination function to render pagination html*/
-
-                    $result['render']->links = pagination((object)$d);
-
-                } elseif (isset($d['simple']['data'])) {
-                    $response[$key] = $d['simple']['data']; //assign data before pagination and unset
-                    unset($d['simple']['data']);
-                    /*here call pagination function to render pagination html*/
-                    $result['render']->links = simplePagination((object)$d['simple']);
-                } else {
-                    $response[$key] = $d;
-                }
-            } else{
-                $response = array();
-            }
-        }
-
-        return array_merge($result,$response);
     }
 }
 
@@ -261,7 +180,7 @@ if(!function_exists('getChildTableAndStatement')) {
      */
     function getChildTableAndStatement($statement){
 
-        $res = array();
+        $res = [];
         if (strpos($statement, "|") == true) {
             $array = explode('|', $statement);
             $child_table = $array[1] . ".";
@@ -734,7 +653,7 @@ if(!function_exists('from')) {
      * @return array
      */
     function from($email){
-        $data = array();
+        $data = [];
         $data['from'] = $email;
         return $data;
     }
@@ -747,7 +666,7 @@ if(!function_exists('to')) {
      * @return array
      */
     function to($email){
-        $data = array();
+        $data = [];
         $data['to'] = $email;
         return $data;
     }
@@ -760,7 +679,7 @@ if(!function_exists('subject')) {
      * @return array
      */
     function subject($subject){
-        $data = array();
+        $data = [];
         $data['subject'] = $subject;
         return $data;
     }
@@ -772,7 +691,7 @@ if(!function_exists('body')) {
      * @return array
      */
     function body($body){
-        $data = array();
+        $data = [];
         $data['body'] = $body;
         return $data;
     }

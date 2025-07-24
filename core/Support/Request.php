@@ -4,7 +4,7 @@ namespace Core\Support;
 
 class Request
 {
-    private $field = array();
+    private $field = [];
 
 
     public function post($key)
