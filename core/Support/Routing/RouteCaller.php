@@ -6,7 +6,14 @@ use Core\Support\Request;
 
 class RouteCaller
 {
-    public static function call($controller, $method, array $params = [])
+    /**
+     * @param $controller
+     * @param $method
+     * @param array $params
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    public static function call($controller, $method, array $params = []): mixed
     {
         $instance = new $controller();
         $refMethod = new \ReflectionMethod($instance, $method);

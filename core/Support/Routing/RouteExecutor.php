@@ -2,6 +2,8 @@
 
 namespace Core\Support\Routing;
 
+use Core\Exception\Handlers\CsrfException;
+use Core\Exception\Handlers\MiddlewareNotFoundException;
 use Core\Exception\Handlers\RouteNotFoundException;
 use Core\Support\IsRoute;
 use Core\Support\Traits\Csrf\csrfToken;
@@ -11,6 +13,17 @@ class RouteExecutor
 {
     use csrfToken, Middleware;
 
+    /**
+     * @param $method
+     * @param $currentAction
+     * @param $routeHandlers
+     * @param $dynamicRoutes
+     * @param $routeMiddleware
+     * @return bool
+     * @throws RouteNotFoundException
+     * @throws CsrfException
+     * @throws MiddlewareNotFoundException
+     */
     public static function execute($method, $currentAction, $routeHandlers, $dynamicRoutes, $routeMiddleware): bool
     {
         $routeKey = $method . ':' . $currentAction;
@@ -18,10 +31,17 @@ class RouteExecutor
         if (isset($routeHandlers[$routeKey])) {
             $handler = $routeHandlers[$routeKey];
 
-            if ($handler['middleware'] && static::getMiddleware($handler['middleware']) !== true) return true;
-            if (isset($routeMiddleware[$routeKey]) && static::getMiddleware($routeMiddleware[$routeKey]) !== true) return true;
+            if ($handler['middleware'] && static::getMiddleware($handler['middleware']) !== true) {
+                return true;
+            }
 
-            if ($method === 'POST') static::check();
+            if (isset($routeMiddleware[$routeKey]) && static::getMiddleware($routeMiddleware[$routeKey]) !== true) {
+                return true;
+            }
+
+            if ($method === 'POST') {
+                static::check();
+            }
 
             if (isset($handler['controller']['closure'])) {
                 echo $handler['controller']['closure']();
