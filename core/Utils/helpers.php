@@ -78,9 +78,9 @@ if(!function_exists('path')) {
      */
     function path(): string
     {
-        // CLI fallback (e.g., Artisan or PHPUnit)
+        // CLI fallback (e.g., Kframe or PHPUnit)
         if (php_sapi_name() === 'cli' || !isset($_SERVER['SERVER_NAME'])) {
-            return defined('root_path') ? root_path : root_path;
+            return root_path;
         }
 
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';

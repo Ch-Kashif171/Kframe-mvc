@@ -45,10 +45,18 @@
             <?php } else { ?>
                 <ul class="navbar-nav ms-auto mb-2 mb-md-0">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center"
+                           href="#"
+                           id="userDropdown"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false"
+                           tabindex="0"
+                           onkeydown="handleUserDropdownKey(event);">
                             <i class="fa fa-user-circle-o me-2" style="font-size: 1.3rem;"></i>
                             <?php echo htmlspecialchars(auth()->user()->name ?? 'User'); ?>
                         </a>
+
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="#">Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -60,3 +68,14 @@
         </div>
     </div>
 </nav>
+
+<script>
+    $(function () {
+        $('#userDropdown').on('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                e.preventDefault();
+                $(this).click();
+            }
+        });
+    });
+</script>
