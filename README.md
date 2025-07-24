@@ -210,3 +210,6 @@ Want to improve this Laravel-style lightweight framework? Submit a PR or open an
 ## 📄 License
 
 Kframe is open-source and licensed under the MIT license.
+
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
