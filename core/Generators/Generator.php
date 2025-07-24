@@ -3,462 +3,306 @@ declare(strict_types=1);
 
 namespace Core\Generators;
 
-use Core\Database\Doctrine;
 use Core\Support\DB;
 
 define('ROOT_PATH', defined('root_path') ? root_path : dirname(__DIR__, 2));
 
-class Generator {
+class Generator
+{
+    public static ?self $instance = null;
 
-    /**
-     * @var Generator
-     */
-    public static $instance;
-    public function __construct() {
+    public function __construct()
+    {
         self::$instance = $this;
     }
 
-    /**
-     * @return Generator
-     */
-    public static function getInstance(){
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
+    public static function getInstance(): self
+    {
+        return self::$instance ??= new self();
     }
 
-    /**
-     * @param $controllerName
-     * @return array
-     */
-    public function generateController(string $controllerName): array {
-        $controllerFile = ROOT_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR . ucfirst($controllerName) . '.php';
+    public function generateController(string $controllerName): array
+    {
+        $pathParts = preg_split('/[\\\\\/]/', $controllerName);
+        $className = ucfirst(array_pop($pathParts));
+        $directory = implode(DIRECTORY_SEPARATOR, $pathParts);
+        $baseDir = ROOT_PATH . '/app/Controllers' . ($directory ? '/' . $directory : '');
+        $controllerFile = "$baseDir/$className.php";
+
         if (file_exists($controllerFile)) {
-            return [
-                'status' => false,
-                'message' => ucfirst($controllerName) . ' Controller Already Exist'
-            ];
+            return ['status' => false, 'message' => "$className Controller Already Exists"];
         }
-        $templateFile = ROOT_PATH . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR . 'ControllerTemplate.php';
-        if (file_exists($templateFile)) {
-            $controllerClass = $controllerName;
-            if (str_contains($controllerName, '\\')) {
-                $controller_name_arr = explode('\\', $controllerName);
-                $controllerClass = end($controller_name_arr);
-            } elseif (str_contains($controllerName, '/')) {
-                $controller_name_arr = explode('/', $controllerName);
-                $controllerClass = end($controller_name_arr);
+
+        $templatePath = ROOT_PATH . '/core/Templates/Controllers/ControllerTemplate.php';
+        if (!file_exists($templatePath)) {
+            return ['status' => false, 'message' => 'Controller Template File Not Found'];
+        }
+
+        if (!file_exists($baseDir)) {
+            mkdir($baseDir, 0777, true);
+        }
+
+        $templateContent = file_get_contents($templatePath);
+        $controllerContent = str_replace('controllername', $className, $templateContent);
+        $controllerContent = $this->prependNamespace($controllerContent, $directory);
+        file_put_contents($controllerFile, $controllerContent);
+
+        return ['status' => true, 'message' => "$className Controller Generated Successfully"];
+    }
+
+    public function generateModel(string $modelName): array
+    {
+        $modelFile = ROOT_PATH . '/app/Models/' . $modelName . '.php';
+        if (file_exists($modelFile)) {
+            return ['status' => false, 'message' => "$modelName Model Already Exists"];
+        }
+
+        $templatePath = ROOT_PATH . '/core/Templates/Models/ModelTemplate.php';
+        if (!file_exists($templatePath)) {
+            return ['status' => false, 'message' => 'Model Template File Not Found'];
+        }
+
+        $templateContent = file_get_contents($templatePath);
+        $className = ucfirst(basename(str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $modelName)));
+        $modelContent = str_replace('modelname', $className, $templateContent);
+
+        file_put_contents($modelFile, $modelContent);
+        return ['status' => true, 'message' => "$className Model Generated Successfully"];
+    }
+
+    public function generateAuth(string $controllerName): array
+    {
+        $responses = [
+            $this->generateAuthControllers(),
+            $this->generateRoutes(),
+            $this->generateViews()
+        ];
+
+        $errors = array_merge(...array_column($responses, 'errors'));
+
+        return empty($errors)
+            ? ['status' => true, 'message' => 'Auth scaffolding created successfully']
+            : ['status' => false, 'message' => implode("\n", $errors)];
+    }
+
+    private function generateRoutes(): array
+    {
+        $errors = [];
+        $templatePath = ROOT_PATH . '/core/Templates/Routes/RouteTemplate.php';
+        $routeFile = ROOT_PATH . '/routes/web.php';
+
+        if (file_exists($templatePath)) {
+            $routeContent = file_get_contents($templatePath);
+            if (!str_contains(file_get_contents($routeFile), $routeContent)) {
+                file_put_contents($routeFile, $routeContent, FILE_APPEND | LOCK_EX);
             } else {
-                $controller_name_arr = [$controllerName];
+                $errors[] = 'Auth routes already exist!';
             }
-            if (str_contains(file_get_contents($templateFile), 'controllername')) {
-                $directory = '';
-                if (count($controller_name_arr) > 1) {
-                    $directory = $controller_name_arr[0];
-                    $controllerDir = ROOT_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR . $directory;
-                    if (!file_exists($controllerDir)) {
-                        mkdir($controllerDir, 0777, true);
+        }
+
+        return ['errors' => $errors];
+    }
+
+    private function generateViews(): array
+    {
+        $errors = [];
+        $views = [
+            'auth/login' => 'auth/login',
+            'auth/register' => 'auth/register',
+            'partials/header' => 'partials/header',
+            'home' => 'home'
+        ];
+
+        foreach ($views as $view => $template) {
+            $viewPath = ROOT_PATH . "/views/$view.php";
+            $templatePath = ROOT_PATH . "/core/Templates/Views/$template.php";
+
+            if (file_exists($viewPath) && $view !== 'partials/header') {
+                $errors[] = ucfirst(basename($view)) . ' view already exists';
+                continue;
+            }
+
+            if (file_exists($templatePath)) {
+                if (!is_dir(dirname($viewPath))) {
+                    mkdir(dirname($viewPath), 0777, true);
+                }
+                file_put_contents($viewPath, file_get_contents($templatePath));
+            } else {
+                $errors[] = ucfirst($template) . ' template not found';
+            }
+        }
+
+        return ['errors' => $errors];
+    }
+
+    private function generateAuthControllers(): array
+    {
+        $errors = [];
+
+        // Generate Auth Controllers
+        $errors = array_merge($errors, $this->generateControllerSet([
+            'Login'    => 'AuthControllerTemplate',
+            'Register' => 'RegisterControllerTemplate',
+        ], '/Auth'));
+
+        // Generate Home Controller
+        $homeError = $this->generateHomeController();
+        if ($homeError) {
+            $errors[] = $homeError;
+        }
+
+        return ['errors' => $errors];
+    }
+
+    private function generateControllerSet(array $controllers, string $subDir): array
+    {
+        $errors = [];
+
+        foreach ($controllers as $name => $templateFile) {
+            $controllerClass = str_ends_with($name, 'Controller') ? $name : $name . 'Controller';
+            $controllerPath = ROOT_PATH . "/app/Controllers$subDir/$controllerClass.php";
+            $templatePath = ROOT_PATH . "/core/Templates/Controllers/$templateFile.php";
+
+            if (file_exists($controllerPath)) {
+                $errors[] = "$controllerClass already exists";
+                continue;
+            }
+
+            if (!file_exists($templatePath)) {
+                $errors[] = "$controllerClass template not found";
+                continue;
+            }
+
+            $content = str_replace('controllername', $controllerClass, file_get_contents($templatePath));
+            if (!is_dir(dirname($controllerPath))) {
+                mkdir(dirname($controllerPath), 0777, true);
+            }
+            file_put_contents($controllerPath, $content);
+        }
+
+        return $errors;
+    }
+
+    private function generateHomeController(): ?string
+    {
+        $homeControllerClass = 'HomeController';
+        $templatePath = ROOT_PATH . '/core/Templates/Controllers/HomeControllerTemplate.php';
+        $controllerPath = ROOT_PATH . '/app/Controllers/HomeController.php';
+
+        if (!file_exists($templatePath)) {
+            return 'Home controller template file not found';
+        }
+
+        $templateContent = file_get_contents($templatePath);
+
+        $controllerContent = str_contains($templateContent, 'controllername')
+            ? str_replace('controllername', $homeControllerClass, $templateContent)
+            : $templateContent;
+
+        if (!is_dir(dirname($controllerPath))) {
+            mkdir(dirname($controllerPath), 0777, true);
+        }
+
+        file_put_contents($controllerPath, $controllerContent);
+
+        return null; // No error
+    }
+
+    public function generateMigration(string $action): array
+    {
+        $migrationDir = ROOT_PATH . '/migrations/';
+        DB::rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
+
+        if ($action === 'rollback') {
+            $result = DB::rawQuery("SELECT * FROM migrations WHERE is_migrate = '1' ORDER BY id DESC LIMIT 1");
+            if (empty($result)) {
+                return ['status' => false, 'message' => 'No migrations to rollback.'];
+            }
+
+            $className = $result[0]['migration'];
+            foreach (glob("$migrationDir*.php") as $file) {
+                require_once $file;
+                if (class_exists($className)) {
+                    $instance = new $className();
+                    if (method_exists($instance, 'down')) {
+                        $instance->down();
+                        DB::rawQuery("DELETE FROM migrations WHERE migration = '$className' LIMIT 1");
+                        return ['status' => true, 'message' => "Rolled back: $className"];
                     }
                 }
-
-                $newContent = str_replace('controllername', ucfirst($controllerClass), file_get_contents($templateFile));
-                $updatedContent = $this->prependNamespace($newContent, $directory);
-                file_put_contents($controllerFile, $updatedContent);
-                return [
-                    'status' => true,
-                    'message' => ucfirst($controllerName) . ' Controller Generated Successfully'
-                ];
-            } else {
-                return [
-                    'status' => false,
-                    'message' => 'Controller Template File Not Found'
-                ];
-            }
-        }
-        return [
-            'status' => false,
-            'message' => 'Controller Template File Not Found'
-        ];
-    }
-
-    /**
-     * @param $modelname
-     * @return array
-     */
-    public  function generateModel($modelname){
-
-        if (file_exists(root_path . '/app/models'.'/'.$modelname.'.php')) {
-            return [
-                'status' => false,
-                'message' => ucfirst($modelname).'Model Build Not Successful, Model Already Exist'
-            ];
-        }
-        $templatefile = root_path . '/core/Templates/Models/ModelTemplate.php';
-        if(file_exists($templatefile)){
-
-            if (strpos($modelname,'\\') !== false){
-                $model_name_arr = explode('\\',$modelname);
-                $model_class_name = end($model_name_arr);
-            } elseif (strpos($modelname,'/') !== false){
-                $model_name_arr = explode('/',$modelname);
-                $model_class_name = end($model_name_arr);
-            } else {
-                $model_class_name = $modelname;
             }
 
-            if( strpos(file_get_contents($templatefile),'modelname') !== false) {
-                $newcontent = str_replace('modelname', $model_class_name, file_get_contents($templatefile));
-                $modelfile = root_path . '/app/models'.'/'.$modelname.'.php';
-                fopen($modelfile, 'w');
-                file_put_contents($modelfile,$newcontent);
-                return [
-                    'status' => true,
-                    'message' => ucfirst($modelname).' Model Generated Successfully'
-                ];
-            }
-            else {
-                return [
-                    'status' => false,
-                    'message' => 'Model Template File Not Found'
-                ];
-            }
-        }
-    }
-
-    /**
-     * @param $controllerName
-     * @return array
-     */
-    public  function generateAuth($controllerName)
-    {
-        $response[] = $this->generateAuthControllers();
-        $response[] = $this->generateRoutes();
-        $response[] = $this->generateViews();
-
-        $errorMessages = [];
-        foreach ($response as $errors) {
-            foreach ($errors['errors'] as $error) {
-                $errorMessages[] = $error;
-            }
+            return ['status' => false, 'message' => "Could not rollback migration: $className"];
         }
 
-        if (!empty($errorMessages)) {
-            return [
-                'status' => false,
-                'message' => implode("\n", $errorMessages)
-            ];
-        }
-        return [
-            'status' => true,
-            'message' => 'Auth Scaffolding Created successfully'
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    private function generateRoutes()
-    {
-        $response['errors'] = [];
-        $templatefile = root_path. '/core/Templates/Routes/RouteTemplate.php';
-        if(file_exists($templatefile)){
-
-            $newcontent = file_get_contents($templatefile);
-            $routefile = root_path. '/routes/web.php';
-
-            if(str_contains(file_get_contents($routefile), $newcontent)) {
-                $response['errors'][] = "Auth routes already exists!";
-            } else {
-                $newfile = fopen($routefile, 'a');
-                file_put_contents($routefile, $newcontent,FILE_APPEND | LOCK_EX);
-            }
-        }
-
-        return $response;
-    }
-
-    private function generateViews()
-    {
-        $response['errors'] = [];
-        if (!file_exists(root_path. '/views/auth')) {
-            mkdir(root_path. '/views/auth', 0777, true);
-        }
-
-        /*loginController*/
-        if (file_exists(root_path. '/views/auth/login.php')) {
-            $response['errors'][] = 'Login view already exist';
-        }
-        if (file_exists(root_path. '/views/auth/register.php')) {
-            $response['errors'][] = 'Register view already exist';
-        }
-
-        //Register View
-        $register_template = root_path. '/core/Templates/Views/auth/register.php';
-        if(file_exists($register_template)){
-
-            $newcontent = file_get_contents($register_template);
-            $register_view = root_path. '/views/auth/register.php';
-            file_put_contents($register_view,$newcontent);
-        }  else {
-            $response['errors'][] = 'Register view template file not found';
-        }
-
-        //Login View
-        $login_template = root_path. '/core/Templates/Views/auth/login.php';
-        if(file_exists($login_template)){
-
-            $newcontent = file_get_contents($login_template);
-            $login_view = root_path. '/views/auth/login.php';
-            file_put_contents($login_view,$newcontent);
-        }  else {
-            $response['errors'][] = 'Login view template file not found';
-        }
-
-        //Update Header View
-        $header_template = root_path. '/core/Templates/Views/partials/header.php';
-        if(file_exists($header_template)){
-
-            $newcontent = file_get_contents($header_template);
-            $header_view = root_path. '/views/partials/header.php';
-            file_put_contents($header_view,$newcontent);
-        }  else {
-            $response['errors'][] = 'Header view template file not found';
-        }
-
-        // Create Home View
-        $register_template = root_path. '/core/Templates/Views/home.php';
-        if(file_exists($register_template)){
-
-            $newcontent = file_get_contents($register_template);
-            $register_view = root_path. '/views/home.php';
-            file_put_contents($register_view,$newcontent);
-        }  else {
-            $response['errors'][] = 'Home view template file not found';
-        }
-
-        return $response;
-    }
-
-    private function generateAuthControllers()
-    {
-        $response['errors'] = [];
-
-        if (!file_exists(root_path . '/app/controllers/Auth')) {
-            mkdir(root_path . '/app/Controllers/Auth', 0777, true);
-        }
-
-        /*loginController*/
-        $controllerName = 'Login';
-        if (file_exists(root_path . '/app/Controllers/Auth/LoginController.php')) {
-            $response['errors'][] = 'LoginController Already Exist';
-        }
-        $templatefile = root_path . '/core/Templates/Controllers/AuthControllerTemplate.php';
-        if(file_exists($templatefile)){
-            if( strpos(file_get_contents($templatefile),'controllername') !== false) {
-                $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
-                $controllerfile = root_path . '/app/Controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
-                fopen($controllerfile, 'w');
-                file_put_contents($controllerfile,$newcontent);
-            }
-            else {
-                $response['errors'][] = 'Login Controller Template File Not Found';
-            }
-        }/*end loginController*/
-
-
-        /*RegisterController*/
-        $controllerName = 'Register';
-        if (file_exists(root_path . '/app/Controllers/Auth/RegisterController.php')) {
-            $response['errors'][] = 'RegisterController Already Exist';
-        }
-        $templatefile = root_path. '/core/Templates/Controllers/RegisterControllerTemplate.php';
-        if(file_exists($templatefile)){
-            if( strpos(file_get_contents($templatefile),'controllername') !== false) {
-                $newcontent = str_replace('controllername', ucfirst($controllerName).'Controller', file_get_contents($templatefile));
-                $controllerfile = root_path. '/app/Controllers/Auth'.'/'.ucfirst($controllerName).'Controller.php';
-                fopen($controllerfile, 'w');
-                file_put_contents($controllerfile,$newcontent);
-            }
-            else {
-                $response['errors'][] = 'Register Controller Template File Not Found';
-            }
-        }
-        /*RegisterController*/
-
-        // Create Home Controller
-        $homeController = 'HomeController';
-        $home_template = root_path. '/core/Templates/Controllers/HomeController.php';
-        if(file_exists($home_template)) {
-            $newcontent = str_replace('controllername', $homeController, file_get_contents($templatefile));
-            //$newcontent = file_get_contents($home_template);
-            $home_controller = root_path. '/app/Controllers/HomeController.php';
-            file_put_contents($home_controller,$newcontent);
-        }  else {
-            $response['errors'][] = 'Home controller template file not found';
-        }
-
-        return $response;
-    }
-
-    /**
-     * @param $migrate
-     * @return array
-     */
-    public function generateMigration($migrate)
-    {
-        // Rollback the last migration
-        if ($migrate === 'rollback') {
-            DB::rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
-            $result = DB::rawQuery("SELECT * FROM migrations WHERE is_migrate = '1' ORDER BY id DESC LIMIT 1");
-            if (!$result) {
-                return [
-                    'status' => false,
-                    'message' => 'No migrations to rollback.'
-                ];
-            }
-            $className = $result[0]['migration'];
-            // Find the migration file
-            $migrationDir = root_path . '/migrations/';
-            $files = glob($migrationDir . '*.php');
-            $fileToRollback = null;
-            foreach ($files as $file) {
-                $base = basename($file, '.php');
-                $parts = explode('_', $base, 5);
-                $fileClass = isset($parts[4]) ? str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $parts[4]))) : null;
-                if ($fileClass === $className) {
-                    $fileToRollback = $file;
-                    break;
-                }
-            }
-            if ($fileToRollback && class_exists($className)) {
-                $instance = new $className();
-                if (method_exists($instance, 'down')) {
-                    $instance->down();
-                    DB::rawQuery("DELETE FROM migrations WHERE migration = '" . $className . "' AND is_migrate = '1' LIMIT 1");
-                    return [
-                        'status' => true,
-                        'message' => 'Rolled back: ' . $className
-                    ];
-                }
-            }
-            return [
-                'status' => false,
-                'message' => 'Could not rollback migration: ' . $className
-            ];
-        }
-        // If the argument is 'migrate', run all migration files in the migrations directory
-        if ($migrate === 'migrate') {
-            $migrationDir = root_path . '/migrations/';
-            if (!file_exists($migrationDir)) {
-                return [
-                    'status' => false,
-                    'message' => 'No migrations directory found.'
-                ];
-            }
-            $files = glob($migrationDir . '*.php');
-            if (!$files) {
-                return [
-                    'status' => false,
-                    'message' => 'No migration files found.'
-                ];
-            }
+        if ($action === 'migrate') {
             $ran = 0;
-            foreach ($files as $file) {
+            foreach (glob("$migrationDir*.php") as $file) {
                 require_once $file;
-                // Extract class name from file (e.g., 2024_05_18_123456_create_users_table.php => CreateUsersTable)
-                $base = basename($file, '.php');
-                // Remove timestamp prefix if present
-                $parts = explode('_', $base, 5);
-                $className = isset($parts[4]) ? str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $parts[4]))) : null;
+                $className = $this->extractClassName($file);
                 if ($className && class_exists($className)) {
-                    // Check if already migrated (by class name)
-                    DB::rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
-                    $result = DB::rawQuery("SELECT * FROM migrations WHERE migration = '" . $className . "' AND is_migrate = '1'");
-                    if (!$result) {
+                    $exists = DB::rawQuery("SELECT * FROM migrations WHERE migration = '$className' AND is_migrate = '1'");
+                    if (!$exists) {
                         $instance = new $className();
                         if (method_exists($instance, 'up')) {
                             $instance->up();
-                            DB::rawQuery("INSERT INTO migrations (migration, is_migrate) VALUES ('" . $className . "', '1')");
+                            DB::rawQuery("INSERT INTO migrations (migration, is_migrate) VALUES ('$className', '1')");
                             $ran++;
                         }
                     }
                 }
             }
-            return [
-                'status' => true,
-                'message' => $ran . ' migration(s) ran.'
-            ];
+            return ['status' => true, 'message' => "$ran migration(s) ran."];
         }
 
-        return [
-            'status' => false,
-            'message' => 'Nothing to migrate'
-        ];
+        return ['status' => false, 'message' => 'Nothing to migrate'];
     }
 
-    /**
-     * @param $newcontent
-     * @param $namespace
-     * @return array|string
-     */
-    private function prependNamespace($newcontent, $namespace): array|string
+    private function extractClassName(string $filePath): ?string
     {
-        $specificString = "<?php";
-        if ($namespace !== '') {
-            $line = "\n\nnamespace " .$controllerNameSpace = "App\\Controllers\\" . $namespace . ";";
-        } else {
-            $line = "\n\nnamespace " .$controllerNameSpace = "App\\Controllers;";
-        }
-
-        return str_replace($specificString, $specificString . $line, $newcontent);
-
+        $base = basename($filePath, '.php');
+        $parts = explode('_', $base, 5);
+        return isset($parts[4]) ? str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $parts[4]))) : null;
     }
 
-    /**
-     * @param string $name
-     * @return array
-     */
     public function generateMigrationFile(string $name): array
     {
-        $templateFile = root_path . '/core/Templates/Migrations/MigrationTemplate.php';
-        if (!file_exists($templateFile)) {
-            return [
-                'status' => false,
-                'message' => 'Migration template file not found.'
-            ];
+        $templatePath = ROOT_PATH . '/core/Templates/Migrations/MigrationTemplate.php';
+        if (!file_exists($templatePath)) {
+            return ['status' => false, 'message' => 'Migration template file not found.'];
         }
-        // Normalize class name (StudlyCase)
+
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
         $timestamp = date('Y_m_d_His');
-        $fileName = $timestamp . '_' . strtolower($name) . '.php';
-        $migrationDir = root_path . '/migrations/';
-        if (!file_exists($migrationDir)) {
-            mkdir($migrationDir, 0777, true);
-        }
-        $filePath = $migrationDir . $fileName;
+        $fileName = "{$timestamp}_" . strtolower($name) . '.php';
+        $filePath = ROOT_PATH . '/migrations/' . $fileName;
+
         if (file_exists($filePath)) {
-            return [
-                'status' => false,
-                'message' => 'Migration file already exists.'
-            ];
+            return ['status' => false, 'message' => 'Migration file already exists.'];
         }
-        // Extract table name from migration name (supports both StudlyCase and snake_case)
-        $tableName = 'table_name';
-        if (preg_match('/create_(.+)_table/i', strtolower($name), $matches)) {
-            $tableName = $matches[1];
-        } elseif (preg_match('/Create([A-Za-z0-9]+)Table/', $className, $matches)) {
-            // Convert CamelCase to snake_case
-            $tableName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $matches[1]));
-        }
-        $content = file_get_contents($templateFile);
-        $content = str_replace('migrationname', $className, $content);
-        $content = str_replace('table_name', $tableName, $content);
+
+        $tableName = $this->extractTableName($name, $className);
+        $content = str_replace(['migrationname', 'table_name'], [$className, $tableName], file_get_contents($templatePath));
         file_put_contents($filePath, $content);
-        return [
-            'status' => true,
-            'message' => 'Migration created: ' . $fileName
-        ];
+
+        return ['status' => true, 'message' => "Migration created: $fileName"];
     }
 
+    private function extractTableName(string $name, string $className): string
+    {
+        if (preg_match('/create_(.+)_table/i', strtolower($name), $matches)) {
+            return $matches[1];
+        } elseif (preg_match('/Create([A-Za-z0-9]+)Table/', $className, $matches)) {
+            return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $matches[1]));
+        }
+        return 'table_name';
+    }
+
+    private function prependNamespace(string $content, string $namespace): string
+    {
+        $namespaceLine = $namespace
+            ? "\n\nnamespace App\\Controllers\\" . str_replace('/', '\\', $namespace) . ';'
+            : "\n\nnamespace App\\Controllers;";
+        return str_replace('<?php', '<?php' . $namespaceLine, $content);
+    }
 }
