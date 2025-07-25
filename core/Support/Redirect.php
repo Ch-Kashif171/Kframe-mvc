@@ -21,7 +21,8 @@ class Redirect
      * @param null $with
      * @return Redirect|void
      */
-    public function back($with = null){
+    public function back($with = null)
+    {
         if(is_null($with)){
             return header('Location: ' . $_SERVER['HTTP_REFERER']);
         }else{
@@ -74,4 +75,5 @@ class Redirect
         Session::put($type, $message);
         $this->go();
     }
+
 }

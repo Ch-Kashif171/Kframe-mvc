@@ -228,10 +228,14 @@ public function user()
 Register route files in `app/Providers/RouteServiceProvider.php`:
 
 ```php
-return [
-  'routes/web.php',
-  'routes/api.php',
-];
+public static function register(): array
+{
+    return [
+        'routes/web.php',
+        'routes/api.php',
+        // Add more route files here...
+    ];
+}
 ```
 
 Kframe will autoload them all.

@@ -231,23 +231,30 @@ public function posts()
 </pre>
 
     <h3>Inverse (Belongs To)</h3>
-    <pre>
+<pre>
 public function user()
 {
     return $this->belongsTo(User::class, 'user_id');
-}</pre>
+}
+</pre>
 
-    <blockquote>
-   📝 Note: Eager loading is not yet supported but is planned in a future update.
-    </blockquote>
+<blockquote>
+📝 Note: Eager loading is not yet supported but is planned in a future update.
+</blockquote>
 
 
-    <h2>🧩 Extending Routes</h2>
-    <p>Register route files in <code>app/Providers/RouteServiceProvider.php</code>:</p>
-    <pre>return [
-  'routes/web.php',
-  'routes/api.php',
-];</pre>
+<h2>🧩 Extending Routes</h2>
+<p>Register route files in <code>app/Providers/RouteServiceProvider.php</code>:</p>
+<pre>
+public static function register(): array
+{
+    return [
+        'routes/web.php',
+        'routes/api.php',
+        // Add more route files here...
+    ];
+}
+</pre>
     <p>Kframe will autoload them all.</p>
 
     <hr>

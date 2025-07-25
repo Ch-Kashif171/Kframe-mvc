@@ -11,7 +11,7 @@ class File
      * @param array $options Upload options (allowed_types, max_size, filename)
      * @return array|false Array with success status and file info, or false on failure
      */
-    public static function upload($file, $destination, $options = [], $maxSize = 2097152)
+    public static function upload(array $file, string $destination, array $options = [], $maxSize = 2097152): bool|array
     {
         // Default options
         $defaults = [
@@ -92,7 +92,7 @@ class File
      * @param string $filePath Path to the file
      * @return bool True if deleted, false otherwise
      */
-    public static function delete($filePath)
+    public static function delete(string $filePath): bool
     {
         if (file_exists($filePath) && is_file($filePath)) {
             return unlink($filePath);
@@ -105,7 +105,7 @@ class File
      * @param string $filePath Path to the file
      * @return bool True if exists, false otherwise
      */
-    public static function exists($filePath)
+    public static function exists(string $filePath): bool
     {
         return file_exists($filePath) && is_file($filePath);
     }
@@ -115,7 +115,7 @@ class File
      * @param string $filePath Path to the file
      * @return int|false File size in bytes, or false if file doesn't exist
      */
-    public static function size($filePath)
+    public static function size(string $filePath)
     {
         if (self::exists($filePath)) {
             return filesize($filePath);
@@ -128,7 +128,7 @@ class File
      * @param string $filePath Path to the file
      * @return string|false MIME type, or false if file doesn't exist
      */
-    public static function mimeType($filePath)
+    public static function mimeType(string $filePath): bool|string
     {
         if (self::exists($filePath)) {
             $finfo = new \finfo(FILEINFO_MIME_TYPE);
@@ -143,7 +143,7 @@ class File
      * @param string $destination Destination file path
      * @return bool True if copied, false otherwise
      */
-    public static function copy($source, $destination)
+    public static function copy(string $source, string $destination): bool
     {
         if (self::exists($source)) {
             $destinationDir = dirname($destination);
@@ -161,7 +161,7 @@ class File
      * @param string $destination Destination file path
      * @return bool True if moved, false otherwise
      */
-    public static function move($source, $destination)
+    public static function move(string $source, string $destination): bool
     {
         if (self::exists($source)) {
             $destinationDir = dirname($destination);
@@ -178,7 +178,7 @@ class File
      * @param string $filePath Path to the file
      * @return string|false File extension, or false if file doesn't exist
      */
-    public static function extension($filePath)
+    public static function extension(string $filePath)
     {
         if (self::exists($filePath)) {
             return strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
@@ -191,7 +191,7 @@ class File
      * @param string $filePath Path to the file
      * @return string|false File name without extension, or false if file doesn't exist
      */
-    public static function name($filePath)
+    public static function name(string $filePath)
     {
         if (self::exists($filePath)) {
             return pathinfo($filePath, PATHINFO_FILENAME);
@@ -204,7 +204,7 @@ class File
      * @param string $filePath Path to the file
      * @return string|false File name with extension, or false if file doesn't exist
      */
-    public static function basename($filePath)
+    public static function basename(string $filePath)
     {
         if (self::exists($filePath)) {
             return basename($filePath);
@@ -217,7 +217,7 @@ class File
      * @param array $file The file array from $_FILES
      * @return bool True if valid, false otherwise
      */
-    private static function isValidUpload($file)
+    private static function isValidUpload($file): bool
     {
         return isset($file['error']) &&
             $file['error'] === UPLOAD_ERR_OK &&
@@ -229,7 +229,7 @@ class File
      * @param string $filename Original filename
      * @return string Sanitized filename
      */
-    private static function sanitizeFilename($filename)
+    private static function sanitizeFilename(string $filename): string
     {
         // Remove special characters and spaces
         $filename = preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename);
@@ -246,7 +246,7 @@ class File
      * @param int $permissions Directory permissions
      * @return bool True if created or exists, false otherwise
      */
-    public static function makeDirectory($path, $permissions = 0755)
+    public static function makeDirectory(string $path, int $permissions = 0755): bool
     {
         if (!is_dir($path)) {
             return mkdir($path, $permissions, true);
@@ -259,7 +259,7 @@ class File
      * @param string $path Directory path
      * @return bool True if deleted, false otherwise
      */
-    public static function deleteDirectory($path)
+    public static function deleteDirectory(string $path): bool
     {
         if (!is_dir($path)) {
             return false;
@@ -283,7 +283,7 @@ class File
      * @param string $filePath Path to the file
      * @return array|false File info array, or false if file doesn't exist
      */
-    public static function info($filePath)
+    public static function info(string $filePath): bool|array
     {
         if (!self::exists($filePath)) {
             return false;

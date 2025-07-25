@@ -8,6 +8,7 @@
 namespace Core\Support\Validation;
 
 use Core\Support\DB;
+use Core\Support\Session;
 
 class Validator
 {
@@ -81,6 +82,24 @@ class Validator
     public static function escape(string $value): string
     {
         return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
+     * @param $field
+     * @return bool
+     */
+    public static function validation($field): bool
+    {
+        $error = Session::get();
+        if (array_key_exists('error_key', $error)) {
+            if (isset(Session::get('error_key')[$field])) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
     }
 
     /**

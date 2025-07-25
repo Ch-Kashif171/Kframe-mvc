@@ -75,24 +75,24 @@ class LoadView
                 if (isset($d['data'])) {
                     $response[$key] = $d['data']; //assign data before pagination and unset
                     unset($d['data']);
-                    /*here call pagination function to render pagination html*/
 
-                    $result['render']->links = pagination((object)$d);
+                    /*here call pagination function to render pagination html*/
+                    $result['render']->links = Paginator::pagination((object)$d);
 
                 } elseif (isset($d['simple']['data'])) {
                     $response[$key] = $d['simple']['data']; //assign data before pagination and unset
                     unset($d['simple']['data']);
                     /*here call pagination function to render pagination html*/
-                    $result['render']->links = simplePagination((object)$d['simple']);
+                    $result['render']->links = Paginator::simplePagination((object)$d['simple']);
                 } else {
                     $response[$key] = $d;
                 }
-            } else{
+            } else {
                 $response = [];
             }
         }
 
-        return array_merge($result,$response);
+        return array_merge($result, $response);
     }
-    
+
 }

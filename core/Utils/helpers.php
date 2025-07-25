@@ -9,12 +9,14 @@ use App\Providers\RouteServiceProvider;
 use Core\Support\Alert\Toastr;
 use Core\Support\Auth;
 use Core\Support\Container\App;
+use Core\Support\Errors;
 use Core\Support\LoadView;
 use Core\Support\ModelFactory;
 use Core\Support\Response;
 use Core\Support\NotFound;
 use Core\Support\Redirect;
 use Core\Support\Session;
+use Core\Support\Validation\Validator;
 
 
 if(!function_exists('dd')) {
@@ -250,10 +252,13 @@ if(!function_exists('include_html')) {
 
     /**
      * @param $path
+     * @return void
+     * @throws Exception
      */
-    function include_html($path){
+    function include_html($path)
+    {
         $viewPath = root_path . '/views/' . $path;
-        if (strpos($path,'.php') === false) {
+        if (!str_contains($path, '.php')) {
             $viewPath .= '.php';
         }
         if (file_exists($viewPath)) {
@@ -264,197 +269,34 @@ if(!function_exists('include_html')) {
     }
 }
 
-if(!function_exists('pagination')) {
-    function pagination($links)
-    {
-        $links = (object)$links;
-        $html = '';
-        // Info line with safe defaults
-        $from = $links->from ?? 0;
-        $to = $links->to ?? 0;
-        $total = $links->total ?? 0;
-        if ($total > 0) {
-            $html .= '<div class="pagination-info">Showing ' . $from . ' to ' . $to . ' of ' . $total . ' entries</div>';
-        }
-        if (isset($links->last_page) && $links->last_page > 1) {
-            $html .= '<ul class="pagination">';
-            // Previous link (always shown, disabled if on first page)
-            if ($links->current_page <= 1) {
-                $html .= '<li class="disabled"><span>&laquo; Previous</span></li>';
-            } else {
-                $html .= '<li><a href="' . $links->prev_page_url . '">&laquo; Previous</a></li>';
-            }
-            $window = 2; // Number of pages to show before/after current
-            $start = max(1, $links->current_page - $window);
-            $end = min($links->last_page, $links->current_page + $window);
-
-            // Always show first page
-            if ($start > 1) {
-                $html .= '<li><a href="' . $links->path . '?page=1">1</a></li>';
-                if ($start > 2) {
-                    $html .= '<li class="disabled"><span>...</span></li>';
-                }
-            }
-
-            for ($i = $start; $i <= $end; $i++) {
-                $active = $i == $links->current_page ? ' class="active"' : '';
-                $html .= '<li' . $active . '><a href="' . $links->path . '?page=' . $i . '">' . $i . '</a></li>';
-            }
-
-            // Always show last page
-            if ($end < $links->last_page) {
-                if ($end < $links->last_page - 1) {
-                    $html .= '<li class="disabled"><span>...</span></li>';
-                }
-                $html .= '<li><a href="' . $links->path . '?page=' . $links->last_page . '">' . $links->last_page . '</a></li>';
-            }
-
-            // Next link (always shown, disabled if on last page)
-            if ($links->current_page >= $links->last_page) {
-                $html .= '<li class="disabled"><span>Next &raquo;</span></li>';
-            } else {
-                $html .= '<li><a href="' . $links->next_page_url . '">Next &raquo;</a></li>';
-            }
-            $html .= '</ul>';
-        }
-        return $html;
-    }
-}
-
-if(!function_exists('simplePagination')) {
-
-    /**
-     * @param $links
-     * @return string
-     */
-    function simplePagination($links){
-
-        $html = '';
-        $show = showPages($links);
-
-        if ($show != 0) {
-            if (isset($_GET['page'])) {
-                $page = $_GET['page'];
-            } else {
-                $page = 1;
-            }
-
-            if ($page == 1) {
-                $prev = '<span class="page-link">&laquo; Previous</span>';
-                $disabled = 'disabled';
-            } else {
-                $prev = ' <a href="' . $links->prev_page_url . '">Previous</a>';
-                $disabled = '';
-            }
-
-            $html = '<ul class="pagination" role="navigation">
-        <li class="page-item ' . $disabled . '" aria-disabled="true">
-        ' . $prev . '
-        </li>';
-
-            if ($page < $show) {
-                $nexLink = $links->next_page_url;
-                $disabled = '';
-            } else {
-                $disabled = 'disabled';
-                $nexLink = 'javascript:void(0);';
-
-            }
-
-            $html .= '<li class="page-item ' . $disabled . '">
-            <a class="page-link" href="' . $nexLink . '" rel="next">Next &raquo;</a></li>';
-
-            $html .= '</ul>';
-        }
-
-        return $html;
-    }
-}
-
-if(!function_exists('showPages')) {
-
-    /**
-     * @param $links
-     * @return float|int
-     */
-    function showPages($links){
-        $show = 0;
-        if ($links->total > $links->per_page) {
-
-            $show = ($links->total / $links->per_page);
-        }
-        return $show;
-    }
-}
-
 if(!function_exists('withErrors')) {
 
     /**
      * @param $field
      * @return bool
      */
-    function withErrors($field){
-        $error = Session::get();
-        if (array_key_exists('error_key', $error)) {
-            if (isset($error)) {
-                return Session::get('error_key')[$field];
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+    function withErrors($field): bool
+    {
+        return Errors::withErrors($field);
     }
 }
 
 if(!function_exists('errors')) {
     /**
      * @param $key
-     * @return false|mixed
+     * @return mixed
      */
-    function errors($key)
+    function errors($key): mixed
     {
-        if (!Session::has('errors')) {
-            return false;
-        }
-
-        $errors = Session::get('errors');
-        if (empty($errors)) {
-            return false;
-        }
-
-        foreach ($errors as $k => $error) {
-            if (isset($error[$key])) {
-                $message = $error[$key];
-                Session::forget_array('errors', $k, $key);
-                return $message;
-            }
-        }
-
-        return false;
+        return Errors::errors($key);
     }
 }
 
 
 if(!function_exists('has_error')) {
-    function has_error($key)
+    function has_error($key): bool
     {
-        $exist = Session::has('errors');
-        if ($exist) {
-            $errors = Session::get('errors');
-            if (isset($errors)) {
-                foreach ($errors as $error) {
-                    if (isset($error[$key])){
-                        return true;
-                        break;
-                    }
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        return Errors::has_error($key);
     }
 }
 
@@ -464,18 +306,9 @@ if(!function_exists('validation')) {
      * @param $field
      * @return bool
      */
-    function validation($field){
-        $error = Session::get();
-        if (array_key_exists('error_key', $error)) {
-            if (isset(Session::get('error_key')[$field])) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-
+    function validation($field): bool
+    {
+        return Validator::validation($field);
     }
 }
 
@@ -528,7 +361,8 @@ if(!function_exists('salt')) {
     /**
      * @return array
      */
-    function salt(){
+    function salt()
+    {
         return array(
             '0' => 'b76',
             '1' => 'd75',
@@ -636,15 +470,6 @@ if(!function_exists('env')) {
     function value($value)
     {
         return $value instanceof Closure ? $value() : $value;
-    }
-
-    function env_old($env_var,$key= ''){
-        if($key == ''){
-            $env = getenv($env_var);
-        }else{
-            $env = getenv($key);
-        }
-        return $env;
     }
 }
 
@@ -882,16 +707,11 @@ if(!function_exists('csrf_token')) {
 
 if(!function_exists('abort')) {
 
-    function abort($route) {
+    function abort($route)
+    {
         $view = "errors/".$route;
-        return view($view);
-    }
-}
-
-if(!function_exists('not_fount_image')) {
-
-    function not_fount_image() {
-        return url('core/assets/images/404.png');
+        view($view);
+        exit();
     }
 }
 

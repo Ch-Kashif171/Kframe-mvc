@@ -14,7 +14,7 @@ use Core\Support\Routing\Router;
 
 class Application
 {
-    const VERSION = '1.0.2';
+    const VERSION = '3.0.1';
 
     const FRAMEWORK = 'kframe';
 
@@ -130,8 +130,8 @@ class Application
     protected function registerSingletons(): void
     {
         $this->singleton('dotenv', LoadEnv::class, [root_path]);
-        $this->singleton('assetsNotFound', [AssetsNotFound::class, 'run']);
         $this->singleton('whoops', [Whoops::class, 'handle']);
+        $this->singleton('assetsNotFound', [AssetsNotFound::class, 'run']);
         // Add more singletons here as needed
     }
 

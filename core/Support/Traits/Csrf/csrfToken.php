@@ -21,7 +21,8 @@ trait csrfToken
         }
     }
 
-    private static function rotateToken(){
+    private static function rotateToken()
+    {
         $expireAfter = 10;
         if(Session::has('last_action')){
             $secondsInactive = time() - Session::get('last_action');
