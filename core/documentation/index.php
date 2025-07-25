@@ -98,7 +98,7 @@
 
     <h2>🛡️ Security</h2>
     <ul>
-        <li>✅ CSRF Protection: <code>&lt;?php csrf_token(); ?&gt;</code> inside <code>&lt;form&gt;</code></li>
+        <li>✅ CSRF Protection: <code>&lt;?php csrf_field(); ?&gt;</code> inside <code>&lt;form&gt;</code></li>
         <li>✅ Output escaping: <code>&lt;?= e($value) ?&gt;</code></li>
         <li>✅ File upload validation</li>
         <li>✅ Automatic input sanitization</li>

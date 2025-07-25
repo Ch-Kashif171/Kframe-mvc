@@ -16,6 +16,7 @@ use Core\Support\Response;
 use Core\Support\NotFound;
 use Core\Support\Redirect;
 use Core\Support\Session;
+use Core\Support\Form;
 use Core\Support\Validation\Validator;
 
 
@@ -695,12 +696,32 @@ if(!function_exists('csrf_token')) {
      */
     function csrf_token()
     {
-        if (Session::has('csrf_token')) {
-            $token = Session::get('csrf_token');
-        } else{
-            $token = bin2hex(random_bytes(32));
-            Session::put('csrf_token', $token);
-        }
+        return Form::token();
+    }
+}
+
+if(!function_exists('method')) {
+
+    /**
+     * @param $type
+     * @return string
+     */
+    function method($type): string
+    {
+        $method = Form::method($type);
+        echo '<input type="hidden" name="_method" value="'.$method.'">';
+    }
+}
+
+if(!function_exists('csrf_token')) {
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    function csrf_field()
+    {
+        $token = Form::token();
         echo '<input type="hidden" name="csrf_token" value="'.$token.'">';
     }
 }

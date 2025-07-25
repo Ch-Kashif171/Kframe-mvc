@@ -6,12 +6,12 @@ use Core\Exception\Handlers\CsrfException;
 use Core\Exception\Handlers\MiddlewareNotFoundException;
 use Core\Exception\Handlers\RouteNotFoundException;
 use Core\Support\IsRoute;
-use Core\Support\Traits\Csrf\csrfToken;
+use Core\Support\Traits\Csrf\CsrfToken;
 use Core\Support\Traits\Middleware;
 
 class RouteExecutor
 {
-    use csrfToken, Middleware;
+    use CsrfToken, Middleware;
 
     /**
      * @param $method

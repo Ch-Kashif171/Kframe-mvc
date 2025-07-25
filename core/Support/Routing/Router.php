@@ -3,7 +3,7 @@
 namespace Core\Support\Routing;
 
 use Closure;
-use Core\Support\Traits\Csrf\csrfToken;
+use Core\Support\Traits\Csrf\CsrfToken;
 use Core\Support\Traits\Middleware;
 use Core\Support\Traits\RouteParam;
 use Core\Support\Traits\RouteRegistrar;
@@ -11,7 +11,7 @@ use Core\Support\Traits\RouteContext;
 
 class Router
 {
-    use csrfToken, Middleware, RouteParam, RouteRegistrar;
+    use CsrfToken, Middleware, RouteParam, RouteRegistrar;
 
     public static $prefix;
     public static $namespace;
@@ -29,20 +29,20 @@ class Router
     ];
 
     /**
+     * @param $uri
      * @param $action
-     * @param $controllerMethod
      * @return RouteBuilder
      */
-    public static function get($action, $controllerMethod): RouteBuilder
+    public static function get($uri, $action): RouteBuilder
     {
-        if ($controllerMethod instanceof Closure) {
-            $controllerMethod = ['closure' => $controllerMethod];
+        if ($action instanceof Closure) {
+            $action = ['closure' => $action];
         }
 
         $context = new RouteContext(
             'GET',
+            $uri,
             $action,
-            $controllerMethod,
             static::$prefix,
             static::$namespace,
             static::$middleware
@@ -57,20 +57,104 @@ class Router
     }
 
     /**
+     * @param $uri
      * @param $action
-     * @param $controllerMethod
      * @return RouteBuilder
      */
-    public static function post($action, $controllerMethod): RouteBuilder
+    public static function post($uri, $action): RouteBuilder
     {
-        if ($controllerMethod instanceof Closure) {
-            $controllerMethod = ['closure' => $controllerMethod];
+        if ($action instanceof Closure) {
+            $action = ['closure' => $action];
         }
 
         $context = new RouteContext(
             'POST',
+            $uri,
             $action,
-            $controllerMethod,
+            static::$prefix,
+            static::$namespace,
+            static::$middleware
+        );
+
+        return static::registerRoute(
+            $context,
+            self::$routes,
+            self::$dynamicRoutes,
+            self::$routeHandlers
+        );
+    }
+
+    /**
+     * @param $uri
+     * @param $action
+     * @return RouteBuilder
+     */
+    public static function put($uri, $action): RouteBuilder
+    {
+        if ($action instanceof Closure) {
+            $action = ['closure' => $action];
+        }
+
+        $context = new RouteContext(
+            'PUT',
+            $uri,
+            $action,
+            static::$prefix,
+            static::$namespace,
+            static::$middleware
+        );
+
+        return static::registerRoute(
+            $context,
+            self::$routes,
+            self::$dynamicRoutes,
+            self::$routeHandlers
+        );
+    }
+
+    /**
+     * @param $uri
+     * @param $action
+     * @return RouteBuilder
+     */
+    public static function delete($uri, $action): RouteBuilder
+    {
+        if ($action instanceof Closure) {
+            $action = ['closure' => $action];
+        }
+
+        $context = new RouteContext(
+            'DELETE',
+            $uri,
+            $action,
+            static::$prefix,
+            static::$namespace,
+            static::$middleware
+        );
+
+        return static::registerRoute(
+            $context,
+            self::$routes,
+            self::$dynamicRoutes,
+            self::$routeHandlers
+        );
+    }
+
+    /**
+     * @param $uri
+     * @param $action
+     * @return RouteBuilder
+     */
+    public static function patch($uri, $action): RouteBuilder
+    {
+        if ($action instanceof Closure) {
+            $action = ['closure' => $action];
+        }
+
+        $context = new RouteContext(
+            'PATCH',
+            $uri,
+            $action,
             static::$prefix,
             static::$namespace,
             static::$middleware

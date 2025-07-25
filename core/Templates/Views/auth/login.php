@@ -5,7 +5,7 @@
         <h2 class="auth-title">Sign In</h2>
         <form action="<?php echo url('login')?>" method="post">
             <?php include_html('flash/messages.php'); ?>
-            <?php csrf_token(); ?>
+            <?php csrf_field(); ?>
             <div class="form-group">
                 <label for="email">Email address</label>
                 <input type="email" class="form-control <?php echo (has_error('email')?'error':'') ?>" id="email" name="email" placeholder="Enter your email">

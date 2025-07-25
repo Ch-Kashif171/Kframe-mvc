@@ -6,11 +6,12 @@ class MethodChecker
 {
     public static function check($routes)
     {
+        $allowedMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
         $uri = RouteAction::current();
         $method = $_SERVER['REQUEST_METHOD'];
         $altMethod = $method === 'GET' ? 'POST' : 'GET';
 
-        if (!in_array($uri, $routes[$method]) && in_array($uri, $routes[$altMethod])) {
+        if (!in_array($uri, (array)$allowedMethods[$method]) && in_array($uri, (array)$allowedMethods[$altMethod])) {
             http_response_code(405);
             if (function_exists('config') && config('app.app_env') === 'production') {
                 abort(405);

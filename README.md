@@ -34,7 +34,7 @@ Kframe is **not a Laravel clone**. It's a fresh micro-framework for small to med
 
 ## 🛡️ Security
 
-* ✅ **CSRF Protection**: `<?php csrf_token(); ?>` inside `<form>`
+* ✅ **CSRF Protection**: `<?php csrf_field(); ?>` inside `<form>`
 * ✅ **Output escaping**: `<?= e($value) ?>`
 * ✅ **File upload validation**
 * ✅ **Automatic input sanitization**

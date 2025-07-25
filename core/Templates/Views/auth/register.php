@@ -5,7 +5,7 @@
         <h2 class="auth-title">Sign Up</h2>
         <form action="<?php echo url('register')?>" method="post">
             <?php include_html('flash/messages.php'); ?>
-            <?php csrf_token(); ?>
+            <?php csrf_field(); ?>
             <div class="form-group">
                 <label for="name">Full name</label>
                 <input type="text" class="form-control <?php echo (has_error('name')?'error':'') ?>" id="name" name="name" placeholder="Enter your full name">
