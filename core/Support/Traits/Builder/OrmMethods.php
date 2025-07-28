@@ -1,6 +1,7 @@
 <?php
-namespace Core\Database;
+namespace Core\Support\Traits\Builder;
 
+use Core\Database\QueryBuilder;
 use Core\Support\DB;
 
 /**

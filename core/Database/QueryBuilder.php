@@ -4,6 +4,7 @@ namespace Core\Database;
 
 
 use Core\Support\Traits\Builder\Getters;
+use Core\Support\Traits\Builder\MakeResult;
 
 class QueryBuilder implements QueryBuilderInterface
 {
