@@ -2,16 +2,18 @@
 
 namespace Core\Support\Traits\Builder;
 
+use Core\Support\Collection;
+
 trait Getters
 {
     use Hydrate, Wrapper;
 
-    public function all(): array
+    public function all(): array|Collection
     {
         return $this->wrapMultiple(fn() => $this->doctrine->get());
     }
 
-    public function get(): array
+    public function get(): array|Collection
     {
         return $this->wrapMultiple(fn() => $this->doctrine->get());
     }
@@ -36,14 +38,14 @@ trait Getters
         return $this->wrapSingle(fn() => $this->doctrine->firstOrFail());
     }
 
-    public function paginate($limit): array
+    public function paginate($limit)
     {
-        return $this->wrapMultiple(fn() => $this->doctrine->paginate($limit));
+        return $this->doctrine->paginate($limit);
     }
 
     public function simplePaginate($limit): array
     {
-        return $this->wrapMultiple(fn() => $this->doctrine->simplePaginate($limit));
+        return $this->doctrine->simplePaginate($limit);
     }
 
 }

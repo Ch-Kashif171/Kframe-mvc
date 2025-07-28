@@ -13,6 +13,7 @@ class QueryBuilder implements QueryBuilderInterface
     protected Doctrine $doctrine;
     protected $hidden = [];
     protected $modelClass;
+    protected $with = [];
 
     public function __construct($table, $hidden = null, $modelClass = null)
     {
@@ -201,4 +202,44 @@ class QueryBuilder implements QueryBuilderInterface
         return $this;
     }
 
+    public function with($relations)
+    {
+        if (is_string($relations)) {
+            $relations = [$relations];
+        }
+        $this->with = array_merge($this->with, $relations);
+        return $this;
+    }
+
+    public function has($relation)
+    {
+        $relatedQuery = (new $this->modelClass())->$relation();
+        if (!($relatedQuery instanceof self)) {
+            throw new \Exception("Relation $relation must return a QueryBuilder");
+        }
+        $relatedTable = method_exists($relatedQuery->modelClass, 'table') ? (new $relatedQuery->modelClass)->table() : null;
+        $parentModel = new $this->modelClass();
+        $parentTable = method_exists($parentModel, 'table') ? $parentModel->table() : null;
+        $foreignKey = $parentTable . '_id';
+        $this->doctrine->wheres .= " AND EXISTS (SELECT 1 FROM $relatedTable WHERE $relatedTable.$foreignKey = $parentTable.id)";
+        return $this;
+    }
+
+    public function whereHas($relation, $callback = null)
+    {
+        $relatedQuery = (new $this->modelClass())->$relation();
+        if (!($relatedQuery instanceof self)) {
+            throw new \Exception("Relation $relation must return a QueryBuilder");
+        }
+        $relatedTable = method_exists($relatedQuery->modelClass, 'table') ? (new $relatedQuery->modelClass)->table() : null;
+        $parentModel = new $this->modelClass();
+        $parentTable = method_exists($parentModel, 'table') ? $parentModel->table() : null;
+        $foreignKey = $parentTable . '_id';
+        if ($callback) {
+            $callback($relatedQuery);
+        }
+        $relatedWhere = property_exists($relatedQuery->doctrine, 'wheres') ? $relatedQuery->doctrine->wheres : '';
+        $this->doctrine->wheres .= " AND EXISTS (SELECT 1 FROM $relatedTable WHERE $relatedTable.$foreignKey = $parentTable.id $relatedWhere)";
+        return $this;
+    }
 } 

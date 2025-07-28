@@ -18,48 +18,36 @@ use Core\Support\Redirect;
 use Core\Support\Session;
 use Core\Support\Form;
 use Core\Support\Validation\Validator;
+use Symfony\Component\VarDumper\VarDumper;
 
 
 if(!function_exists('dd')) {
+
     /**
-     * Dump and die with pretty JSON output (API-style).
-     *
-     * @param mixed ...$vars
+     * @param ...$vars
      * @return void
      */
-    function dd(...$vars) {
-        while (ob_get_level()) {
-            ob_end_clean();
+    function dd(...$vars)
+    {
+        foreach ($vars as $v) {
+            VarDumper::dump($v);
         }
 
-        echo '<div style="background:#fff;padding:30px;">';
-
-        foreach ($vars as $index => $var) {
-
-            echo '<pre style="background:#1e1e1e;color:#fff;padding:16px;border-radius:6px;box-shadow:0 0 8px rgba(0,0,0,0.3);overflow:auto;">';
-            echo htmlspecialchars(print_r($var, true));
-            echo '</pre>';
-        }
-
-        echo '</div>';
-        die(1);
+        exit(1);
     }
 
-    function dump(...$vars) {
-        while (ob_get_level()) {
-            ob_end_clean();
+}
+
+if(!function_exists('dump')) {
+    /**
+     * @param ...$vars
+     * @return void
+     */
+    function dump(...$vars)
+    {
+        foreach ($vars as $v) {
+            VarDumper::dump($v);
         }
-
-        echo '<div style="background:#fff;padding:30px;">';
-
-        foreach ($vars as $index => $var) {
-
-            echo '<pre style="background:#1e1e1e;color:#fff;padding:16px;border-radius:6px;box-shadow:0 0 8px rgba(0,0,0,0.3);overflow:auto;">';
-            echo htmlspecialchars(print_r($var, true));
-            echo '</pre>';
-        }
-
-        echo '</div>';
     }
 
 }

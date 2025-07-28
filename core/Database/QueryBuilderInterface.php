@@ -1,13 +1,15 @@
 <?php
 namespace Core\Database;
 
+use Core\Support\Collection;
+
 /**
  * Interface for the query builder wrapper.
  *
  * @method QueryBuilderInterface where($column, $operator, $value)
  * @method QueryBuilderInterface select(...$fields)
- * @method array all()
- * @method array get()
+ * @method  all()
+ * @method get()
  * @method object|null first()
  * @method object|null firstOrFail()
  * @method bool exists()
@@ -29,8 +31,8 @@ namespace Core\Database;
  * @method QueryBuilderInterface whereNull($column)
  * @method QueryBuilderInterface whereNotNull($column)
  * @method QueryBuilderInterface having($column, $operator, $value)
- * @method array paginate($limit)
- * @method array simplePaginate($limit)
+ * @method array paginate($limit): array|Collection
+ * @method array simplePaginate($limit): array|Collection
  * @method bool insert($data)
  * @method int|string insertGetId($data)
  * @method bool update($fields)
@@ -46,8 +48,8 @@ interface QueryBuilderInterface
 {
     public function where($column, $operator, $value): QueryBuilderInterface;
     public function select(...$fields): QueryBuilderInterface;
-    public function all(): array;
-    public function get(): array;
+    public function all(): array|Collection;
+    public function get(): array|Collection;
     public function first();
     public function firstOrFail();
     public function exists(): bool;
@@ -69,8 +71,8 @@ interface QueryBuilderInterface
     public function whereNull($column): QueryBuilderInterface;
     public function whereNotNull($column): QueryBuilderInterface;
     public function having($column, $operator, $value): QueryBuilderInterface;
-    public function paginate($limit): array;
-    public function simplePaginate($limit): array;
+    public function paginate($limit);
+    public function simplePaginate($limit): array|Collection;
     public function insert($data): bool;
     public function insertGetId($data);
     public function update($fields): bool;

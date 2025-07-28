@@ -40,5 +40,8 @@
         "allow-plugins": {
             "composer/installers": true
         }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^7.3"
     }
 }

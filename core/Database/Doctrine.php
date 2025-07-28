@@ -12,7 +12,7 @@ class Doctrine
 
     // Add separate properties for each clause
     protected $joins = '';
-    protected $wheres = '';
+    public $wheres = '';
     protected $groupBy = '';
     protected $having = '';
     protected $orderBy = '';

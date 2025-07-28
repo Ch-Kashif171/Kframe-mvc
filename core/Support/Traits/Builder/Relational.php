@@ -42,14 +42,6 @@ trait Relational
     }
 
     /**
-     * @return array
-     */
-    public function toArray()
-    {
-        return $this->attributes;
-    }
-
-    /**
      * @return false|string
      */
     public function __toString()
