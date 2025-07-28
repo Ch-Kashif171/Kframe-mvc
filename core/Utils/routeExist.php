@@ -13,8 +13,6 @@ if (
     return;
 }
 
-if (isset($route) && $route) {
-    // Okay, do nothing
-} else {
+if (!$route) {
     RouteNotFount::check();
 }

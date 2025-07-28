@@ -4,14 +4,12 @@ namespace Core\Support\Routing;
 
 class MethodChecker
 {
-    public static function check($routes)
+    public static function check($routeMethod)
     {
-        $allowedMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
-        $uri = RouteAction::current();
         $method = $_SERVER['REQUEST_METHOD'];
         $altMethod = $method === 'GET' ? 'POST' : 'GET';
 
-        if (!in_array($uri, (array)$allowedMethods[$method]) && in_array($uri, (array)$allowedMethods[$altMethod])) {
+        if ($routeMethod !== $method) {
             http_response_code(405);
             if (function_exists('config') && config('app.app_env') === 'production') {
                 abort(405);

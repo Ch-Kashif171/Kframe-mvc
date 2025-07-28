@@ -41,8 +41,8 @@ class Application
      * @var array|string[]
      */
     protected array $notFound = [
-        'notAllowed' => '/core/Utils/checkMethodNotAllowed.php',
         'routeExist' => '/core/Utils/routeExist.php',
+
     ];
 
     /**
@@ -167,7 +167,6 @@ class Application
 
         // If no route matched, handle 404 or method not allowed
         if (!$routeMatched) {
-            require_once root_path . $this->notFound['notAllowed'];
             require_once root_path . $this->notFound['routeExist'];
         }
 

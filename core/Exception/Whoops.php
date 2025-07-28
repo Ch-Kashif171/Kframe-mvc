@@ -21,7 +21,7 @@ class Whoops
         $handler->addDataTable('Session', isset($_SESSION) ? $_SESSION : []);
         $handler->addDataTable('Cookies', $_COOKIE);
 
-        $logFile = root_path . '/logs/kframe.log';
+        $logFile = root_path . '/storage/logs/kframe.log';
         if (file_exists($logFile)) {
             $lines = @file($logFile);
             $recent = $lines ? array_slice($lines, -20) : [];
