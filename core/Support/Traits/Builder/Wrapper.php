@@ -7,6 +7,7 @@ use Core\Support\Collection;
 
 trait Wrapper
 {
+    use Hydrate;
     /**
      * @param callable $callback
      * @return array

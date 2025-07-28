@@ -6,7 +6,7 @@ use Core\Support\Collection;
 
 trait Getters
 {
-    use Hydrate, Wrapper;
+    use Wrapper;
 
     public function all(): array|Collection
     {
