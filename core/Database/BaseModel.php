@@ -34,4 +34,12 @@ class BaseModel
     {
         return json_encode($this->attributes, JSON_PRETTY_PRINT);
     }
+
+    public function __call($method, $arguments)
+    {
+        if (method_exists($this, $method)) {
+            return $this->$method(...$arguments);
+        }
+        throw new \Exception("Method {$method} does not exist on " . static::class);
+    }
 }

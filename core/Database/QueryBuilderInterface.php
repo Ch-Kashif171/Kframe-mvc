@@ -6,6 +6,7 @@ namespace Core\Database;
  *
  * @method QueryBuilderInterface where($column, $operator, $value)
  * @method QueryBuilderInterface select(...$fields)
+ * @method array all()
  * @method array get()
  * @method object|null first()
  * @method object|null firstOrFail()
@@ -45,6 +46,7 @@ interface QueryBuilderInterface
 {
     public function where($column, $operator, $value): QueryBuilderInterface;
     public function select(...$fields): QueryBuilderInterface;
+    public function all(): array;
     public function get(): array;
     public function first();
     public function firstOrFail();

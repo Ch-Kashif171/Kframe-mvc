@@ -44,7 +44,7 @@ trait OrmMethods
     public function hasOne($related, $foreignKey, $localKey = 'id')
     {
         $instance = new $related();
-        return (new QueryBuilder($instance->table, $instance->hidden))
+        return (new QueryBuilder($instance->table, $instance->hidden, $related))
             ->where($foreignKey, '=', $this->$localKey);
     }
 
@@ -58,7 +58,7 @@ trait OrmMethods
     public function hasMany($related, $foreignKey, $localKey = 'id')
     {
         $instance = new $related();
-        return (new QueryBuilder($instance->table, $instance->hidden))
+        return (new QueryBuilder($instance->table, $instance->hidden, $related))
             ->where($foreignKey, '=', $this->$localKey);
     }
 
@@ -72,7 +72,7 @@ trait OrmMethods
     public function belongsTo($related, $foreignKey, $ownerKey = 'id')
     {
         $instance = new $related();
-        return (new QueryBuilder($instance->table, $instance->hidden))
+        return (new QueryBuilder($instance->table, $instance->hidden, $related))
             ->where($ownerKey, '=', $this->$foreignKey);
     }
 
@@ -93,7 +93,7 @@ trait OrmMethods
         $pivotRows = $db::table($pivot)->where($foreignPivotKey, '=', $this->$localKey)->get();
         $relatedIds = array_map(function($row) use ($relatedPivotKey) { return $row->$relatedPivotKey; }, $pivotRows);
         if (empty($relatedIds)) return [];
-        return (new QueryBuilder($instance->table, $instance->hidden))
+        return (new QueryBuilder($instance->table, $instance->hidden, $related))
             ->whereIn($relatedKey, $relatedIds)
             ->get();
     }

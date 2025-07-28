@@ -3,69 +3,34 @@
 namespace Core\Database;
 
 
+use Core\Support\Traits\Builder\Getters;
+
 class QueryBuilder implements QueryBuilderInterface
 {
-    use MakeResult;
+    use MakeResult, Getters;
 
     protected Doctrine $doctrine;
     protected $hidden = [];
+    protected $modelClass;
 
-    public function __construct($table, $hidden = null)
+    public function __construct($table, $hidden = null, $modelClass = null)
     {
         $this->doctrine = new Doctrine($table);
         $this->hidden = $hidden;
-    }
-
-    public function get(): array
-    {
-        $result = $this->doctrine->get();
-        return self::getResult($result);
-    }
-
-    public function first()
-    {
-        $result = $this->doctrine->first();
-        return self::skipHidden($result);
-    }
-
-    public function pluck($columns): array
-    {
-        return $this->doctrine->pluck($columns);
-    }
-
-    public function find($id)
-    {
-        $result = $this->doctrine->find($id);
-        return self::getResult($result);
-    }
-
-    public function firstOrFail()
-    {
-        $result = $this->doctrine->firstOrFail();
-        return self::getResult($result);
-    }
-
-    public function paginate($limit): array
-    {
-        $result = $this->doctrine->paginate($limit);
-        return self::getResult($result);
-    }
-
-    public function simplePaginate($limit): array
-    {
-        $result = $this->doctrine->simplePaginate($limit);
-        return self::getResult($result);
+        $this->modelClass = $modelClass;
     }
 
     public function where($column, $operator, $value): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->where($column, $operator, $value);
+        // Ensure modelClass is preserved
         return $this;
     }
 
     public function select(...$fields): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->select(...$fields);
+        // Ensure modelClass is preserved
         return $this;
     }
 
@@ -77,18 +42,21 @@ class QueryBuilder implements QueryBuilderInterface
     public function orderBy($field, $order = 'ASC'): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->orderBy($field, $order);
+        // Ensure modelClass is preserved
         return $this;
     }
 
     public function orderByDesc($field): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->orderByDesc($field);
+        // Ensure modelClass is preserved
         return $this;
     }
 
     public function limit($limit): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->limit($limit);
+        // Ensure modelClass is preserved
         return $this;
     }
 
@@ -127,48 +95,56 @@ class QueryBuilder implements QueryBuilderInterface
     public function groupBy($fields): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->groupBy($fields);
+        // Ensure modelClass is preserved
         return $this;
     }
 
     public function take($take): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->take($take);
+        // Ensure modelClass is preserved
         return $this;
     }
 
     public function offset($offset): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->offset($offset);
+        // Ensure modelClass is preserved
         return $this;
     }
 
     public function orWhere($column, $operator, $value): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->orWhere($column, $operator, $value);
+        // Ensure modelClass is preserved
         return $this;
     }
 
     public function whereIn($column, array $values): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->whereIn($column, $values);
+        // Ensure modelClass is preserved
         return $this;
     }
 
     public function whereNull($column): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->whereNull($column);
+        // Ensure modelClass is preserved
         return $this;
     }
 
     public function whereNotNull($column): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->whereNotNull($column);
+        // Ensure modelClass is preserved
         return $this;
     }
 
     public function having($column, $operator, $value): QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->having($column, $operator, $value);
+        // Ensure modelClass is preserved
         return $this;
     }
 

@@ -7,7 +7,7 @@ use function getTable;
 
 trait Builder
 {
-    use Aggregators, Clauses, Statements, Joins, Getters;
+    use Aggregators, Clauses, Statements, Joins;
 
     protected $table;
     protected $hidden = [];

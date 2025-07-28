@@ -2,55 +2,76 @@
 
 namespace Core\Support\Traits\Builder;
 
-use Core\Database\QueryBuilder;
-
 trait Getters
 {
-    public static function all()
+    public function all(): array
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->get();
+        return $this->get();
     }
 
-    public static function get()
+    public function get(): array
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->get();
+        $result = $this->doctrine->get();
+        $result = self::getResult($result);
+        if ($this->modelClass && class_exists($this->modelClass)) {
+            return $this->modelClass::hydrateMany($result);
+        }
+        return $result;
     }
 
-    public static function pluck(...$columns)
+    public function first()
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->pluck($columns);
+        $result = $this->doctrine->first();
+        $result = self::getResult($result);
+        if ($this->modelClass && class_exists($this->modelClass)) {
+            return $this->modelClass::hydrate($result);
+        }
+        return $result;
     }
 
-    public static function find($id)
+    public function pluck($columns): array
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->find($id);
+        return $this->doctrine->pluck($columns);
     }
 
-    public static function first()
+    public function find($id)
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->first();
+        $result = $this->doctrine->find($id);
+        $result = self::getResult($result);
+        if ($this->modelClass && class_exists($this->modelClass)) {
+            return $this->modelClass::hydrate($result);
+        }
+        return $result;
     }
 
-    public static function firstOrFail()
+    public function firstOrFail()
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->firstOrFail();
+        $result = $this->doctrine->firstOrFail();
+        $result = self::getResult($result);
+        if ($this->modelClass && class_exists($this->modelClass)) {
+            return $this->modelClass::hydrate($result);
+        }
+        return $result;
     }
 
-    public static function paginate($limit)
+    public function paginate($limit): array
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->paginate($limit);
+        $result = $this->doctrine->paginate($limit);
+        $result = self::getResult($result);
+        if ($this->modelClass && class_exists($this->modelClass)) {
+            return $this->modelClass::hydrateMany($result);
+        }
+        return $result;
     }
 
-    public static function simplePaginate($limit)
+    public function simplePaginate($limit): array
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->simplePaginate($limit);
+        $result = $this->doctrine->simplePaginate($limit);
+        $result = self::getResult($result);
+        if ($this->modelClass && class_exists($this->modelClass)) {
+            return $this->modelClass::hydrateMany($result);
+        }
+        return $result;
     }
+
 }
