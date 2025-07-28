@@ -5,28 +5,30 @@ namespace Core\Support\Traits\Builder;
 use Core\Database\Doctrine;
 use function getTable;
 
-trait QueryBuilder
+trait Builder
 {
-    use Aggregators, Clauses, Statements, Joins;
+    use Aggregators, Clauses, Statements, Joins, Getters;
 
     protected $table;
-    protected $hide_fields;
+    protected $hidden = [];
     protected $doctrine;
 
     public function __construct()
     {
-        /*if table not define in model, then by default, model
-         *name should be then table name*/
+        /**
+         * if table not define in model, then by default, model
+         * name should be then table name
+         */
         if(empty($this->table)) {
             $this->table = getTable(static::class);
         }
 
-        $this->doctrine = new Doctrine($this->table,$this->hide_fields);
+        $this->doctrine = new Doctrine($this->table, $this->hidden);
     }
 
     public function hideFields()
     {
-        return $this->hide_fields;
+        return $this->hidden;
     }
 
     public function table()

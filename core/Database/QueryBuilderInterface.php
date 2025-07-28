@@ -13,11 +13,11 @@ namespace Core\Database;
  * @method QueryBuilderInterface orderBy($field, $order = 'ASC')
  * @method QueryBuilderInterface orderByDesc($field)
  * @method QueryBuilderInterface limit($limit)
- * @method int count()
+ * @method int count($column = "*")
  * @method float|int sum($column)
  * @method float|int max($column)
  * @method float|int min($column)
- * @method array pluck($column)
+ * @method array pluck($columns)
  * @method object|null find($id)
  * @method QueryBuilderInterface latest($column)
  * @method QueryBuilderInterface oldest($column)
@@ -52,11 +52,11 @@ interface QueryBuilderInterface
     public function orderBy($field, $order = 'ASC'): QueryBuilderInterface;
     public function orderByDesc($field): QueryBuilderInterface;
     public function limit($limit): QueryBuilderInterface;
-    public function count(): int;
+    public function count($column = "*"): int;
     public function sum($column);
     public function max($column);
     public function min($column);
-    public function pluck($column): array;
+    public function pluck($columns): array;
     public function find($id);
     public function latest($column): QueryBuilderInterface;
     public function oldest($column): QueryBuilderInterface;

@@ -7,5 +7,5 @@ class Users extends BaseModel
 {
     protected $table = 'users';
 
-    protected $hide_fields = 'password';
+    protected $hidden = ['password'];
 }

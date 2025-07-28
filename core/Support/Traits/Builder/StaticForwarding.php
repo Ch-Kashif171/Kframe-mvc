@@ -7,12 +7,12 @@ trait StaticForwarding
     public static function __callStatic($method, $parameters)
     {
         $instance = new static();
-        $builder = new \Core\Database\QueryBuilder($instance->table, $instance->hide_fields);
+        $builder = new \Core\Database\QueryBuilder($instance->table, $instance->hidden);
 
         if (method_exists($builder, $method)) {
             return $builder->$method(...$parameters);
         }
 
-        throw new \Exception("Method {$method} does not exist on QueryBuilder.");
+        throw new \Exception("Method {$method} does not exist on Builder.");
     }
 } 

@@ -6,106 +6,58 @@ use Core\Database\QueryBuilder;
 
 trait Statements
 {
-    public static function all()
+
+    public static function latest($column = 'created_at')
     {
         $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->get();
+        return (new QueryBuilder($instance->table, $instance->hidden))->latest($column);
     }
 
-    public static function get()
+    public static function oldest($column = 'created_at')
     {
         $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->get();
-    }
-
-    public static function pluck($column)
-    {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->pluck($column);
-    }
-
-    public static function find($id)
-    {
-        $instance = new static();
-        $data = (new QueryBuilder($instance->table, $instance->hide_fields))->find($id);
-        return $data ? static::hydrate($data) : null;
-    }
-
-    public static function first()
-    {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->first();
-    }
-
-    public static function firstOrFail()
-    {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->firstOrFail();
-    }
-
-    public static function latest($column)
-    {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->latest($column);
-    }
-
-    public static function oldest($column)
-    {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->oldest($column);
-    }
-
-    public static function paginate($limit)
-    {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->paginate($limit);
-    }
-
-    public static function simplePaginate($limit)
-    {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->simplePaginate($limit);
+        return (new QueryBuilder($instance->table, $instance->hidden))->oldest($column);
     }
 
     public static function insert($data)
     {
         $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->insert($data);
+        return (new QueryBuilder($instance->table, $instance->hidden))->insert($data);
     }
 
     public static function insertGetId($data)
     {
         $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->insertGetId($data);
+        return (new QueryBuilder($instance->table, $instance->hidden))->insertGetId($data);
     }
 
     public static function select(...$fields)
     {
         $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->select(...$fields);
+        return (new QueryBuilder($instance->table, $instance->hidden))->select(...$fields);
     }
 
     public static function update($fields)
     {
         $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->update($fields);
+        return (new QueryBuilder($instance->table, $instance->hidden))->update($fields);
     }
 
     public static function delete()
     {
         $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->delete();
+        return (new QueryBuilder($instance->table, $instance->hidden))->delete();
     }
 
     public static function updateOrCreate($attributes, $values)
     {
         $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->updateOrCreate($attributes, $values);
+        return (new QueryBuilder($instance->table, $instance->hidden))->updateOrCreate($attributes, $values);
     }
 
     public static function create($attributes)
     {
         $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hide_fields))->create($attributes);
+        return (new QueryBuilder($instance->table, $instance->hidden))->create($attributes);
     }
 }

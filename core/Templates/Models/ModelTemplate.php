@@ -7,7 +7,7 @@ use Core\Database\BaseModel;
 class modelname extends BaseModel {
 
   protected $table = '';
-  protected $hide_fields = '';
+  protected $hidden = '';
 
 
 

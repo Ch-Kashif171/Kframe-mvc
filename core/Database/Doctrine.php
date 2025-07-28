@@ -9,6 +9,7 @@ use Whoops\Exception\ErrorException;
 class Doctrine
 {
     use Queries;
+
     // Add separate properties for each clause
     protected $joins = '';
     protected $wheres = '';
@@ -89,38 +90,15 @@ class Doctrine
         return $this->result;
     }
 
-    /**
-     * @param $column
-     * @return Doctrine
-     */
-    public function latest($column)
-    {
-        $query = " order by {$column} DESC";
-        $this->statement .= $query;
-        return new Doctrine($this->table,$this->hide_fields,$this->statement);
-    }
-
-    /**
-     * @param $column
-     * @return Doctrine
-     */
-    public function oldest($column)
-    {
-        $query = " order by {$column} ASC";
-        $this->statement .= $query;
-        return new Doctrine($this->table,$this->hide_fields,$this->statement);
-    }
-
-    /**
+    /***
      * @param $column
      * @param int $value
      * @return bool
+     * @throws ErrorException
      */
-    public function increment($column,$value = 1)
+    public function increment($column, int $value = 1): bool
     {
-
-        $array_statement = getChildTableAndStatement($this->statement);
-        $sql = "SELECT {$column} FROM " . $this->table." ".$array_statement['statement'];
+        $sql = "SELECT {$column} FROM " . $this->table . $this->wheres;
 
         try {
 
@@ -142,12 +120,11 @@ class Doctrine
      * @param $column
      * @param int $value
      * @return bool
+     * @throws ErrorException
      */
-    public function decrement($column, $value = 1)
+    public function decrement($column, int $value = 1): bool
     {
-        $array_statement = getChildTableAndStatement($this->statement);
-        $sql = "SELECT {$column} FROM " . $this->table." ".$array_statement['statement'];
-
+        $sql = "SELECT {$column} FROM " . $this->table . $this->wheres;
         try {
             $query = $this->con->query($sql);
             $column_value = $query->fetch(\PDO::FETCH_OBJ);
@@ -171,42 +148,20 @@ class Doctrine
      */
     public function sum($column)
     {
-
-        if(!is_null($this->statement)){
-            $array_statement = getChildTableAndStatement($this->statement);
-
-            $sql = "SELECT SUM({$column}) as sum FROM " . $this->table." ".$array_statement['statement'];
-
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetch(\PDO::FETCH_OBJ);
-
-        }else{
-            $sql = "SELECT SUM({$column}) as sum FROM " . $this->table;
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetch(\PDO::FETCH_OBJ);
-        }
+        $sql = "SELECT SUM({$column}) as sum FROM " . $this->table .$this->wheres;
+        $query = $this->con->query($sql) ;
+        $this->result = $query->fetch(\PDO::FETCH_OBJ);
         return $this->result->sum;
     }
 
     /**
      * @return mixed
      */
-    public function count()
+    public function count($column)
     {
-
-        if(!is_null($this->statement)){
-            $array_statement = getChildTableAndStatement($this->statement);
-
-            $sql = "SELECT COUNT(*) as count FROM " . $this->table." ".$array_statement['statement'];
-
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetch(\PDO::FETCH_OBJ);
-
-        }else{
-            $sql = "SELECT COUNT(*) as count FROM " . $this->table;
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetch(\PDO::FETCH_OBJ);
-        }
+        $sql = "SELECT COUNT({$column}) as count FROM " . $this->table . $this->wheres;
+        $query = $this->con->query($sql) ;
+        $this->result = $query->fetch(\PDO::FETCH_OBJ);
         return $this->result->count;
     }
 
@@ -310,7 +265,7 @@ class Doctrine
         }
         unset($field);
         $this->fields = implode(',', $fields);
-        return new Doctrine($this->table,$this->hide_fields,$this->statement,$this->fields);
+        return new Doctrine($this->table);
     }
 
     /**
@@ -444,7 +399,7 @@ class Doctrine
     /*public function skip($skip){
         $query = " LIMIT {$skip} ";
         $this->statement .= $query;
-        return new Doctrine($this->table,$this->hide_fields,$this->statement);
+        return new Doctrine($this->table);
     }*/
 
     /**
@@ -601,13 +556,49 @@ class Doctrine
      * @param string $column
      * @return array
      */
-    public function pluck(string $column): array
+    public function pluck($columns): array
     {
+        // Normalize columns: flatten if nested (e.g., [['id', 'name']] → ['id', 'name'])
+        if (count($columns) === 1 && is_array($columns[0])) {
+            $columns = $columns[0];
+        }
+
         $results = $this->get();
-        return array_map(function($item) use ($column) {
-            return $item->$column ?? null;
+
+        if (empty($results)) {
+            return [];
+        }
+
+        // One column: return simple value list
+        if (count($columns) === 1) {
+            $column = $columns[0];
+            return array_map(fn($item) => $item->$column ?? null, $results);
+        }
+
+        // Two columns: return associative array
+        if (count($columns) === 2) {
+            [$keyColumn, $valueColumn] = $columns;
+
+            $assoc = [];
+            foreach ($results as $item) {
+                $key = $item->$keyColumn ?? null;
+                $value = $item->$valueColumn ?? null;
+                $assoc[$key] = $value;
+            }
+
+            return $assoc;
+        }
+
+        // More than 2: return array of subarrays
+        return array_map(function ($item) use ($columns) {
+            $row = [];
+            foreach ($columns as $col) {
+                $row[$col] = $item->$col ?? null;
+            }
+            return $row;
         }, $results);
     }
+
 
     /**
      * Check if any record exists for the current query.

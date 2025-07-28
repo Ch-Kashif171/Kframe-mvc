@@ -28,17 +28,40 @@ if(!function_exists('dd')) {
      * @return void
      */
     function dd(...$vars) {
-        // Clean (erase) the output buffer if any
         while (ob_get_level()) {
             ob_end_clean();
         }
-        echo '<pre style="background:#222;color:#fff;padding:16px;font-size:12px;z-index:9999;">';
-        foreach ($vars as $var) {
-            print_r($var);
+
+        echo '<div style="background:#fff;padding:30px;">';
+
+        foreach ($vars as $index => $var) {
+
+            echo '<pre style="background:#1e1e1e;color:#fff;padding:16px;border-radius:6px;box-shadow:0 0 8px rgba(0,0,0,0.3);overflow:auto;">';
+            echo htmlspecialchars(print_r($var, true));
+            echo '</pre>';
         }
-        echo '</pre>';
+
+        echo '</div>';
         die(1);
     }
+
+    function dump(...$vars) {
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        echo '<div style="background:#fff;padding:30px;">';
+
+        foreach ($vars as $index => $var) {
+
+            echo '<pre style="background:#1e1e1e;color:#fff;padding:16px;border-radius:6px;box-shadow:0 0 8px rgba(0,0,0,0.3);overflow:auto;">';
+            echo htmlspecialchars(print_r($var, true));
+            echo '</pre>';
+        }
+
+        echo '</div>';
+    }
+
 }
 
 if(!function_exists('asset')) {
@@ -182,8 +205,8 @@ if(!function_exists('getChildTableAndStatement')) {
      * @param $statement
      * @return array
      */
-    function getChildTableAndStatement($statement){
-
+    function getChildTableAndStatement($statement)
+    {
         $res = [];
         if (strpos($statement, "|") == true) {
             $array = explode('|', $statement);

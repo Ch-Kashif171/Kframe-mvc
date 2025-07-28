@@ -1,13 +1,60 @@
 <?php
+
 namespace Core\Database;
+
 
 class QueryBuilder implements QueryBuilderInterface
 {
-    protected Doctrine $doctrine;
+    use MakeResult;
 
-    public function __construct($table, $hide_fields = null)
+    protected Doctrine $doctrine;
+    protected $hidden = [];
+
+    public function __construct($table, $hidden = null)
     {
-        $this->doctrine = new Doctrine($table, $hide_fields);
+        $this->doctrine = new Doctrine($table);
+        $this->hidden = $hidden;
+    }
+
+    public function get(): array
+    {
+        $result = $this->doctrine->get();
+        return self::getResult($result);
+    }
+
+    public function first()
+    {
+        $result = $this->doctrine->first();
+        return self::skipHidden($result);
+    }
+
+    public function pluck($columns): array
+    {
+        return $this->doctrine->pluck($columns);
+    }
+
+    public function find($id)
+    {
+        $result = $this->doctrine->find($id);
+        return self::getResult($result);
+    }
+
+    public function firstOrFail()
+    {
+        $result = $this->doctrine->firstOrFail();
+        return self::getResult($result);
+    }
+
+    public function paginate($limit): array
+    {
+        $result = $this->doctrine->paginate($limit);
+        return self::getResult($result);
+    }
+
+    public function simplePaginate($limit): array
+    {
+        $result = $this->doctrine->simplePaginate($limit);
+        return self::getResult($result);
     }
 
     public function where($column, $operator, $value): QueryBuilderInterface
@@ -20,16 +67,6 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->select(...$fields);
         return $this;
-    }
-
-    public function get(): array
-    {
-        return $this->doctrine->get();
-    }
-
-    public function first()
-    {
-        return $this->doctrine->first();
     }
 
     public function exists(): bool
@@ -55,9 +92,9 @@ class QueryBuilder implements QueryBuilderInterface
         return $this;
     }
 
-    public function count(): int
+    public function count($column = "*"): int
     {
-        return $this->doctrine->count();
+        return $this->doctrine->count($column);
     }
 
     public function sum($column)
@@ -75,25 +112,15 @@ class QueryBuilder implements QueryBuilderInterface
         return $this->doctrine->min($column);
     }
 
-    public function pluck($column): array
-    {
-        return $this->doctrine->pluck($column);
-    }
-
-    public function find($id)
-    {
-        return $this->doctrine->find($id);
-    }
-
     public function latest($column): QueryBuilderInterface
     {
-        $this->doctrine = $this->doctrine->latest($column);
+        $this->doctrine = $this->doctrine->orderByDesc($column);
         return $this;
     }
 
     public function oldest($column): QueryBuilderInterface
     {
-        $this->doctrine = $this->doctrine->oldest($column);
+        $this->doctrine = $this->doctrine->orderBy($column);
         return $this;
     }
 
@@ -143,21 +170,6 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $this->doctrine = $this->doctrine->having($column, $operator, $value);
         return $this;
-    }
-
-    public function firstOrFail()
-    {
-        return $this->doctrine->firstOrFail();
-    }
-
-    public function paginate($limit): array
-    {
-        return $this->doctrine->paginate($limit);
-    }
-
-    public function simplePaginate($limit): array
-    {
-        return $this->doctrine->simplePaginate($limit);
     }
 
     public function insert($data): bool
@@ -211,5 +223,5 @@ class QueryBuilder implements QueryBuilderInterface
         $this->doctrine = $this->doctrine->leftJoin($table, $column, $equal, $second_column);
         return $this;
     }
-    // Add more as needed
+
 } 

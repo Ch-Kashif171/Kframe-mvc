@@ -14,24 +14,15 @@ trait Queries
     public $where_statement;
     public $where;
     public $fields;
-    protected $hide_fields;
     public $result;
     public $exception;
 
     /**
      * @throws \Core\Exception\Handlers\DBException
      */
-    public function __construct($table = null, $hidden_fields = null, $statement = null, $fields = null)
+    public function __construct($table = null)
     {
         $this->table  =   $table;
-        $this->statement  =   $statement;
-        $this->hide_fields = $hidden_fields;
-        if(!is_null($fields)){
-            $this->fields  =   is_null($this->hide_fields) ? $fields : str_replace($this->hide_fields,'', $fields);
-        }else{
-            $this->fields  =  $fields;
-        }
-
         $db   =   new database();
         $this->con = $db->connection();
     }
@@ -86,27 +77,6 @@ trait Queries
         catch (\Exception $e){
             throw new ErrorException($e->getMessage());
         }
-    }
-
-    /**
-     * @param $table
-     * @return string
-     * @throws ErrorException
-     */
-    private function get_table_columns_except_some($table)
-    {
-        if (!empty($this->joins)) {
-            $tables = $this->getJoinedTables($table);
-            $columns = [];
-            foreach ($tables as $tbl) {
-                $skipFields = ($tbl === $table && !is_null($this->hide_fields)) ? explode(',', $this->hide_fields) : [];
-                $columns = array_merge($columns, $this->getAliasedColumns($tbl, $skipFields));
-            }
-            return implode(',', $columns);
-        }
-        // No joins: just get columns for main table
-        $skipFields = !is_null($this->hide_fields) ? explode(',', $this->hide_fields) : [];
-        return implode(',', $this->getTableColumns($table, $skipFields));
     }
 
     /**
