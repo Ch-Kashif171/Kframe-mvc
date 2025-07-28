@@ -1,4 +1,3 @@
-
 # Kframe
 
 > **Lightweight. Laravel-Inspired. 100% Custom.**
@@ -188,6 +187,41 @@ php kframe migration:rollback
 
 ---
 
+## 🧮 Queries & ORM
+
+Kframe offers a Laravel-inspired ORM for interacting with your database using expressive and chainable syntax.
+
+### 🔍 Fetching Data
+
+```php
+// Get all users
+$users = User::get();
+
+// Find a specific user by ID
+$user = User::find(1);
+
+// Get users with conditions
+$activeUsers = User::where('status', '=', 'active')->get();
+
+// First matching result
+$user = User::where('email', '=', 'john@example.com')->first();
+```
+
+### 🔒 Hidden Fields
+
+To hide sensitive fields like passwords when converting models to arrays or JSON, use the `$hidden` property in your model:
+
+```php
+class User extends Model
+{
+    protected $hidden = ['password'];
+}
+```
+
+This ensures that fields such as `password` or `other` are excluded when rendering user data in responses or views.
+
+---
+
 ## 🔗 Defining Relationships
 
 Define Laravel-style relationships directly in your models.
@@ -219,7 +253,7 @@ public function user()
 }
 ```
 
-> 📝 Note: Eager loading is not yet supported but is planned in a future update.
+> 📝 **Note**: Eager loading is not yet supported but is planned for a future update.
 
 ---
 

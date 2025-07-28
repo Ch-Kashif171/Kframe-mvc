@@ -212,6 +212,36 @@ php kframe migration:rollback</pre>
 
     <hr>
 
+    <h2>🧮 Queries & ORM</h2>
+    <p>Kframe offers a Laravel-inspired ORM for interacting with your database using expressive and chainable syntax.</p>
+
+    <h3>🔍 Fetching Data</h3>
+    <pre>
+// Get all users
+$users = User::get();
+
+// Find a specific user by ID
+$user = User::find(1);
+
+// Get users with conditions
+$activeUsers = User::where('status', '=', 'active')->get();
+
+// First matching result
+$user = User::where('email', '=', 'john@example.com')->first();
+    </pre>
+
+    <h3>🔒 Hidden Fields</h3>
+    <p>To hide sensitive fields like passwords when converting models to arrays or JSON, use the <code>$hidden</code> property in your model:</p>
+    <pre>
+class User extends Model
+{
+    protected $hidden = ['password'];
+}
+    </pre>
+    <p>This ensures that fields such as <code>password</code> or other are excluded when rendering user data in responses or views.</p>
+
+    <hr>
+
     <h2>🔗 Defining Relationships</h2>
     <h3>Define Laravel-style relationships directly in your models.</h3>
     <h3>One-to-One</h3>
