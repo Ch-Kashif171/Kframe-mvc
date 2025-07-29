@@ -7,7 +7,7 @@ use Core\Support\Session;
 
 trait CsrfToken
 {
-    public static function check()
+    public static function checkCsrf()
     {
         if (isset($_POST['csrf_token']) && Session::has('csrf_token')){
             if (!static::verify(Session::get('csrf_token'))){ // this is valid request

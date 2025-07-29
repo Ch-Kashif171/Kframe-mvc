@@ -724,7 +724,7 @@ if(!function_exists('method')) {
     }
 }
 
-if(!function_exists('csrf_token')) {
+if(!function_exists('csrf_field')) {
 
     /**
      * @return string

@@ -15,11 +15,16 @@ use Closure;
  * @method static \Core\Support\Facades\Route checkMethodNotAllowed()
  * @method static \Core\Support\Facades\Route executeRoutes()
  * @method static \Core\Support\Facades\Route addRouteMiddleware($routeKey, $middleware)
+ * @method static \Core\Support\Facades\Route middleware($middleware)
  *
  * @see \Core\Support\Routing\Router
  */
 class Route extends Facade
 {
+    public static mixed $middleware;
+    public static mixed $prefix;
+    public static mixed $namespace;
+
     /**
      * @return string
      */

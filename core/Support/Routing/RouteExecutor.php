@@ -40,7 +40,7 @@ class RouteExecutor
             }
 
             if ($method === 'POST') {
-                static::check();
+                static::checkCsrf();
             }
 
             if (isset($handler['controller']['closure'])) {
@@ -60,11 +60,18 @@ class RouteExecutor
         foreach ($dynamicRoutes[$method] ?? [] as $route) {
             if (preg_match($route['regex'], $currentAction, $matches)) {
                 array_shift($matches);
-                if ($route['middleware'] && static::getMiddleware($route['middleware']) !== true) return true;
-                if ($method === 'POST') static::check();
+
+                if ($route['middleware'] && static::getMiddleware($route['middleware']) !== true) {
+                    return true;
+                }
+                if ($method === 'POST') {
+                    static::checkCsrf();
+                }
 
                 [$controller, $methodName] = $route['controller'];
-                if (!$methodName) throw new RouteNotFoundException("Please specify a method.");
+                if (!$methodName) {
+                    throw new RouteNotFoundException("Please specify a method.");
+                }
                 $fqcn = $route['namespace'] ? $route['namespace'] . '\\' . $controller : $controller;
 
                 RouteCaller::call($fqcn, $methodName, $matches);
