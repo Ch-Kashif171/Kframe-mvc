@@ -3,59 +3,110 @@
 namespace Core\Support\Traits\Builder;
 
 use Core\Database\QueryBuilder;
+use Core\Database\QueryBuilderInterface;
+use Core\Exception\Handlers\DBException;
+use Whoops\Exception\ErrorException;
 
 trait Statements
 {
-
-    public static function latest($column = 'created_at')
+    /**
+     * @param string $column
+     * @return QueryBuilderInterface
+     * @throws DBException
+     */
+    public static function latest(string $column = 'created_at'): QueryBuilderInterface
     {
         $instance = new static();
         return (new QueryBuilder($instance->table, $instance->hidden, static::class))->latest($column);
     }
 
-    public static function oldest($column = 'created_at')
+    /**
+     * @param string $column
+     * @return QueryBuilderInterface
+     * @throws DBException
+     */
+    public static function oldest(string $column = 'created_at'): QueryBuilderInterface
     {
         $instance = new static();
         return (new QueryBuilder($instance->table, $instance->hidden, static::class))->oldest($column);
     }
 
-    public static function insert($data)
+    /**
+     * @param $data
+     * @return bool
+     * @throws DBException
+     * @throws ErrorException
+     */
+    public static function insert($data): bool
     {
         $instance = new static();
         return (new QueryBuilder($instance->table, $instance->hidden, static::class))->insert($data);
     }
 
-    public static function insertGetId($data)
+    /**
+     * @param $data
+     * @return string
+     * @throws DBException
+     * @throws ErrorException
+     */
+    public static function insertGetId($data): string
     {
         $instance = new static();
         return (new QueryBuilder($instance->table, $instance->hidden, static::class))->insertGetId($data);
     }
 
-    public static function select(...$fields)
+    /**
+     * @param ...$fields
+     * @return QueryBuilderInterface
+     * @throws DBException
+     */
+    public static function select(...$fields): QueryBuilderInterface
     {
         $instance = new static();
         return (new QueryBuilder($instance->table, $instance->hidden, static::class))->select(...$fields);
     }
 
-    public static function update($fields)
+    /**
+     * @param $fields
+     * @return bool
+     * @throws DBException
+     * @throws ErrorException
+     */
+    public static function update($fields): bool
     {
         $instance = new static();
         return (new QueryBuilder($instance->table, $instance->hidden, static::class))->update($fields);
     }
 
-    public static function delete()
+    /**
+     * @return bool
+     * @throws DBException
+     * @throws ErrorException
+     */
+    public static function delete(): bool
     {
         $instance = new static();
         return (new QueryBuilder($instance->table, $instance->hidden, static::class))->delete();
     }
 
-    public static function updateOrCreate($attributes, $values)
+    /**
+     * @param $attributes
+     * @param $values
+     * @return mixed
+     * @throws DBException
+     */
+    public static function updateOrCreate($attributes, $values): mixed
     {
         $instance = new static();
         return (new QueryBuilder($instance->table, $instance->hidden, static::class))->updateOrCreate($attributes, $values);
     }
 
-    public static function create($attributes)
+    /**
+     * @param $attributes
+     * @return mixed
+     * @throws DBException
+     */
+    public static function create($attributes): mixed
     {
         $instance = new static();
         return (new QueryBuilder($instance->table, $instance->hidden, static::class))->create($attributes);

@@ -1,37 +1,34 @@
 <?php
+
 namespace Core\Support;
 
 use Core\Database\QueryBuilder;
-use Core\Database\Doctrine;
+use Core\Exception\Handlers\DBException;
+use Whoops\Exception\ErrorException;
 
 /**
  * Class DB
  */
 class DB
 {
-    public function __construct()
-    {
-
-    }
-
     /**
-     * @param null $table
+     * @param $table
      * @return QueryBuilder
+     * @throws DBException
      */
-    public static function table($table = null)
+    public static function table($table): QueryBuilder
     {
-        /*here we can also set hidden_fields but currently not working*/
         return new QueryBuilder($table);
     }
 
     /**
      * @param $sql
-     * @return array|bool
-     * @throws \Whoops\Exception\ErrorException
+     * @return bool
+     * @throws ErrorException
      */
     public static function rawQuery($sql)
     {
-        $doctrine = new Doctrine();
-        return $doctrine->rawQuery($sql);
+        return QueryBuilder::rawQuery($sql);
     }
+
 }

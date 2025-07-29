@@ -1,87 +1,286 @@
 <?php
+
 namespace Core\Database;
 
 use Core\Support\Collection;
 
-/**
- * Interface for the query builder wrapper.
- *
- * @method QueryBuilderInterface where($column, $operator, $value)
- * @method QueryBuilderInterface select(...$fields)
- * @method  all()
- * @method get()
- * @method object|null first()
- * @method object|null firstOrFail()
- * @method bool exists()
- * @method QueryBuilderInterface orderBy($field, $order = 'ASC')
- * @method QueryBuilderInterface orderByDesc($field)
- * @method QueryBuilderInterface limit($limit)
- * @method int count($column = "*")
- * @method float|int sum($column)
- * @method float|int max($column)
- * @method float|int min($column)
- * @method array pluck($columns)
- * @method object|null find($id)
- * @method QueryBuilderInterface latest($column)
- * @method QueryBuilderInterface oldest($column)
- * @method QueryBuilderInterface groupBy($fields)
- * @method QueryBuilderInterface take($take)
- * @method QueryBuilderInterface orWhere($column, $operator, $value)
- * @method QueryBuilderInterface whereIn($column, array $values)
- * @method QueryBuilderInterface whereNull($column)
- * @method QueryBuilderInterface whereNotNull($column)
- * @method QueryBuilderInterface having($column, $operator, $value)
- * @method array paginate($limit): array|Collection
- * @method array simplePaginate($limit): array|Collection
- * @method bool insert($data)
- * @method int|string insertGetId($data)
- * @method bool update($fields)
- * @method bool delete()
- * @method object updateOrCreate($attributes, $values)
- * @method object create($attributes)
- * @method bool increment($column, $value = 1)
- * @method bool decrement($column, $value = 1)
- * @method QueryBuilderInterface join($table, $column, $equal, $second_column)
- * @method QueryBuilderInterface leftJoin($table, $column, $equal, $second_column)
- */
 interface QueryBuilderInterface
 {
+    /**
+     * @param $column
+     * @param $operator
+     * @param $value
+     * @return QueryBuilderInterface
+     */
     public function where($column, $operator, $value): QueryBuilderInterface;
+
+    /**
+     * @param ...$fields
+     * @return QueryBuilderInterface
+     */
     public function select(...$fields): QueryBuilderInterface;
+
+    /**
+     * @return array|Collection
+     */
     public function all(): array|Collection;
+
+    /**
+     * @return array|Collection
+     */
     public function get(): array|Collection;
+
+    /**
+     * @return mixed
+     */
     public function first();
+
+    /**
+     * @return mixed
+     */
     public function firstOrFail();
+
+    /**
+     * @return bool
+     */
     public function exists(): bool;
-    public function orderBy($field, $order = 'ASC'): QueryBuilderInterface;
+
+    /**
+     * @param $field
+     * @param string $order
+     * @return QueryBuilderInterface
+     */
+    public function orderBy($field, string $order = 'ASC'): QueryBuilderInterface;
+
+    /**
+     * @param $field
+     * @return QueryBuilderInterface
+     */
     public function orderByDesc($field): QueryBuilderInterface;
+
+    /**
+     * @param $limit
+     * @return QueryBuilderInterface
+     */
     public function limit($limit): QueryBuilderInterface;
-    public function count($column = "*"): int;
+
+    /**
+     * @param string $column
+     * @return int
+     */
+    public function count(string $column = "*"): int;
+
+    /**
+     * @param $column
+     * @return mixed
+     */
     public function sum($column);
+
+    /**
+     * @param $column
+     * @return mixed
+     */
     public function max($column);
+
+    /**
+     * @param $column
+     * @return mixed
+     */
     public function min($column);
+
+    /**
+     * @param $columns
+     * @return array
+     */
     public function pluck($columns): array;
+
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function find($id);
+
+    /**
+     * @param $column
+     * @return QueryBuilderInterface
+     */
     public function latest($column): QueryBuilderInterface;
+
+    /**
+     * @param $column
+     * @return QueryBuilderInterface
+     */
     public function oldest($column): QueryBuilderInterface;
+
+    /**
+     * @param $fields
+     * @return QueryBuilderInterface
+     */
     public function groupBy($fields): QueryBuilderInterface;
+
+    /**
+     * @param $take
+     * @return QueryBuilderInterface
+     */
     public function take($take): QueryBuilderInterface;
+
+    /**
+     * @param $column
+     * @param $operator
+     * @param $value
+     * @return QueryBuilderInterface
+     */
     public function orWhere($column, $operator, $value): QueryBuilderInterface;
+
+    /**
+     * @param $column
+     * @param array $values
+     * @return QueryBuilderInterface
+     */
     public function whereIn($column, array $values): QueryBuilderInterface;
+
+    /**
+     * @param $column
+     * @return QueryBuilderInterface
+     */
     public function whereNull($column): QueryBuilderInterface;
+
+    /**
+     * @param $column
+     * @return QueryBuilderInterface
+     */
     public function whereNotNull($column): QueryBuilderInterface;
+
+    /**
+     * @param $column
+     * @param $operator
+     * @param $value
+     * @return QueryBuilderInterface
+     */
     public function having($column, $operator, $value): QueryBuilderInterface;
+
+    /**
+     * @param $limit
+     * @return mixed
+     */
     public function paginate($limit);
+
+    /**
+     * @param $limit
+     * @return array|Collection
+     */
     public function simplePaginate($limit): array|Collection;
+
+    /**
+     * @param $data
+     * @return bool
+     */
     public function insert($data): bool;
+
+    /**
+     * @param $data
+     * @return mixed
+     */
     public function insertGetId($data);
+
+    /**
+     * @param $fields
+     * @return bool
+     */
     public function update($fields): bool;
+
+    /**
+     * @return bool
+     */
     public function delete(): bool;
+
+    /**
+     * @param $attributes
+     * @param $values
+     * @return mixed
+     */
     public function updateOrCreate($attributes, $values);
+
+    /**
+     * @param $attributes
+     * @return mixed
+     */
     public function create($attributes);
-    public function increment($column, $value = 1): bool;
-    public function decrement($column, $value = 1): bool;
+
+    /**
+     * @param $column
+     * @param int $value
+     * @return bool
+     */
+    public function increment($column, int|string $value = 1): bool;
+
+    /**
+     * @param $column
+     * @param int|string $value
+     * @return bool
+     */
+    public function decrement($column, int|string $value = 1): bool;
+
+    /**
+     * @param $table
+     * @param $column
+     * @param $equal
+     * @param $second_column
+     * @return QueryBuilderInterface
+     */
     public function join($table, $column, $equal, $second_column): QueryBuilderInterface;
+
+    /**
+     * @param $table
+     * @param $column
+     * @param $equal
+     * @param $second_column
+     * @return QueryBuilderInterface
+     */
     public function leftJoin($table, $column, $equal, $second_column): QueryBuilderInterface;
-    // Add more as needed
-} 
+
+    /**
+     * @param $table
+     * @param $column
+     * @param $equal
+     * @param $second_column
+     * @return QueryBuilderInterface
+     */
+    public function rightJoin($table, $column, $equal, $second_column): QueryBuilderInterface;
+
+    /**
+     * @param $table
+     * @param $column
+     * @param $equal
+     * @param $second_column
+     * @return QueryBuilderInterface
+     */
+    public function fullOuterJoin($table, $column, $equal, $second_column): QueryBuilderInterface;
+
+    /**
+     * @param $relations
+     * @return $this
+     */
+    public function with($relations): static;
+
+    /**
+     * @param $relation
+     * @return $this
+     */
+    public function has($relation): static;
+
+    /**
+     * @param $relation
+     * @param $callback
+     * @return $this
+     */
+    public function whereHas($relation, $callback = null): static;
+
+    /**
+     * @param $relation
+     * @param $callback
+     * @return $this
+     */
+    public function withWhereHas($relation, $callback = null): static;
+
+}

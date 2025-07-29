@@ -2,49 +2,75 @@
 
 namespace Core\Support\Traits\Builder;
 
-use Core\Database\QueryBuilder;
+use Whoops\Exception\ErrorException;
 
 trait Aggregators
 {
-    public static function increment($column, $value = 1)
+    /**
+     * @param $column
+     * @param int|string $value
+     * @return bool
+     * @throws ErrorException
+     */
+    public function increment($column, int|string $value = 1): bool
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->increment($column, $value);
+        return $this->doctrine->increment($column, $value);
     }
 
-    public static function decrement($column, $value = 1)
+    /**
+     * @param $column
+     * @param int|string $value
+     * @return bool
+     * @throws ErrorException
+     */
+    public function decrement($column, int|string $value = 1): bool
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->decrement($column, $value);
+        return $this->doctrine->decrement($column, $value);
     }
 
-    public static function sum($column)
+    /**
+     * @return bool
+     * @throws ErrorException
+     */
+    public function exists(): bool
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->sum($column);
+        return $this->doctrine->exists();
     }
 
-    public static function max($column)
+    /**
+     * @param string $column
+     * @return int
+     */
+    public function count(string $column = "*"): int
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->max($column);
-    }
-    
-    public static function min($column)
-    {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->min($column);
+        return $this->doctrine->count($column);
     }
 
-    public static function count($column = "*")
+    /**
+     * @param $column
+     * @return mixed
+     */
+    public function sum($column)
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->count($column);
+        return $this->doctrine->sum($column);
     }
 
-    public static function exists()
+    /**
+     * @param $column
+     * @return mixed
+     */
+    public function max($column)
     {
-        $instance = new static();
-        return (new QueryBuilder($instance->table, $instance->hidden))->exists();
+        return $this->doctrine->max($column);
     }
+
+    /**
+     * @param $column
+     * @return mixed
+     */
+    public function min($column)
+    {
+        return $this->doctrine->min($column);
+    }
+
 }

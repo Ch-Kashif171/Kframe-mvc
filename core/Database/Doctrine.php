@@ -171,20 +171,10 @@ class Doctrine
      */
     public function max($column)
     {
+        $sql = "SELECT MAX({$column}) max FROM " . $this->table." ".$this->wheres;
+        $query = $this->con->query($sql) ;
+        $this->result = $query->fetch(\PDO::FETCH_OBJ);
 
-        if(!is_null($this->statement)){
-            $array_statement = getChildTableAndStatement($this->statement);
-
-            $sql = "SELECT MAX({$column}) max FROM " . $this->table." ".$array_statement['statement'];
-
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetch(\PDO::FETCH_OBJ);
-
-        }else{
-            $sql = "SELECT MAX({$column}) max FROM " . $this->table;
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetch(\PDO::FETCH_OBJ);
-        }
         return $this->result->max;
     }
 
@@ -194,20 +184,9 @@ class Doctrine
      */
     public function min($column)
     {
-
-        if(!is_null($this->statement)){
-            $array_statement = getChildTableAndStatement($this->statement);
-
-            $sql = "SELECT MIN({$column}) min FROM " . $this->table." ".$array_statement['statement'];
-
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetch(\PDO::FETCH_OBJ);
-
-        }else{
-            $sql = "SELECT MIN({$column}) min FROM " . $this->table;
-            $query = $this->con->query($sql) ;
-            $this->result = $query->fetch(\PDO::FETCH_OBJ);
-        }
+        $sql = "SELECT MIN({$column}) min FROM " . $this->table." ".$this->wheres;
+        $query = $this->con->query($sql) ;
+        $this->result = $query->fetch(\PDO::FETCH_OBJ);
         return $this->result->min;
     }
 
@@ -371,7 +350,8 @@ class Doctrine
      */
     public function having($column,$condition,$value): self
     {
-        $this->having = " HAVING {$column} {$condition} '" . addslashes($value) . "' ";
+        $escapedValue = $value === null ? 'NULL' : "'" . addslashes($value) . "'";
+        $this->having = " HAVING {$column} {$condition} {$escapedValue} ";
         return $this;
     }
 
@@ -421,10 +401,11 @@ class Doctrine
      */
     public function where($column, $condition, $value): self
     {
+        $escapedValue = $value === null ? 'NULL' : "'" . addslashes($value) . "'";
         if ($this->wheres === '') {
-            $this->wheres = " WHERE {$column} {$condition} '" . addslashes($value) . "' ";
+            $this->wheres = " WHERE {$column} {$condition} {$escapedValue} ";
         } else {
-            $this->wheres .= " AND {$column} {$condition} '" . addslashes($value) . "' ";
+            $this->wheres .= " AND {$column} {$condition} {$escapedValue} ";
         }
         return $this;
     }
@@ -442,10 +423,11 @@ class Doctrine
             list(, $col) = explode('.', $column, 2);
             $column = $col;
         }
+        $escapedValue = $value === null ? 'NULL' : "'" . addslashes($value) . "'";
         if ($this->wheres === '') {
-            $this->wheres = " WHERE {$column} {$condition} '" . addslashes($value) . "' ";
+            $this->wheres = " WHERE {$column} {$condition} {$escapedValue} ";
         } else {
-            $this->wheres .= " OR {$column} {$condition} '" . addslashes($value) . "' ";
+            $this->wheres .= " OR {$column} {$condition} {$escapedValue} ";
         }
         return $this;
     }
@@ -473,6 +455,32 @@ class Doctrine
     public function leftJoin($table,$column,$equal,$second_column): self
     {
         $this->joins .= " LEFT JOIN $table ON $column $equal $second_column ";
+        return $this;
+    }
+
+    /**
+     * @param $table
+     * @param $column
+     * @param $equal
+     * @param $second_column
+     * @return $this
+     */
+    public function rightJoin($table, $column, $equal, $second_column): self
+    {
+        $this->joins .= " RIGHT JOIN $table ON $column $equal $second_column ";
+        return $this;
+    }
+
+    /**
+     * @param $table
+     * @param $column
+     * @param $equal
+     * @param $second_column
+     * @return $this
+     */
+    public function fullOuterJoin($table, $column, $equal, $second_column): self
+    {
+        $this->joins .= " FULL OUTER JOIN $table ON $column $equal $second_column ";
         return $this;
     }
 
@@ -601,8 +609,8 @@ class Doctrine
 
 
     /**
-     * Check if any record exists for the current query.
      * @return bool
+     * @throws ErrorException
      */
     public function exists(): bool
     {
@@ -664,7 +672,9 @@ class Doctrine
      */
     public function whereIn($column, array $values): self
     {
-        $in = implode(",", array_map(function($v) { return "'".addslashes($v)."'"; }, $values));
+        $in = implode(",", array_map(function($v) { 
+            return $v === null ? 'NULL' : "'".addslashes($v)."'"; 
+        }, $values));
         $query = " WHERE {$column} IN ({$in})";
         $this->statement .= $query;
         return $this;

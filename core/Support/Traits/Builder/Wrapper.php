@@ -55,6 +55,42 @@ trait Wrapper
     }
 
     /**
+     * @param callable $callback
+     * @return mixed
+     */
+    protected function wrapPaginate(callable $callback): mixed
+    {
+        // Get the pagination result from doctrine
+        $pagination = $callback();
+
+        // Process the data portion through the relation pipeline
+        $processedData = $this->processPaginationData($pagination['data']);
+
+        // Replace the data with processed data
+        $pagination['data'] = $processedData;
+
+        return $pagination;
+    }
+
+    /**
+     * @param callable $callback
+     * @return mixed
+     */
+    protected function wrapSimplePaginate(callable $callback): mixed
+    {
+        // Get the simple pagination result from doctrine
+        $pagination = $callback();
+
+        // Process the data portion through the relation pipeline
+        $processedData = $this->processPaginationData($pagination['simple']['data']);
+
+        // Replace the data with processed data
+        $pagination['simple']['data'] = $processedData;
+
+        return $pagination;
+    }
+
+    /**
      * @param $models
      * @param $with
      * @return array
@@ -115,6 +151,27 @@ trait Wrapper
         }
 
         return $models;
+    }
+
+    /**
+     * Process pagination data through the relation pipeline
+     * @param array $data
+     * @return array
+     */
+    private function processPaginationData($data): array
+    {
+        // Filter out hidden attributes as defined in the model's $hidden property
+        $result = $this->getResult($data);
+
+        // Automatically load any defined relationships
+        $result = $this->hydrates($result);
+
+        // Eager load
+        if (property_exists($this, 'with')) {
+            $result = $this->eagerLoadRelations($result, $this->with);
+        }
+
+        return $result;
     }
 
 }

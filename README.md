@@ -253,7 +253,44 @@ public function user()
 }
 ```
 
-> 📝 **Note**: Eager loading is not yet supported but is planned for a future update.
+---
+
+## 🔥 Advanced Relationship Queries
+
+Kframe supports expressive, Laravel-style relationship queries:
+
+### Eager Loading (with)
+```php
+// (Planned) Eager load a relation (prevents N+1 queries)
+$users = User::with('posts')->get();
+```
+
+### Filtering by Relation (has)
+```php
+// Get users who have at least one post
+$users = User::has('posts')->get();
+```
+
+### Filtering with Constraints (whereHas)
+```php
+// Get users who have published posts
+$users = User::whereHas('posts', function($q) {
+    $q->where('status', '=', 'published');
+})->get();
+```
+
+### Eager Load + Filter (withWhereHas)
+```php
+// Filter users by a relation and eager load it in one call
+$users = User::withWhereHas('posts', function($q) {
+    $q->where('status', '=', 'published');
+})->get();
+```
+
+- `has('relation')` — Only include models that have the relation.
+- `whereHas('relation', fn($q) => ...)` — Only include models where the relation matches a condition.
+- `with('relation')` — (Planned) Eager load the relation to prevent N+1 queries.
+- `withWhereHas('relation', fn($q) => ...)` — Filter and eager load in one call (recommended for APIs).
 
 ---
 
