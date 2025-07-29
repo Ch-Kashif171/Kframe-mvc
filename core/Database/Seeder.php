@@ -2,8 +2,11 @@
 
 namespace Core\Database;
 
+use Core\Support\Traits\Seed\Messages;
+
 abstract class Seeder
 {
+    use Messages;
     /**
      * Run the seeder.
      */
@@ -16,22 +19,24 @@ abstract class Seeder
      */
     public function call(string|array $seeders): void
     {
-        $seeders = is_array($seeders) ? $seeders : [$seeders];
-
-        foreach ($seeders as $seeder) {
+        foreach ((array) $seeders as $seeder) {
             if (!class_exists($seeder)) {
-                throw new \Exception("Seeder class {$seeder} not found.");
+                $this->error("Seeder {$seeder} not found.");
+                exit();
+            };
+            if (!method_exists($seeder, 'run')) {
+                $this->error("Seeder {$seeder} must have a run() method.");
+                exit();
             }
 
-            $instance = new $seeder();
+            $this->info("🌱 Starting seeder: {$seeder}");
+            $this->startLoader();
 
-            if (!method_exists($instance, 'run')) {
-                throw new \Exception("Seeder class {$seeder} must implement a run() method.");
-            }
+            (new $seeder())->run();
 
-            echo "Seeding: " . $seeder . PHP_EOL;
-            $instance->run();
-            echo "Seeded: " . $seeder . PHP_EOL;
+            $this->stopLoader();
+            $this->info("✅ Finished seeder: {$seeder}");
         }
     }
+
 }
