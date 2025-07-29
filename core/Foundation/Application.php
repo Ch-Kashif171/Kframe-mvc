@@ -14,7 +14,7 @@ use Core\Support\Routing\Router;
 
 class Application
 {
-    const VERSION = '3.0.1';
+    const VERSION = '4.x';
 
     const FRAMEWORK = 'kframe';
 

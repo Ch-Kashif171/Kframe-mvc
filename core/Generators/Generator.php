@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Core\Generators;
 
+use Core\Support\Constants;
 use Core\Support\DB;
 
 define('ROOT_PATH', defined('root_path') ? root_path : dirname(__DIR__, 2));
@@ -210,7 +211,7 @@ class Generator
 
     public function generateMigration(string $action): array
     {
-        $migrationDir = ROOT_PATH . '/migrations/';
+        $migrationDir = ROOT_PATH . DIRECTORY_SEPARATOR . Constants::MIGRATION_DIR . DIRECTORY_SEPARATOR ;
         DB::rawQuery("CREATE TABLE IF NOT EXISTS `migrations` (id INT AUTO_INCREMENT PRIMARY KEY, migration VARCHAR(255) NOT NULL, is_migrate VARCHAR(255) NOT NULL);");
 
         if ($action === 'rollback') {
@@ -275,7 +276,7 @@ class Generator
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
         $timestamp = date('Y_m_d_His');
         $fileName = "{$timestamp}_" . strtolower($name) . '.php';
-        $filePath = ROOT_PATH . '/migrations/' . $fileName;
+        $filePath = ROOT_PATH . DIRECTORY_SEPARATOR  .Constants::MIGRATION_DIR. DIRECTORY_SEPARATOR  . $fileName;
 
         if (file_exists($filePath)) {
             return ['status' => false, 'message' => 'Migration file already exists.'];

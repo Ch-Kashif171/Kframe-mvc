@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Support;
+namespace Core\Support\Collection;
 
 class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 {

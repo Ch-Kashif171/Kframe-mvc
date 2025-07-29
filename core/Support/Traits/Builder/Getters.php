@@ -2,14 +2,14 @@
 
 namespace Core\Support\Traits\Builder;
 
-use Core\Support\Collection;
+use Core\Support\Collection\Collection;
 
 trait Getters
 {
     use Wrapper;
 
     /**
-     * @return array|Collection
+     * @return array|\Core\Support\Collection\Collection
      * @throws \Whoops\Exception\ErrorException
      */
     public function all(): array|Collection
@@ -18,7 +18,7 @@ trait Getters
     }
 
     /**
-     * @return array|Collection
+     * @return array|\Core\Support\Collection\Collection
      * @throws \Whoops\Exception\ErrorException
      */
     public function get(): array|Collection

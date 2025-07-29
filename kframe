@@ -1,41 +1,24 @@
 #!/usr/bin/env php
 <?php
 
-use Core\Dotenv\Dotenv;
+use Core\Commands\Executor\Commander;
+use Core\Foundation\Application as App;
 use Symfony\Component\Console\Application;
-use Core\Commands\CreateControllerCommand;
-use Core\Commands\CreateModelCommand;
-use Core\Commands\MakeAuth;
-use Core\Commands\MigrationCommand;
-use Core\Commands\CreateMigrationCommand;
-use Core\Commands\RollbackMigrationCommand;
 
 const root_path = __DIR__;
 
 require_once 'vendor/autoload.php';
-/******************************************************
- *for some reason need to include here these files *
- ******************************************************/
 
 require_once 'core/Utils/helpers.php';
 require_once 'core/Migrations/Migrate.php';
 require_once 'core/Migrations/Blueprint.php';
 
-/**
- * sent second @param, file name if load file other than .env
- */
-
-$dotenv = new Dotenv(root_path);
-$dotenv->load();
 /***********************************************************/
 
+$application = new Application("Welcome to ".App::framework()." Developed By Kashif Sohail, Version: ", App::version());
 
-$application = new Application('Welcome to Kframe Developed By Kashif Sohail, Version: ', '1.0.2');
-$application->add(new CreateControllerCommand());
-$application->add(new CreateModelCommand());
-$application->add(new MakeAuth());
-$application->add(new MigrationCommand());
-$application->add(new CreateMigrationCommand());
-$application->add(new RollbackMigrationCommand());
+$commander = new Commander($application);
 
-$application->run();
+$app = $commander->register();
+
+$app->run();

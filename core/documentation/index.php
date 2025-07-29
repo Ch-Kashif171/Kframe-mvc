@@ -204,7 +204,10 @@ if ($validation->fails()) {
     <h3>Create a new migration file</h3>
     <pre>php kframe make:migration create_users_table</pre>
 
+    <span>This will generate a file in the <code>database/migrations/</code> directory.</span>
+
     <h3>Define the schema</h3>
+    <span>Each migration file contains <code>up()</code> and <code>down()</code> methods. You can define your table structure using the <code>Blueprint</code> class inside the <code>up()</code> method:</span>
     <pre>Migrate::create('users', function (Blueprint $table) {
   $table->increments('id');
   $table->string('name')->nullable();
@@ -227,6 +230,64 @@ php kframe migration:migrate
 php kframe migration:rollback</pre>
 
     <hr>
+
+    <section id="database-seeding">
+        <h2>🌱 Database Seeding</h2>
+        <p>Kframe supports Laravel-style seeders for populating your database with initial or dummy data.</p>
+
+        <h3>📦 Create a Seeder</h3>
+        <p>Use the CLI to generate a new seeder class:</p>
+        <pre>php kframe make:seeder AdminSeeder</pre>
+        <p>This creates a new file in the <code>database/seeders/</code> directory:</p>
+        <pre>&lt;?php
+
+namespace Database\\Seeders;
+
+use Core\\Database\\Seeder;
+
+class AdminSeeder extends Seeder
+{
+    public function run(): void
+    {
+        // Add seeding logic here
+    }
+}
+</pre>
+
+        <h3>🌾 Run Seeders</h3>
+        <p>Run all seeders through the <code>DatabaseSeeder</code> entry point:</p>
+        <pre>php kframe db:seed</pre>
+        <p>Seeders should be registered inside <code>DatabaseSeeder.php</code> like this:</p>
+        <pre>public function run(): void
+{
+    $this->call([
+        AdminSeeder::class,
+        // Add more seeders here
+    ]);
+}</pre>
+
+        <p>Each seeder class should extend the base <code>Seeder</code> class and implement the <code>run()</code> method.</p>
+
+        <h3>✅ Example Seeder</h3>
+        <pre>use App\\Models\\User;
+
+class AdminSeeder extends Seeder
+{
+    public function run(): void
+    {
+        User::updateOrCreate([
+            'email' => 'admin@example.com',
+        ], [
+            'name' => 'Admin',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+    }
+}</pre>
+
+        <p>This makes it easy to pre-fill admin accounts, demo users, settings, and more — ideal for dev and staging environments.</p>
+    </section>
+
 
     <h2>🧮 Queries & ORM</h2>
     <p>Kframe offers a Laravel-inspired ORM for interacting with your database using expressive and chainable syntax.</p>

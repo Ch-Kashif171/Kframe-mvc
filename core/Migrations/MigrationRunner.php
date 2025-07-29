@@ -3,6 +3,7 @@ namespace Core\Migrations;
 
 use Core\Database\Doctrine;
 use Core\Queries\MigrationQueries;
+use Core\Support\Constants;
 use Core\Support\DB;
 
 /**
@@ -16,13 +17,13 @@ class MigrationRunner
     /**
      * @var string Directory where migration files are stored.
      */
-    protected $migrationsDir;
+    protected string $migrationsDir;
 
     /**
      * MigrationRunner constructor.
      * @param string $migrationsDir
      */
-    public function __construct($migrationsDir = 'migrations/')
+    public function __construct(string $migrationsDir = Constants::MIGRATION_DIR. DIRECTORY_SEPARATOR )
     {
         $this->migrationsDir = $migrationsDir;
         $this->ensureMigrationsTable();

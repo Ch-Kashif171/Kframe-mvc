@@ -166,7 +166,7 @@ if ($validation->fails()) {
 php kframe make:migration create_users_table
 ```
 
-This will generate a file in the `migrations/` directory.
+This will generate a file in the `database/migrations/` directory.
 
 ### Define the schema
 
@@ -202,6 +202,82 @@ php kframe make:migration create_posts_table
 php kframe migration:migrate
 php kframe migration:rollback
 ```
+
+---
+
+## 🌱 Database Seeding
+
+Kframe supports Laravel-style seeders for populating your database with initial or dummy data.
+
+### 📦 Create a Seeder
+
+Use the CLI to generate a new seeder class:
+
+```bash
+php kframe make:seeder AdminSeeder
+```
+
+This creates a new file in the `database/seeders/` directory:
+
+```php
+<?php
+
+namespace Database\Seeders;
+
+use Core\Database\Seeder;
+
+class AdminSeeder extends Seeder
+{
+    public function run(): void
+    {
+        // Add seeding logic here
+    }
+}
+```
+
+### 🌾 Run Seeders
+
+Run all seeders through the `DatabaseSeeder` entry point:
+
+```bash
+php kframe db:seed
+```
+
+Seeders should be registered inside `DatabaseSeeder.php` like this:
+
+```php
+public function run(): void
+{
+    $this->call([
+        AdminSeeder::class,
+        // Add more seeders here
+    ]);
+}
+```
+
+Each seeder class should extend the base `Seeder` class and implement the `run()` method.
+
+### ✅ Example Seeder
+
+```php
+use App\Models\User;
+
+class AdminSeeder extends Seeder
+{
+    public function run(): void
+    {
+        User::updateOrCreate([
+            'email' => 'admin@example.com',
+        ], [
+            'name' => 'Admin',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+    }
+}
+```
+
+This makes it easy to pre-fill admin accounts, demo users, settings, and more — ideal for dev and staging environments.
 
 ---
 

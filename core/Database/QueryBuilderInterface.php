@@ -2,7 +2,7 @@
 
 namespace Core\Database;
 
-use Core\Support\Collection;
+use Core\Support\Collection\Collection;
 
 interface QueryBuilderInterface
 {
@@ -21,7 +21,7 @@ interface QueryBuilderInterface
     public function select(...$fields): QueryBuilderInterface;
 
     /**
-     * @return array|Collection
+     * @return array|\Core\Support\Collection\Collection
      */
     public function all(): array|Collection;
 
@@ -167,7 +167,7 @@ interface QueryBuilderInterface
 
     /**
      * @param $limit
-     * @return array|Collection
+     * @return array|\Core\Support\Collection\Collection
      */
     public function simplePaginate($limit): array|Collection;
 

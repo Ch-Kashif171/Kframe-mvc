@@ -14,7 +14,9 @@
     "autoload": {
         "psr-4": {
             "Core\\": "core/",
-            "App\\": "app/"
+            "App\\": "app/",
+            "Database\\Migrations\\": "database/migrations/",
+            "Database\\Seeders\\": "database/seeders/"
         }
     },
 

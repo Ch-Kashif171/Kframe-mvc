@@ -3,7 +3,7 @@
 namespace Core\Support\Traits\Builder;
 
 use Core\Database\QueryBuilder;
-use Core\Support\Collection;
+use Core\Support\Collection\Collection;
 
 trait Wrapper
 {
