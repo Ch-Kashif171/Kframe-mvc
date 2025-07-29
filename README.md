@@ -83,6 +83,24 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
 });
 ```
 
+## 🧩 Extending Routes
+
+Register route files in `app/Providers/RouteServiceProvider.php`:
+
+```php
+public static function register(): array
+{
+    return [
+        'routes/web.php',
+        'routes/api.php',
+        // Add more route files here...
+    ];
+}
+```
+
+Kframe will autoload them all.
+
+
 ---
 
 ## 🧰 Middleware System
@@ -291,25 +309,6 @@ $users = User::withWhereHas('posts', function($q) {
 - `whereHas('relation', fn($q) => ...)` — Only include models where the relation matches a condition.
 - `with('relation')`
 - `withWhereHas('relation', fn($q) => ...)` — Filter and eager load in one call (recommended for APIs).
-
----
-
-## 🧩 Extending Routes
-
-Register route files in `app/Providers/RouteServiceProvider.php`:
-
-```php
-public static function register(): array
-{
-    return [
-        'routes/web.php',
-        'routes/api.php',
-        // Add more route files here...
-    ];
-}
-```
-
-Kframe will autoload them all.
 
 ---
 
