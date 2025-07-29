@@ -18,10 +18,10 @@ trait Wrapper
         $result = $callback();
 
         // Filter out hidden attributes as defined in the model's $hidden property
-        $result = self::getResult($result);
+        $result = $this->getResult($result);
 
         // Automatically load any defined relationships
-        $result = self::hydrates($result);
+        $result = $this->hydrates($result);
 
         // Eager load
         if (property_exists($this, 'with')) {
@@ -41,10 +41,10 @@ trait Wrapper
         $result = $callback();
 
         // Filter out hidden attributes as defined in the model's $hidden property
-        $result = self::getResult($result);
+        $result = $this->getResult($result);
 
         // Automatically load any defined relationships
-        $result = self::hydrate($result);
+        $result = $this->hydrate($result);
 
         // Eager load
         if (property_exists($this, 'with')) {
@@ -137,19 +137,53 @@ trait Wrapper
      */
     private function multiRelation($models, $with): mixed
     {
-        foreach ($models as $model) {
-            foreach ($with as $relation) {
-                if (method_exists($model, $relation)) {
+        foreach ($with as $relation) {
+            if (empty($models)) continue;
+            // Only support hasMany for now
+            $firstModel = $models[0];
+            if (!method_exists($firstModel, $relation)) continue;
+            $relationQuery = $firstModel->$relation();
+            if (!($relationQuery instanceof QueryBuilder)) {
+                // fallback to old per-model logic for non-QueryBuilder relations
+                foreach ($models as $model) {
                     $result = $model->$relation();
-                    if ($result instanceof QueryBuilder) {
-                        $model->$relation = $result->get();
-                    } else {
-                        $model->$relation = $result;
-                    }
+                    $model->$relation = $result;
+                }
+                continue;
+            }
+            // Get foreign key and related model class
+            $relatedModel = new $relationQuery->modelClass();
+            $relatedTable = $relatedModel->table();
+            // Try to extract the foreign key from the where clause
+            $foreignKey = null;
+            if (property_exists($relationQuery->doctrine, 'wheres') && !empty($relationQuery->doctrine->wheres)) {
+                if (preg_match('/(\w+)\s*=\s*[\'"]?([^\'"]*)[\'"]?/', $relationQuery->doctrine->wheres, $matches)) {
+                    $foreignKey = $matches[1];
                 }
             }
+            if (!$foreignKey) {
+                // fallback: guess from parent table
+                $parentTable = method_exists($firstModel, 'table') ? $firstModel->table() : null;
+                $foreignKey = $parentTable . '_id';
+            }
+            // Collect all parent keys
+            $parentKey = 'id';
+            $parentIds = array_map(fn($m) => $m->$parentKey, $models);
+            // Fetch all related records in one query
+            $relatedRows = (new QueryBuilder($relatedTable, $relatedModel->hidden, get_class($relatedModel)))
+                ->whereIn($foreignKey, $parentIds)
+                ->get();
+            // Group related records by foreign key
+            $grouped = [];
+            foreach ($relatedRows as $row) {
+                $fk = $row->$foreignKey;
+                $grouped[$fk][] = $row;
+            }
+            // Assign related records to each parent
+            foreach ($models as $model) {
+                $model->$relation = $grouped[$model->$parentKey] ?? [];
+            }
         }
-
         return $models;
     }
 

@@ -83,12 +83,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
 });
 ```
 
-### Middleware per route
-
-```php
-Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth');
-```
-
 ---
 
 ## 🧰 Middleware System
@@ -106,6 +100,12 @@ Use middleware in controllers:
 
 ```php
 $this->middleware(['auth', 'web']);
+```
+
+### Middleware per route
+
+```php
+Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth');
 ```
 
 ---
@@ -261,7 +261,7 @@ Kframe supports expressive, Laravel-style relationship queries:
 
 ### Eager Loading (with)
 ```php
-// (Planned) Eager load a relation (prevents N+1 queries)
+//Eager load a relation (prevents N+1 queries, supported hasMany for now)
 $users = User::with('posts')->get();
 ```
 
@@ -289,7 +289,7 @@ $users = User::withWhereHas('posts', function($q) {
 
 - `has('relation')` — Only include models that have the relation.
 - `whereHas('relation', fn($q) => ...)` — Only include models where the relation matches a condition.
-- `with('relation')` — (Planned) Eager load the relation to prevent N+1 queries.
+- `with('relation')`
 - `withWhereHas('relation', fn($q) => ...)` — Filter and eager load in one call (recommended for APIs).
 
 ---

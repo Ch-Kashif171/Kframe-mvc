@@ -144,8 +144,19 @@ AUTH_TABLE=users</pre>
   Route::get('dashboard', [DashboardController::class, 'index']);
 });</pre>
 
-    <h3>Middleware per route</h3>
-    <pre>Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth');</pre>
+    <h2>🧩 Extending Routes</h2>
+    <p>Register route files in <code>app/Providers/RouteServiceProvider.php</code>:</p>
+    <pre>
+public static function register(): array
+{
+    return [
+        'routes/web.php',
+        'routes/api.php',
+        // Add more route files here...
+    ];
+}
+</pre>
+    <p>Kframe will autoload them all.</p>
 
     <hr>
 
@@ -157,6 +168,11 @@ AUTH_TABLE=users</pre>
 ];</pre>
     <p>Use middleware in controllers:</p>
     <pre>$this->middleware(['auth', 'web']);</pre>
+
+    <hr>
+
+    <h3>Middleware per route</h3>
+    <pre>Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth');</pre>
 
     <hr>
 
@@ -272,20 +288,39 @@ public function user()
 📝 Note: Eager loading is not yet supported but is planned in a future update.
 </blockquote>
 
+    <h2>🔥 Advanced Relationship Queries</h2>
+    <p>Kframe supports expressive, Laravel-style relationship queries:</p>
 
-<h2>🧩 Extending Routes</h2>
-<p>Register route files in <code>app/Providers/RouteServiceProvider.php</code>:</p>
-<pre>
-public static function register(): array
-{
-    return [
-        'routes/web.php',
-        'routes/api.php',
-        // Add more route files here...
-    ];
-}
-</pre>
-    <p>Kframe will autoload them all.</p>
+    <h3>Eager Loading (<code>with</code>)</h3>
+    <p>Eager load a relation (prevents N+1 queries, supported for <code>hasMany</code> for now):</p>
+    <pre>$users = User::with('posts')->get();</pre>
+
+    <h3>Filtering by Relation (<code>has</code>)</h3>
+    <p>Get users who have at least one post:</p>
+    <pre>$users = User::has('posts')->get();</pre>
+
+    <h3>Filtering with Constraints (<code>whereHas</code>)</h3>
+    <p>Get users who have published posts:</p>
+    <pre>
+$users = User::whereHas('posts', function($q) {
+    $q->where('status', '=', 'published');
+})->get();
+    </pre>
+
+    <h3>Eager Load + Filter (<code>withWhereHas</code>)</h3>
+    <p>Filter users by a relation and eager load it in one call:</p>
+    <pre>
+$users = User::withWhereHas('posts', function($q) {
+    $q->where('status', '=', 'published');
+})->get();
+    </pre>
+
+    <ul>
+        <li><code>has('relation')</code> — Only include models that have the relation.</li>
+        <li><code>whereHas('relation', fn($q) => ...)</code> — Only include models where the relation matches a condition.</li>
+        <li><code>with('relation')</code> — Eager load a relation.</li>
+        <li><code>withWhereHas('relation', fn($q) => ...)</code> — Filter and eager load in one call (recommended for APIs).</li>
+    </ul>
 
     <hr>
 
