@@ -23,7 +23,7 @@ class MakeSeederCommand extends Command
         $className = trim($input->getArgument('name'));
         $className = preg_replace('/[^A-Za-z0-9_]/', '', $className);
         $fileName = $className . '.php';
-        $path = base_path('database/seeders');
+        $path = base_path() . '/database/seeders';
 
         if (!is_dir($path)) {
             mkdir($path, 0755, true);
