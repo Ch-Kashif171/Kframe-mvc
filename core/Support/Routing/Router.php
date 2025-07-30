@@ -67,7 +67,7 @@ class Router
     public static function post($uri, $action): RouteBuilder
     {
         $method = 'POST';
-        MethodChecker::check($method);
+       // MethodChecker::check($method);
 
         if ($action instanceof Closure) {
             $action = ['closure' => $action];
@@ -98,7 +98,7 @@ class Router
     public static function put($uri, $action): RouteBuilder
     {
         $method = 'PUT';
-        MethodChecker::check($method);
+      //  MethodChecker::check($method);
 
         if ($action instanceof Closure) {
             $action = ['closure' => $action];
@@ -129,7 +129,7 @@ class Router
     public static function delete($uri, $action): RouteBuilder
     {
         $method = 'DELETE';
-        MethodChecker::check($method);
+       // MethodChecker::check($method);
 
         if ($action instanceof Closure) {
             $action = ['closure' => $action];
@@ -160,7 +160,7 @@ class Router
     public static function patch($uri, $action): RouteBuilder
     {
         $method = 'PATCH';
-        MethodChecker::check($method);
+       // MethodChecker::check($method);
 
         if ($action instanceof Closure) {
             $action = ['closure' => $action];

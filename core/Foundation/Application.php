@@ -162,7 +162,7 @@ class Application
             $routeMatched = Route::executeRoutes();
         } catch (MiddlewareException | RouteNotFoundException $e) {
             Log::error($e, "Not Found Exception");
-            return true;
+            throw new MiddlewareException($e->getMessage());
         }
 
         // If no route matched, handle 404 or method not allowed

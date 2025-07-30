@@ -24,7 +24,6 @@ trait Middleware
                     }
 
                 } else {
-
                     throw new MiddlewareException("Your given middleware did not match");
                 }
             }
@@ -52,10 +51,15 @@ trait Middleware
     }
 
     public function middleware($middleware) {
-        $result = static::getMiddleware($middleware);
-        if ($result === false) {
-            exit; // Stop execution if middleware returns false
+        try {
+            $result = static::getMiddleware($middleware);
+            if ($result === false) {
+                exit; // Stop execution if middleware returns false
+            }
+        } catch (MiddlewareException $e) {
+            throw new MiddlewareException($e->getMessage());
         }
+
     }
 
 }
