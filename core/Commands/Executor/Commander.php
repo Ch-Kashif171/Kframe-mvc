@@ -10,6 +10,7 @@ use Core\Commands\MakeAuth;
 use Core\Commands\MakeSeederCommand;
 use Core\Commands\MigrationCommand;
 use Core\Commands\RollbackMigrationCommand;
+use Core\Commands\RouteListCommand;
 use Core\Dotenv\Dotenv;
 use Symfony\Component\Console\Application;
 
@@ -40,6 +41,7 @@ class Commander
         $this->app->add(new RollbackMigrationCommand());
         $this->app->add(new MakeSeederCommand());
         $this->app->add(new DatabaseSeedCommand());
+        $this->app->add(new RouteListCommand());
 
         return $this->app;
     }

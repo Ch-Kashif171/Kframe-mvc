@@ -227,7 +227,9 @@ php kframe make:model User
 php kframe make:controller PostController
 php kframe make:migration create_posts_table
 php kframe migration:migrate
-php kframe migration:rollback</pre>
+php kframe migration:rollback
+php kframe route:list
+    </pre>
 
     <hr>
 
