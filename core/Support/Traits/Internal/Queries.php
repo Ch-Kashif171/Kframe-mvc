@@ -23,8 +23,7 @@ trait Queries
     public function __construct($table = null)
     {
         $this->table  =   $table;
-        $db   =   new database();
-        $this->con = $db->connection();
+        $this->con = Database::getInstance()->connection();
     }
 
     /**

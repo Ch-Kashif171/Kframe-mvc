@@ -6,13 +6,11 @@ use PDO;
 use PDOException;
 use Core\Exception\Handlers\DBException;
 
-/**
- * Class Database
- * PDO-based DB connection handler by @kashif sohail
- */
 class Database
 {
-    protected PDO|null $connection = null;
+    protected static ?PDO $connection = null;
+
+    private static ?self $instance = null;
 
     private string $driver;
     private string $host;
@@ -26,7 +24,7 @@ class Database
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ];
 
-    public function __construct()
+    private function __construct()
     {
         $this->driver = config('database.db_connection');
         $this->host   = config('database.db_host');
@@ -38,26 +36,39 @@ class Database
     }
 
     /**
-     * Establish a PDO connection (lazy-loaded).
+     * Get the singleton instance
+     */
+    public static function getInstance(): self
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    /**
+     * Get the PDO connection
      */
     public function connection(): PDO
     {
-        if ($this->connection === null) {
+        if (self::$connection === null) {
             try {
-                $this->connection = new PDO($this->dsn, $this->user, $this->pass, $this->options);
+                self::$connection = new PDO($this->dsn, $this->user, $this->pass, $this->options);
             } catch (PDOException $e) {
                 throw new DBException("Database connection failed: " . $e->getMessage());
             }
         }
 
-        return $this->connection;
+        return self::$connection;
     }
 
     /**
-     * Close the active PDO connection.
+     * Close the connection
      */
     public function closeConnection(): void
     {
-        $this->connection = null;
+        self::$connection = null;
     }
+
 }
