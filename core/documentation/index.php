@@ -229,6 +229,11 @@ php kframe make:migration create_posts_table
 php kframe migration:migrate
 php kframe migration:rollback
 php kframe route:list
+php kframe route:list --method=GET        // to filter route with method
+php kframe route:list --method=POST      // to filter route with method
+php kframe route:list --method=PUT      // to filter route with method
+php kframe route:list --method=PATCH   // to filter route with method
+php kframe route:list --method=DELETE // to filter route with method
     </pre>
 
     <hr>
