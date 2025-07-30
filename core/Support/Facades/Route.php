@@ -21,10 +21,6 @@ use Closure;
  */
 class Route extends Facade
 {
-    public static mixed $middleware;
-    public static mixed $prefix;
-    public static mixed $namespace;
-
     /**
      * @return string
      */
