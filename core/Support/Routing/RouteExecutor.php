@@ -14,73 +14,121 @@ class RouteExecutor
     use CsrfToken, Middleware;
 
     /**
-     * @param $method
+     * @param $incomingMethod
      * @param $currentAction
      * @param $routeHandlers
      * @param $dynamicRoutes
      * @param $routeMiddleware
      * @return bool
-     * @throws RouteNotFoundException
-     * @throws CsrfException
-     * @throws MiddlewareException
+     * @throws \Exception
      */
-    public static function execute($method, $currentAction, $routeHandlers, $dynamicRoutes, $routeMiddleware): bool
+    public static function execute($incomingMethod, $currentAction, $routeHandlers, $dynamicRoutes, $routeMiddleware): bool
     {
-        $routeKey = $method . ':' . $currentAction;
+        $routeKey = $incomingMethod . ':' . $currentAction;
 
         if (isset($routeHandlers[$routeKey])) {
-            $handler = $routeHandlers[$routeKey];
+            return static::handleStaticRoute($routeHandlers[$routeKey], $routeKey, $incomingMethod, $routeMiddleware);
+        }
 
-            if ($handler['middleware'] && static::getMiddleware($handler['middleware']) !== true) {
-                return true;
-            }
+        // To check if route method is not exists (wrong method)
+        MethodChecker::check($incomingMethod, $currentAction, $routeHandlers);
 
-            if (isset($routeMiddleware[$routeKey]) && static::getMiddleware($routeMiddleware[$routeKey]) !== true) {
-                return true;
-            }
+        return static::handleDynamicRoutes($incomingMethod, $currentAction, $dynamicRoutes[$incomingMethod] ?? []);
+    }
 
-            if ($method === 'POST') {
-                static::checkCsrf();
-            }
-
-            if (isset($handler['controller']['closure'])) {
-                echo $handler['controller']['closure']();
-            } else {
-                $namespace = $handler['namespace'];
-                [$controller, $methodName] = $handler['controller'];
-                if (!$methodName) throw new RouteNotFoundException("Please specify a method.");
-                $fqcn = $namespace ? $namespace . '\\' . $controller : $controller;
-                RouteCaller::call($fqcn, $methodName);
-            }
-
-            IsRoute::checkRoute(true);
+    /**
+     * @param array $handler
+     * @param string $routeKey
+     * @param string $incomingMethod
+     * @param array $routeMiddleware
+     * @return bool
+     * @throws CsrfException
+     * @throws RouteNotFoundException
+     * @throws MiddlewareException|\ReflectionException
+     */
+    private static function handleStaticRoute(array $handler, string $routeKey, string $incomingMethod, array $routeMiddleware): bool
+    {
+        if (!static::runMiddlewareChecks($handler['middleware'] ?? [], $routeMiddleware[$routeKey] ?? [])) {
             return true;
         }
 
-        foreach ($dynamicRoutes[$method] ?? [] as $route) {
+        if ($incomingMethod === 'POST') {
+            static::checkCsrf();
+        }
+
+        if (isset($handler['controller']['closure'])) {
+            echo $handler['controller']['closure']();
+        } else {
+            static::invokeController($handler['namespace'], $handler['controller']);
+        }
+
+        IsRoute::checkRoute(true);
+        return true;
+    }
+
+    /**
+     * @param string $incomingMethod
+     * @param string $currentAction
+     * @param array $routes
+     * @return bool
+     * @throws CsrfException
+     * @throws RouteNotFoundException
+     * @throws MiddlewareException|\ReflectionException
+     */
+    private static function handleDynamicRoutes(string $incomingMethod, string $currentAction, array $routes): bool
+    {
+        foreach ($routes as $route) {
             if (preg_match($route['regex'], $currentAction, $matches)) {
                 array_shift($matches);
 
-                if ($route['middleware'] && static::getMiddleware($route['middleware']) !== true) {
+                if (!static::runMiddlewareChecks($route['middleware'] ?? [])) {
                     return true;
                 }
-                if ($method === 'POST') {
+
+                if ($incomingMethod === 'POST') {
                     static::checkCsrf();
                 }
 
-                [$controller, $methodName] = $route['controller'];
-                if (!$methodName) {
-                    throw new RouteNotFoundException("Please specify a method.");
-                }
-                $fqcn = $route['namespace'] ? $route['namespace'] . '\\' . $controller : $controller;
-
-                RouteCaller::call($fqcn, $methodName, $matches);
+                static::invokeController($route['namespace'], $route['controller'], $matches);
                 IsRoute::checkRoute(true);
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * @param array|string $handlerMiddleware
+     * @param array $routeMiddleware
+     * @return bool
+     * @throws MiddlewareException
+     */
+    private static function runMiddlewareChecks(array|string $handlerMiddleware = [], array $routeMiddleware = []): bool
+    {
+
+        return static::getMiddleware($handlerMiddleware) === true
+            && static::getMiddleware($routeMiddleware) === true;
+    }
+
+    /**
+     * @param string|null $namespace
+     * @param array $controller
+     * @param array $params
+     * @return void
+     * @throws RouteNotFoundException
+     * @throws \ReflectionException
+     */
+    private static function invokeController(?string $namespace, array $controller, array $params = []): void
+    {
+        [$controllerClass, $methodName] = $controller;
+        if (!$methodName) {
+            throw new RouteNotFoundException("Please specify a method.");
+        }
+
+        $fqcn = $namespace ? $namespace . '\\' . $controllerClass : $controllerClass;
+
+        RouteCaller::call($fqcn, $methodName, $params);
     }
 
 }

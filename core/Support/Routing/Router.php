@@ -3,6 +3,8 @@
 namespace Core\Support\Routing;
 
 use Closure;
+use Core\Exception\Handlers\RouteNotFoundException;
+use Core\Support\Constants;
 use Core\Support\Traits\Csrf\CsrfToken;
 use Core\Support\Traits\Middleware;
 use Core\Support\Traits\RouteParam;
@@ -35,15 +37,12 @@ class Router
      */
     public static function get($uri, $action): RouteBuilder
     {
-        $method = 'GET';
-        MethodChecker::check($method);
-
         if ($action instanceof Closure) {
             $action = ['closure' => $action];
         }
 
         $context = new RouteContext(
-            $method,
+            Constants::METHODS['GET'],
             $uri,
             $action,
             static::$prefix,
@@ -66,15 +65,12 @@ class Router
      */
     public static function post($uri, $action): RouteBuilder
     {
-        $method = 'POST';
-       // MethodChecker::check($method);
-
         if ($action instanceof Closure) {
             $action = ['closure' => $action];
         }
 
         $context = new RouteContext(
-            'POST',
+            Constants::METHODS['POST'],
             $uri,
             $action,
             static::$prefix,
@@ -97,15 +93,12 @@ class Router
      */
     public static function put($uri, $action): RouteBuilder
     {
-        $method = 'PUT';
-      //  MethodChecker::check($method);
-
         if ($action instanceof Closure) {
             $action = ['closure' => $action];
         }
 
         $context = new RouteContext(
-            'PUT',
+            Constants::METHODS['PUT'],
             $uri,
             $action,
             static::$prefix,
@@ -128,15 +121,12 @@ class Router
      */
     public static function delete($uri, $action): RouteBuilder
     {
-        $method = 'DELETE';
-       // MethodChecker::check($method);
-
         if ($action instanceof Closure) {
             $action = ['closure' => $action];
         }
 
         $context = new RouteContext(
-            'DELETE',
+            Constants::METHODS['DELETE'],
             $uri,
             $action,
             static::$prefix,
@@ -159,15 +149,12 @@ class Router
      */
     public static function patch($uri, $action): RouteBuilder
     {
-        $method = 'PATCH';
-       // MethodChecker::check($method);
-
         if ($action instanceof Closure) {
             $action = ['closure' => $action];
         }
 
         $context = new RouteContext(
-            'PATCH',
+            Constants::METHODS['PATCH'],
             $uri,
             $action,
             static::$prefix,
@@ -185,12 +172,13 @@ class Router
 
     /**
      * @return bool
-     * @throws \Core\Exception\Handlers\RouteNotFoundException
+     * @throws RouteNotFoundException
+     * @throws \Exception
      */
     public static function executeRoutes(): bool
     {
         return RouteExecutor::execute(
-            $_SERVER['REQUEST_METHOD'],
+            $_SERVER['REQUEST_METHOD'] ?? 'GET',
             RouteAction::current(),
             self::$routeHandlers,
             self::$dynamicRoutes,
@@ -218,15 +206,7 @@ class Router
     }
 
     /**
-     * @return void
-     * @throws \Exception
-     */
-    public static function checkMethodNotAllowed()
-    {
-       // MethodChecker::check(self::$routes);
-    }
-
-    /**
+     * To check single route base middleware
      * @param string $routeKey
      * @param array $middlewares
      * @return void

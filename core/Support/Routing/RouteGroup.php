@@ -3,7 +3,6 @@
 namespace Core\Support\Routing;
 
 use Closure;
-use Core\Support\Facades\Route;
 
 class RouteGroup
 {
