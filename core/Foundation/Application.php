@@ -2,7 +2,7 @@
 
 namespace Core\Foundation;
 
-use Core\Exception\Handlers\MiddlewareNotFoundException;
+use Core\Exception\Handlers\MiddlewareException;
 use Core\Exception\Handlers\RouteNotFoundException;
 use Core\Exception\Log;
 use Core\Exception\Whoops;
@@ -160,7 +160,7 @@ class Application
         $routeMatched = false;
         try {
             $routeMatched = Route::executeRoutes();
-        } catch (MiddlewareNotFoundException | RouteNotFoundException $e) {
+        } catch (MiddlewareException | RouteNotFoundException $e) {
             Log::error($e, "Not Found Exception");
             return true;
         }

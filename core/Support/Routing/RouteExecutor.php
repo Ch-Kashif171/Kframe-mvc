@@ -3,7 +3,7 @@
 namespace Core\Support\Routing;
 
 use Core\Exception\Handlers\CsrfException;
-use Core\Exception\Handlers\MiddlewareNotFoundException;
+use Core\Exception\Handlers\MiddlewareException;
 use Core\Exception\Handlers\RouteNotFoundException;
 use Core\Support\IsRoute;
 use Core\Support\Traits\Csrf\CsrfToken;
@@ -22,7 +22,7 @@ class RouteExecutor
      * @return bool
      * @throws RouteNotFoundException
      * @throws CsrfException
-     * @throws MiddlewareNotFoundException
+     * @throws MiddlewareException
      */
     public static function execute($method, $currentAction, $routeHandlers, $dynamicRoutes, $routeMiddleware): bool
     {

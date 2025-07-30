@@ -3,7 +3,7 @@
 namespace Core\Support\Traits;
 
 use App\Kernel;
-use Core\Exception\Handlers\MiddlewareNotFoundException;
+use Core\Exception\Handlers\MiddlewareException;
 
 trait Middleware
 {
@@ -25,7 +25,7 @@ trait Middleware
 
                 } else {
 
-                    throw new MiddlewareNotFoundException("Your given middleware did not match");
+                    throw new MiddlewareException("Your given middleware did not match");
                 }
             }
 
@@ -42,7 +42,7 @@ trait Middleware
                     }
 
                 } else {
-                    throw new MiddlewareNotFoundException("Your given middleware did not match");
+                    throw new MiddlewareException("Your given middleware did not match");
                 }
 
             }
