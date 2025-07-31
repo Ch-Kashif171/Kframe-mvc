@@ -7,8 +7,12 @@ use Core\Exception\Handlers\MiddlewareException;
 
 trait Middleware
 {
-
-    public static function getMiddleware ($middlewares) {
+    /**
+     * @param $middlewares
+     * @return bool
+     * @throws MiddlewareException
+     */
+    public static function getMiddleware($middlewares) {
 
         $kernel = new Kernel();
 
@@ -50,16 +54,20 @@ trait Middleware
         return true; // All middleware passed
     }
 
-    public function middleware($middleware) {
+    /**
+     * @param $middlewares
+     * @return void
+     * @throws MiddlewareException
+     */
+    public function middleware($middlewares)
+    {
         try {
-            $result = static::getMiddleware($middleware);
-            if ($result === false) {
-                exit; // Stop execution if middleware returns false
+            if (!static::getMiddleware($middlewares)) {
+                exit;
             }
         } catch (MiddlewareException $e) {
-            throw new MiddlewareException($e->getMessage());
+            throw $e;
         }
-
     }
 
 }
