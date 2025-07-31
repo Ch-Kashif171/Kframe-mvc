@@ -8,7 +8,7 @@ use Whoops\Run;
 
 class Whoops
 {
-    public static function handle()
+    public static function handler()
     {
         $whoops = new Run;
         $handler = new PrettyPageHandler;

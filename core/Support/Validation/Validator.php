@@ -7,6 +7,8 @@
 
 namespace Core\Support\Validation;
 
+use Core\Exception\Handlers\DBException;
+use Core\Exception\Handlers\ValidationException;
 use Core\Support\DB;
 use Core\Support\Session;
 
@@ -18,6 +20,7 @@ class Validator
      * @param array $fields
      * @param array $rules
      * @return Validator|string
+     * @throws DBException
      */
     public static function validate(array $fields, array $rules): Validator|string
     {
@@ -107,6 +110,7 @@ class Validator
      * @param mixed $value
      * @param string $rules
      * @return void
+     * @throws DBException
      */
     private static function applyRules(string $name, mixed $value, string $rules): void
     {
@@ -179,6 +183,7 @@ class Validator
      * @param mixed $value
      * @param string $rule
      * @return void
+     * @throws DBException
      */
     private static function checkUniqueness(string $field, mixed $value, string $rule): void
     {
@@ -204,6 +209,7 @@ class Validator
      * @param mixed|null $exceptId
      * @param string $idColumn
      * @return bool
+     * @throws DBException
      */
     private static function recordExists(string $table, string $column, mixed $value, mixed $exceptId = null, string $idColumn = 'id'): bool
     {
@@ -215,4 +221,19 @@ class Validator
 
         return $query->exists();
     }
+
+    /**
+     * @return void
+     * @throws ValidationException
+     */
+    public function validateOrFail(): void
+    {
+        if ($this->fails()) {
+            throw new ValidationException(
+                'Validation failed',
+                $this->errors()
+            );
+        }
+    }
+
 }

@@ -2,7 +2,9 @@
 
 namespace Core\Foundation;
 
+use App\Exceptions\Handler;
 use Core\Exception\Handlers\MiddlewareException;
+use Core\Exception\Handlers\NotFoundException;
 use Core\Exception\Handlers\RouteNotFoundException;
 use Core\Exception\Log;
 use Core\Exception\Whoops;
@@ -112,11 +114,17 @@ class Application
      */
     public function boot(): void
     {
+
         foreach ($this->includes as $file) {
             $this->includeFile($file);
         }
 
+
         $this->registerSingletons();
+
+        if (config('app.app_env') !== 'production') {
+            $this->registerExceptionHandler();
+        }
 
         foreach ($this->postIncludes as $file) {
             $this->includeFile($file);
@@ -130,7 +138,7 @@ class Application
     protected function registerSingletons(): void
     {
         $this->singleton('dotenv', LoadEnv::class, [root_path]);
-        $this->singleton('whoops', [Whoops::class, 'handle']);
+        $this->singleton('whoops', [Whoops::class, 'handler']);
         $this->singleton('assetsNotFound', [AssetsNotFound::class, 'run']);
         // Add more singletons here as needed
     }
@@ -181,6 +189,13 @@ class Application
         foreach ($this->includes as $file) {
             require_once root_path . $file;
         }
+    }
+
+    protected function registerExceptionHandler(): void
+    {
+        $handler = new Handler(!(config('app.app_env') === 'production'));
+
+        set_exception_handler([$handler, 'handle']);
     }
 
 }

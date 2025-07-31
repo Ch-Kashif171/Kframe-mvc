@@ -18,7 +18,7 @@ class Log
     /**
      * Log an exception or error to the appropriate log file.
      *
-     * @param \Throwable|string $exception Exception, error, or message to log
+     * @param \Throwable|string $exception Handler, error, or message to log
      * @param string $context   Context label (e.g., 'EXCEPTION', 'CAUGHT', 'WHOOPS')
      */
     public static function error($exception, string $context = 'EXCEPTION')
