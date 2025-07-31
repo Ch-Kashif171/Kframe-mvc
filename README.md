@@ -394,6 +394,55 @@ $users = User::withWhereHas('posts', function($q) {
 
 ---
 
+### 🧩 Customize Exception Handling
+
+Your global exception handling logic is located at:
+
+```
+app/Exceptions/Handler.php
+```
+
+You can handle and customize different types of exceptions in this file.
+
+Example:
+```php
+protected bool $exception = true; // true, false
+```
+
+```php
+public function handle(Throwable $e)
+{
+    $this->render($e, function (Throwable $e) {
+
+        if ($e instanceof NotFoundException) {
+            response()->json(['NotFoundException' => $e->getMessage()], 404);
+        } elseif ($e instanceof ValidationException) {
+            response()->json(['ValidationException' => $e->getErrors()], 422);
+        } elseif ($e instanceof AuthException) {
+            response()->json('Unauthenticated.', 401);
+        } else {
+            response()->json(['Exception' => 'Something went wrong.'], 500);
+        }
+    });
+
+    return true;
+}
+```
+
+---
+
+### 🧪 Tip for Development
+
+If you're in a development environment and want to disable this custom handler to see default **Whoops** debug pages:
+
+- Simply make it true
+```php
+protected bool $exception = true; // true, false
+```
+- Whoops will automatically display the error with a full debug trace.
+
+---
+
 ## 🙌 Contribute
 
 Want to improve this Laravel-style lightweight framework? Submit a PR or open an issue. All contributions are welcome!

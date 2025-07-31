@@ -2,10 +2,12 @@
 
 namespace Core\Exception;
 
+use Closure;
+use Core\Exception\Handlers\SimpleException;
+use Exception;
 use Throwable;
-use ReflectionFunction;
 
-class ExceptionDispatcher
+trait ExceptionDispatcher
 {
     protected array $handlers = [];
 
@@ -16,35 +18,32 @@ class ExceptionDispatcher
         $this->debug = $debug;
     }
 
-    public function register(callable $handler): void
+    /**
+     * @throws Exception
+     */
+    public function render(Throwable $e, Closure $closure)
     {
-        $reflection = new ReflectionFunction($handler);
-        $params = $reflection->getParameters();
-
-        if (!isset($params[0])) {
-            throw new \InvalidArgumentException('Handler must accept an exception.');
+        if (!$this->exception) {
+            return $closure($e);
         }
 
-        $type = $params[0]->getType();
-
-        if (!$type || $type->isBuiltin()) {
-            throw new \InvalidArgumentException('Handler must type-hint an exception class.');
-        }
-
-        $this->handlers[$type->getName()] = $handler;
+        throw new SimpleException($e->getMessage());
     }
 
+    /**
+     * @param Throwable $e
+     * @return void
+     */
     public function handle(Throwable $e): void
     {
         if ($this->debug) {
-
             $response = $this->dispatch($e);
-
             if ($response === null) {
                 $this->renderDefault($e);
             }
+        } else {
+            $this->renderJson("Something went wrong.", 500);
         }
-
     }
 
     protected function dispatch(Throwable $e): mixed
@@ -62,13 +61,9 @@ class ExceptionDispatcher
     {
         http_response_code($e->getCode() >= 400 ? $e->getCode() : 500);
 
-        if ($this->debug) {
-            echo "<h1>" . get_class($e) . "</h1>";
-            echo "<p>" . $e->getMessage() . "</p>";
-            echo "<pre>" . $e->getTraceAsString() . "</pre>";
-        } else {
-            echo "Something went wrong.";
-        }
+        echo "<h1>" . get_class($e) . "</h1>";
+        echo "<p>" . $e->getMessage() . "</p>";
+        echo "<pre>" . $e->getTraceAsString() . "</pre>";
     }
 
     protected function renderJson($message, int $code): void

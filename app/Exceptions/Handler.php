@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Closure;
 use Core\Exception\ExceptionDispatcher;
 use Core\Exception\Handlers\AuthException;
 use Core\Exception\Handlers\NotFoundException;
@@ -9,30 +10,38 @@ use Core\Exception\Handlers\ValidationException;
 use Exception;
 use Throwable;
 
-class Handler extends ExceptionDispatcher
+class Handler
 {
+    use ExceptionDispatcher;
+
+    /**
+     * If you want to hide the exception and want to show below errors in handler
+     * just turn this to false
+     * @var bool
+     */
+    protected bool $exception = true; // true, false
 
     /**
      * @param Throwable $e
-     * @return void
+     * @return mixed
      * @throws Exception
      */
-    public function handle(Throwable $e): void
+    public function handle(Throwable $e)
     {
-        /**
-         * You can uncomment these if you want to customize the exception
-         */
-//        if ($e instanceof NotFoundException) {
-//            response()->json(['NotFoundException' => $e->getMessage()], 404);
-//        } elseif ($e instanceof ValidationException) {
-//            response()->json(['NotFoundException' => $e->getErrors()], 422);
-//        } elseif ($e instanceof AuthException) {
-//            response()->json('Unauthenticated.', 401);
-//        } elseif ($e instanceof Exception) {
-//            response()->json(['Exception' => 'Something went wrong.'], 500);
-//        }
+        $this->render($e, function (Throwable $e) {
 
-        throw new \Exception($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                response()->json(['NotFoundException' => $e->getMessage()], 404);
+            } elseif ($e instanceof ValidationException) {
+                response()->json(['ValidationException' => $e->getErrors()], 422);
+            } elseif ($e instanceof AuthException) {
+                response()->json('Unauthenticated.', 401);
+            } else {
+                response()->json(['Exception' => 'Something went wrong.'], 500);
+            }
+        });
+
+        return true;
     }
 
 }
