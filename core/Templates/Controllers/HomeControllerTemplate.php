@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
 
 class controllername extends Controller
 {

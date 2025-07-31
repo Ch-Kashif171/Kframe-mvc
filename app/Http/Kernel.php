@@ -1,9 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Http;
 
-use App\Middleware\Authenticate;
-use App\Middleware\Guest;
+use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\Guest;
 
 class Kernel
 {

@@ -1,7 +1,6 @@
 <?php
 
-use App\Controllers\Controller;
-use Core\Support\Request;
+use App\Http\Controllers\Controller;
 
 class controllername extends Controller
 {

@@ -2,7 +2,7 @@
 
 namespace Core\Support\Traits;
 
-use App\Kernel;
+use App\Http\Kernel;
 use Core\Exception\Handlers\MiddlewareException;
 
 trait Middleware

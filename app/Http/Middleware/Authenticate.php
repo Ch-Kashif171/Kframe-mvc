@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Middleware;
+namespace App\Http\Middleware;
 
 use Core\Support\Auth;
+use function redirect;
 
 class Authenticate
 {

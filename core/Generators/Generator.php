@@ -27,7 +27,7 @@ class Generator
         $pathParts = preg_split('/[\\\\\/]/', $controllerName);
         $className = ucfirst(array_pop($pathParts));
         $directory = implode(DIRECTORY_SEPARATOR, $pathParts);
-        $baseDir = ROOT_PATH . '/app/Controllers' . ($directory ? '/' . $directory : '');
+        $baseDir = ROOT_PATH . '/app/Http/Controllers' . ($directory ? '/' . $directory : '');
         $controllerFile = "$baseDir/$className.php";
 
         if (file_exists($controllerFile)) {
@@ -161,7 +161,7 @@ class Generator
 
         foreach ($controllers as $name => $templateFile) {
             $controllerClass = str_ends_with($name, 'Controller') ? $name : $name . 'Controller';
-            $controllerPath = ROOT_PATH . "/app/Controllers$subDir/$controllerClass.php";
+            $controllerPath = ROOT_PATH . "/app/Http/Controllers$subDir/$controllerClass.php";
             $templatePath = ROOT_PATH . "/core/Templates/Controllers/$templateFile.php";
 
             if (file_exists($controllerPath)) {
@@ -188,7 +188,7 @@ class Generator
     {
         $homeControllerClass = 'HomeController';
         $templatePath = ROOT_PATH . '/core/Templates/Controllers/HomeControllerTemplate.php';
-        $controllerPath = ROOT_PATH . '/app/Controllers/HomeController.php';
+        $controllerPath = ROOT_PATH . '/app/Http/Controllers/HomeController.php';
 
         if (!file_exists($templatePath)) {
             return 'Home controller template file not found';
@@ -302,8 +302,8 @@ class Generator
     private function prependNamespace(string $content, string $namespace): string
     {
         $namespaceLine = $namespace
-            ? "\n\nnamespace App\\Controllers\\" . str_replace('/', '\\', $namespace) . ';'
-            : "\n\nnamespace App\\Controllers;";
+            ? "\n\nnamespace App\\Http\\Controllers\\" . str_replace('/', '\\', $namespace) . ';'
+            : "\n\nnamespace App\\Http\\Controllers;";
         return str_replace('<?php', '<?php' . $namespaceLine, $content);
     }
 }

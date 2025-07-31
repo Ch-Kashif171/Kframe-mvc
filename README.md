@@ -105,7 +105,7 @@ Kframe will autoload them all.
 
 ## 🧰 Middleware System
 
-Register middleware in `App\Kernel.php`:
+Register middleware in `App\Http\Kernel.php`:
 
 ```php
 public $routeMiddleware = [

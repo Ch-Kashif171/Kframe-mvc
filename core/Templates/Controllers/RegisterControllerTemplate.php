@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controllers\Auth;
+namespace App\Http\Controllers\Auth;
 
-use App\Controllers\Controller;
+use App\Http\Controllers\Controller;
 use App\Models\Users;
 use Core\Support\Auth;
 use Core\Support\Request;
